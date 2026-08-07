@@ -11,6 +11,19 @@ Companion: `INTEGRATION.md` — how this composes with ontodag (claims,
 proofs), recordstore/Swarm (evidence, roots), and loopmarket (the first
 structured consumer).
 
+**Update 2026-08-07.** A research sweep (optimistic-oracle empirics,
+combinatorial netting, insurance, market integrity) turned several of this
+draft's positions into work packages and revised three of them; the
+revisions are flagged inline below at §3, §5, §6.4 and §6.5. The work
+packages live under `docs/plans/`: `mechanism-design.md` (odds-weighted
+bonds, revised sizing, the adjudication constitution — the deepest
+document), `insurance-products.md`, `netting-and-reserves.md`,
+`evidence-policy.md` (§11.1's home), `records-and-anchoring.md`,
+`phase0-simulation.md` (§10's Phase-0 instrument), `loopmarket-coupling.md`
+and `THREATS.md`. Design invariants F1–F9 are stated across those docs;
+F7 is §12 of this file, promoted from documentation discipline to
+invariant.
+
 ## 1. The problem
 
 Knowing what is actually true has always been hard; in the age of generated
@@ -81,6 +94,22 @@ than scaling markets down to trivial facts.
 A bond is also what makes a standing offer *credible*: a capital-free
 assertion would be a free option (post, watch, renege). The bonded
 assertion is "the cheapest credible standing bet-offer."
+
+**Update 2026-08-07 — the sizing doctrine is revised at the top of the
+ladder (flagged: this amends a founding position).** "Sized to the cost of
+adjudication, not the value riding on the claim" survives as the *floor*,
+but 2025 practice falsified it as a ceiling: Polymarket/UMA captures
+succeeded precisely because a ~$750 bond gated disputes on ~$7M of open
+reliance — the last rung's integrity cost was decoupled from what rode on
+the answer. The revised doctrine (full mechanism in
+`docs/plans/mechanism-design.md`): bond = max(adjudication-cost floor,
+k × settlement-weighted reliance/centrality of the claim); the dispute
+ladder's *final* rung must have integrity cost ≥ the aggregate open
+reliance on the claim; and per-claim insurance exposure is capped, with
+sales stopping — failing closed — when the cap or the final-rung condition
+would be breached (invariant F4). Cheap bonds still secure the ~99%
+undisputed happy path; what changes is that reliance can no longer
+accumulate past what the ladder can defend.
 
 ## 4. What the assertion side gives up, and how to recover it
 
@@ -163,7 +192,15 @@ The honest complications, in order of severity:
    the pseudonymous minimum is: exclude claims where the buyer plausibly
    controls the source, and keep payouts small enough that arson-for-profit
    doesn't pay. This caps the mechanism at micro-insurance scale —
-   acceptable for the use case.
+   acceptable for the use case. *(Update 2026-08-07 — flagged revision:
+   payout-smallness is demoted from primary defense to belt-and-braces. The
+   primary structural defense is now the **indemnity principle**, invariant
+   F3: a payout never exceeds the buyer's provable reliance on the fact.
+   Where consumption is a loopmarket settlement, the settlement root proves
+   reliance for free and the bound is exact; where reliance is unprovable —
+   the agents-first wedge of §5.5 — payout caps remain the proxy, and
+   out-of-settlement reliance measurement is a registered open problem.
+   See `docs/plans/insurance-products.md`.)*
 4. **Adverse selection is the pool's core pricing problem — and tolerable.**
    The $1-to-win-$100 buyer disproportionately knows something. Real
    insurers price this daily; it requires actuarial loss data per
@@ -228,7 +265,20 @@ The honest complications, in order of severity:
    layer must be an *interface* — evidence norms differ per domain and
    evolve. Evidence itself goes to content-addressed decentralized storage
    with only hashes on-chain (Swarm's postage model fits evidence that must
-   outlive a dispute — `INTEGRATION.md` §9).
+   outlive a dispute — `INTEGRATION.md` §9). *(Update 2026-08-07 — flagged
+   revision: the interface stays pluggable, but the top rung's structural
+   properties become non-negotiable, learned from deployed-system failures:
+   escalation ends at an **independent** arbitrator, never a vote of the
+   system's own incentive token (UMA's DVM is the counterexample); the
+   juror/stake base grows each round (Kleros' 2n+1) so p+ε bribery
+   liability outruns the bond; adjudicator stake is soulbound —
+   non-transferable, time-locked, retroactively slashable — so no bribe
+   market can price capture; minority voters are never slashed for
+   incoherence alone; rulings are reopenable on evidence that did not exist
+   at ruling time; and arbitrator conduct + removal rules are written
+   before the first dispute. The constitution: `docs/plans/
+   mechanism-design.md`; the "full vote as court of last resort" wording
+   above is superseded accordingly.)*
 5. **Graph layer — the netting engine (deferred, designed-for).** The
    generalized-negRisk component: a constraint store of logical relations
    between claims (`A implies B`, `A excludes B`, `exactly-one-of {…}`) in
@@ -245,7 +295,19 @@ The honest complications, in order of severity:
    *(ontodag is a concrete candidate — `INTEGRATION.md` §6.)* Critically:
    layers 2–3 accept a *portfolio* collateral requirement from day one,
    even while v1's calculator is the trivial per-claim sum, so this layer
-   slots in without migrating capital.
+   slots in without migrating capital. *(Update 2026-08-07 — flagged
+   revision: the question above is **resolved in principle**. Over pure
+   fits-within edges, price consistency is an O(E) difference-constraint
+   pass on the order polytope (Stanley), and worst-case collateral is the
+   maximum-weight closure of the subsumption DAG — one min-cut (Picard
+   1976), polynomial, with the cut itself a compact optimality certificate.
+   What flips the problem to #P-hard is admitting *global*
+   mutual-exclusion or exhaustiveness axioms — so those stay out forever;
+   disjointness is admitted only as local, bonded sibling partitions, each
+   unlocking a NegRisk-style netting pocket. The remaining open item is
+   empirical, not theoretical: the measured treewidth and cone-system VC
+   width of the actually-seeded catalogue decide which pricing features
+   ship. See `docs/plans/netting-and-reserves.md`.)*
 
 ## 7. The claim lifecycle, and the decisions inside it
 
@@ -304,7 +366,12 @@ No continuous markets on uncontested claims. No leverage or liquidation
 machinery anywhere. No free-text claims. No cross-chain anything. **No
 token** — fees and yield are sufficient incentive plumbing to test the
 mechanism, and adding a token before the loss tables exist just adds a
-reflexive attack surface.
+reflexive attack surface. *(Hardened 2026-08-07 from a v1 scoping to a
+standing stance, and generalized as invariant F9: no volume-linked
+emissions anywhere — assertion-mining would be the FCoin of facts, and
+FCoin's fee-mining reached, with its copycats, ~40% of global reported
+exchange volume before terminal insolvency inside 20 months. Revisiting the stance requires
+modelling that scenario first; see `docs/plans/THREATS.md`.)*
 
 ## 10. Build order (de-risking fastest)
 
@@ -315,7 +382,11 @@ reflexive attack surface.
   planted-error half-life become acceptable?** If honest verification of a
   mundane false claim can't be made profitable, the system would look
   healthy while quietly certifying nothing — this is the criterion for the
-  whole vision.
+  whole vision. *(Now fully specified — populations, parameter sweeps,
+  adversary playbooks keyed to the threat register, the pre-registered
+  acceptability threshold and its owner — in
+  `docs/plans/phase0-simulation.md`. The same harness runs loopmarket's
+  settlement-pricing shading experiments: one instrument, two consumers.)*
 - **Phase 1** — layers 1–2 plus a naive bond pool on a testnet, against a
   frozen snapshot of one narrow domain (OSM `opening_hours` in one city:
   high error base rate, cheap physical verification, crisp evidence).
@@ -328,11 +399,17 @@ reflexive attack surface.
 1. **The evidence-admissibility spec** for the automated adjudication rung:
    what counts as proof a shop was closed, in a world of generative
    imagery. A moving target — a versioned, per-domain *policy document*,
-   not code.
+   not code. *(Work package assigned 2026-08-07:
+   `docs/plans/evidence-policy.md` — evidence classes as versioned
+   catalogue data with weights and revocation, per-domain hash-pinned
+   policies, first 2026 rulings encoded.)*
 2. **Odds-weighted bond game theory**: asymmetric bonds create a new
    strategic surface (assert at 0.999 to make challenges maximally
    expensive). Needs an equilibrium analysis before real stakes; nobody has
    published this — simultaneously the design's main risk and its paper.
+   *(Work package assigned 2026-08-07: the game-theory section of
+   `docs/plans/mechanism-design.md`, with the empirical half in
+   `docs/plans/phase0-simulation.md`.)*
 
 ## 12. What the system actually certifies
 
@@ -342,6 +419,12 @@ is genuinely more than most databases offer, and the "put your money where
 your mouth is" mechanism is a real social technology — but prices are
 signals under capital constraints and attack, not oracles. Every consumer
 document, API status name, and pitch must preserve this distinction.
+
+*(Promoted 2026-08-07 from documentation discipline to invariant **F7**,
+binding every consumer surface — API field names, MCP annotations,
+loopmarket receipts, pitches. Each plan document under `docs/plans/`
+carries its own "what this document does not promise" section in the same
+spirit.)*
 
 ## 13. Reading list (as collected in the transcript)
 

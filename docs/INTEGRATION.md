@@ -6,6 +6,12 @@ stage, and every integration below is layered composition under written
 contracts — no sister project takes a dependency on factbond, and factbond's
 machinery never enters anyone's canonical data.
 
+*(Update 2026-08-07: the commitments this document deliberately does not
+make now exist elsewhere — the factbond side in `docs/plans/` (notably
+`loopmarket-coupling.md`, `records-and-anchoring.md`), the loopmarket side
+in `loopmarket/docs/plans/P3-guarantee-coupling.md`. This file keeps its
+charter: composition analysis under the sisters' written contracts.)*
+
 Assumed background: `DESIGN.md` here; ontodag's `docs/CONTRACT.md` (the
 guarantees a higher layer may rely on) and `docs/PROVENANCE.md` (attribution
 without breaking canonical roots).
@@ -160,10 +166,25 @@ The insurance coupling instantiates with unusual precision there:
   shared catalogue** — which categories, regions and declarers produce
   disputes — feeding loopmarket's P3 "aggregated risk markets and rate
   premia" directly.
-- The proof machinery is shared: loopmarket P2 already plans on-chain
-  verification of offer inclusion under a pinned book root
-  (proximity-order-trie `ForkPathProof`); factbond's dispute layer verifies
-  claim subjects the same way. One proof path, two consumers.
+- The proof machinery is shared: loopmarket P2 plans on-chain verification
+  of offer inclusion under a pinned book root (since 2026-08-07:
+  recordstore's canonical-trie inclusion/absence proofs first, POT
+  `ForkPathProof` only if the on-chain verifier demands it —
+  `loopmarket/docs/plans/proof-fabric.md`); factbond's dispute layer
+  verifies claim subjects the same way. One proof path, two consumers.
+
+*(Concretized 2026-08-07.)* Three details graduated from fit to specified
+mechanism: **witness edges** — loopmarket settlement instruments
+`satisfies`/`is_below` to emit the exact ⊑ edges each settled loop relied
+on, pure telemetry that lands before any bond exists and accumulates the
+centrality data bond sizing needs; **reliance as the payout ceiling** — the
+settlement root proves which paying transactions pinned an edge, so
+information-insurance payouts are capped by provable reliance (invariant
+F3), which is what makes insurance-arson structurally unprofitable here
+first; and **solver bonds as the pool's second customer** — loopmarket's
+P2 solver registration bonds are damage-sized escrow of exactly the shape
+the bond pool underwrites, so one bond machinery serves both consumers and
+the loss experience stays in one place.
 
 ## 9. recordstore and Swarm: evidence, roots, feeds
 
@@ -179,6 +200,12 @@ The insurance coupling instantiates with unusual precision there:
   an owner-signed, followable address carrying `Refuted` events — the same
   primitive ontodag already uses for "latest root," pointed at corrections
   instead.
+- **Anchored time is factbond's to build** (ontodag's `PROVENANCE.md`
+  assigns it explicitly): liveness windows and dispute deadlines need a
+  time source better than local clocks — feed index vs on-chain anchor is
+  the open choice, decided in `docs/plans/records-and-anchoring.md`, which
+  also owns the `annotations.factbond` schema (status, confidence, capital
+  standing) that ontodag's answer envelopes reserved.
 
 ## 10. Boundaries (the part that keeps everyone honest)
 

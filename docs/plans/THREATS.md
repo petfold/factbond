@@ -1,6 +1,9 @@
 # factbond: threat register
 
-Status: design, 2026-08-07. Decided here: the shared IDs T1–T9 adopted
+Status: design, 2026-08-07; dated edit 2026-08-21 (T14, aggregator
+omission & centralization, mirrored from the primary register — added
+there at owner direction; T10–T13 were imported into the primary register
+the same day). Decided at 2026-08-07: the shared IDs T1–T9 adopted
 frozen from the primary register, factbond-primary depth on T4–T6 and T9,
 the factbond-native entries T10–T13 appended under the mirror's new-IDs
 rule, initial tripwire thresholds pre-registered and changeable only by
@@ -533,6 +536,44 @@ claim rate per class (the candidate measurement instrument); the Phase-0
 mass-revocation drill must show the ladder degrading, never certifying
 garbage. `evidence-policy.md` §4/§5 (Phase 1; fabrication-bound gate
 Phase 2) + `phase0-simulation.md` §7; reopening: `mechanism-design.md` §4.
+
+## T14 — Aggregator omission & centralization — primary: `loopmarket/docs/plans/THREATS.md`
+
+*(Mirrored 2026-08-21, added at owner direction with the loopmarket
+agenda-#5 sign-off; condensed, substance complete.)*
+
+**Attack & economics.** A loopmarket aggregator silently omits or delays
+makers/offers from its fold; its manifest is the book most solvers read,
+so omission is market exclusion. Admission-by-reference (T2's spam
+defense) *is* censorship capability — the same discretionary power — and
+with one aggregator worth reading it becomes unilateral market shaping.
+Omission is free at the margin and yields a perfectly valid `book_root`;
+running a competitor costs a full pinning Bee node, so the market
+concentrates by default. factbond exposure: the pool's loss experience,
+premium feeds and settlement-weighted reliance measures are computed
+over what the fold shows — a censoring aggregator skews the dataset
+factbond prices from.
+
+**Defense (by construction).** The fold is pure and commutative:
+same inputs ⇒ byte-identical `book_root`s, so manifest divergence is
+evidence. Omission is provable: registry-event announcements are the
+censorship-resistant ground truth, maker books are public feeds, and
+recordstore absence proofs demonstrate absence from a pinned root
+mechanically. Fold decisions are attributed in `provenance_root`; entry
+is permissionless; solvers can always fold maker feeds directly.
+
+**Residual.** Neutrality-by-auditability is only as real as the number
+of independent aggregators running. **Owner directive (2026-08-21):
+several independent aggregators are the deployment floor; a
+single-aggregator steady state is a failure condition; read-path
+decentralization is a mandated investigation before P1 completes.** The
+P1 settlement-instance chokepoint stands until P2.
+
+**Tripwire & work package.** Count of independently-operated manifests
+(pages below two); unexplained `book_root` divergence; a planted-offer
+inclusion probe across watched manifests. loopmarket
+`P1-federated-book.md` §2/§8 + `adoption-and-thickness.md` §9;
+settlement half: `P2-batch-auction.md`.
 
 ## The invariant ↔ threat coverage matrix
 

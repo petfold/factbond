@@ -23,8 +23,9 @@ adjudicator-failure loading.
 
 This is the deepest document of the programme: it expands `DESIGN.md` §3,
 §4, §6.4 and §8 into full mechanism, and carries in full the two 2026-08-07
-flagged revisions those sections announce — the sizing doctrine (§3's note)
-and the top rung's non-negotiable properties (§6.4's note). Companions:
+flagged revisions those sections announce — the sizing doctrine (§3's
+note; ratified 2026-08-20) and the top rung's non-negotiable properties
+(§6.4's note). Companions:
 `evidence-policy.md` (what the ladder's evidence rung admits),
 `insurance-products.md` (the products these bonds secure; the auto-dispute
 coupling), `netting-and-reserves.md` (the capital behind the pool; the
@@ -134,8 +135,9 @@ of open reliance, and the last rung's integrity cost was decoupled from
 what rode on the answer. Bonds priced to adjudication cost are safe
 *only while attacker profit outside the oracle game is capped*.
 
-The revised doctrine (decided 2026-08, lands with Phase 1; amends
-`DESIGN.md` §3 per its flagged note), three clauses:
+The revised doctrine (decided 2026-08, ratified by owner sign-off
+2026-08-20, lands with Phase 1; amends `DESIGN.md` §3 per its note),
+three clauses:
 
 1. **bond = max( adjudication-cost floor , k × settlement-weighted
    reliance/centrality of the claim ).** The floor keeps template claims

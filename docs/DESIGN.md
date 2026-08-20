@@ -14,7 +14,10 @@ structured consumer).
 **Update 2026-08-07.** A research sweep (optimistic-oracle empirics,
 combinatorial netting, insurance, market integrity) turned several of this
 draft's positions into work packages and revised three of them; the
-revisions are flagged inline below at §3, §5, §6.4 and §6.5. The work
+revisions are flagged inline below at §3, §5, §6.4 and §6.5. **The §3,
+§5.3 and §6.5 revisions were ratified by owner sign-off on 2026-08-20
+(discussion agenda item 1) and are settled doctrine**; §6.4's note is a
+design decision that was never contested. The work
 packages live under `docs/plans/`: `mechanism-design.md` (odds-weighted
 bonds, revised sizing, the adjudication constitution — the deepest
 document), `insurance-products.md`, `netting-and-reserves.md`,
@@ -192,7 +195,8 @@ The honest complications, in order of severity:
    the pseudonymous minimum is: exclude claims where the buyer plausibly
    controls the source, and keep payouts small enough that arson-for-profit
    doesn't pay. This caps the mechanism at micro-insurance scale —
-   acceptable for the use case. *(Update 2026-08-07 — flagged revision:
+   acceptable for the use case. *(Update 2026-08-07, ratified by owner
+   sign-off 2026-08-20:
    payout-smallness is demoted from primary defense to belt-and-braces. The
    primary structural defense is now the **indemnity principle**, invariant
    F3: a payout never exceeds the buyer's provable reliance on the fact.
@@ -295,8 +299,9 @@ The honest complications, in order of severity:
    *(ontodag is a concrete candidate — `INTEGRATION.md` §6.)* Critically:
    layers 2–3 accept a *portfolio* collateral requirement from day one,
    even while v1's calculator is the trivial per-claim sum, so this layer
-   slots in without migrating capital. *(Update 2026-08-07 — flagged
-   revision: the question above is **resolved in principle**. Over pure
+   slots in without migrating capital. *(Update 2026-08-07, ratified by
+   owner sign-off 2026-08-20: the question above is **resolved in
+   principle**. Over pure
    fits-within edges, price consistency is an O(E) difference-constraint
    pass on the order polytope (Stanley), and worst-case collateral is the
    maximum-weight closure of the subsumption DAG — one min-cut (Picard

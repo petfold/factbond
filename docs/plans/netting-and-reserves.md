@@ -2,7 +2,8 @@
 
 Status: design, 2026-08-07. Decided here: the graph layer's claim fragment
 (subsumption plus exact dimensions — closing `DESIGN.md` §6.5's "open research
-question", a flagged revision); consistency as an O(E) difference-constraint
+question", ratified by owner sign-off 2026-08-20); consistency as an O(E)
+difference-constraint
 pass; the Picard min-cut margin engine with the cut as its certificate;
 disjointness admitted only as local bonded sibling partitions; polarity-aware
 cross-margin rules; complexity-priced structural axioms; the v0 reserve
@@ -28,7 +29,8 @@ of this stands on).
 verification where worst-case collateral and price propagation are polynomial"
 and called it the open research question. The research resolves it in
 principle, and this document commits to the answer — §6.5's framing is revised
-from *open* to *resolved-in-principle, empirically gated* (flagged revision).
+from *open* to *resolved-in-principle, empirically gated* (ratified by
+owner sign-off 2026-08-20).
 The bridge claim, stated once in `INTEGRATION.md` §6 and adopted verbatim:
 **subsumption-plus-exact-dimensions is a tractable, canonically-identified,
 monotone claim/implication fragment for knowledge-base collateral netting.**

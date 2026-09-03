@@ -272,6 +272,8 @@ to witness class, and the ruling role (today Peter, or the two-source
 rule) as the top of the ladder. What it would buy: a review of ~1,900
 edges by people who each know one field, paid per real mistake, with the
 whole dispute history merging by union like everything else. The packs
-are small enough that the experiment is cheap and large enough that the
-3.6% matters — roughly forty wrong edges are still in them by the
-measured rate, and the sample says they hide among the single-source ones.
+are small enough that the experiment is cheap and large enough to be
+worth it: the 3.6% is what a *second* reading by the same reader caught,
+so what a third reader would find is unknown — which is exactly the
+number a bounty measures — and the sample says it hides among the
+single-source edges.

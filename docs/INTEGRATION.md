@@ -224,3 +224,54 @@ The composition discipline mirrors ontodag's B1/B2:
   endorsements and rulings are signed records that merge by union;
   everything else (status, prices, reserves' views) is recomputable local
   state.
+
+## 11. Worked example: bounties on the science packs (Peter, 2026-09-03)
+
+ontodag-core's four science packs (physics, mathematics, chemistry, biology
+— about 1,900 edges as of 2026-09-03) are a ready-made first case, because
+the day they were finished a spot check found the error structure that
+factbond prices:
+
+- **The claims are already canonical and finite.** Every pack edge is a
+  `sub ⊑ sup` pair of canonical names, and the pack is a store with a
+  golden root — so §3 applies verbatim: *bond the pack root, dispute a
+  leaf*. One signature covers the whole pack; a challenger names one edge
+  and localizes it with an inclusion proof.
+- **The base rate is measured, and it is stratified.** A random sample of
+  50 edges read by a non-expert found no error. A second reading of the
+  1,109 edges carried by a *single* independent source rejected 40 (about
+  3.6%). Edges carried by two or more independent sources (WordNet + SUMO,
+  Wikidata + OpenCyc) were not where the errors were. Each edge's witness
+  set is recorded in `build/evidence.tsv`, so **bond size can follow
+  evidence class**: a single-source edge is worth a larger bounty than a
+  two-source one, and a ruling-only edge (`claude-ruling`) larger still.
+  This is the reliance/evidence term of the bond-sizing rule with the
+  evidence already in hand, not estimated.
+- **The kinds of error are known, so the challenge is bounded work.**
+  Sense drift (`indicator ⊑ sign` for a chemical indicator), label
+  collision (`clique ⊑ subclass` via the taxonomic rank), a source's own
+  slip (`heterozygote ⊑ zygote`, `covariance ⊑ variance`), a coarse ruling
+  that is wrong rather than coarse (`chemical-chain ⊑ concept`). A
+  challenger knows what to look for; the reward is for looking.
+- **Adjudication has a written evidence standard.** An edge is accepted
+  when two independent sources entail it and none entails the reverse, or
+  when a named ruling accepts it (`UPPER.md` §1, §6). A dispute therefore
+  has a mechanical half — *show the sources do not say this*, checkable
+  against the extracted views — and a judgement half — *the sources are
+  wrong* — which escalates to a ruling. That is the adjudication ladder of
+  `DESIGN.md` §6.4 with the cheap rung genuinely cheap.
+- **The correction is a speech act, never an edit.** A refuted edge is
+  recorded as a `reject` line in the pack's review files, which the next
+  build honours; published edges are sticky by construction (`UPPER.md`
+  §1), so the refutation reaches readers as the next pack version plus a
+  correction record — §4's "correction feed, not corrected databases",
+  already how the packs work.
+
+What it would cost to run: a bond per pack root, a bounty schedule keyed
+to witness class, and the ruling role (today Peter, or the two-source
+rule) as the top of the ladder. What it would buy: a review of ~1,900
+edges by people who each know one field, paid per real mistake, with the
+whole dispute history merging by union like everything else. The packs
+are small enough that the experiment is cheap and large enough that the
+3.6% matters — roughly forty wrong edges are still in them by the
+measured rate, and the sample says they hide among the single-source ones.

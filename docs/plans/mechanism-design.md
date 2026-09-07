@@ -149,7 +149,9 @@ three clauses:
    vote-buying), whereas clearing-weighted reliance is farmable only by
    paying real fees on real cleared loops — loopmarket's U12
    (*reward/reputation statistics count cleared fee-paid loops only*)
-   applied to bond sizing. The measure is supplied by loopmarket's
+   applied to bond sizing. Reliance counts at clearing and retires at
+   settlement; delivery never adds weight, adjudicated failures subtract
+   (`loopmarket-coupling.md` §2, decided 2026-09-07). The measure is supplied by loopmarket's
    witness-edge telemetry (loopmarket `docs/plans/P3-guarantee-coupling.md`
    §2; `loopmarket-coupling.md` §1), which lands before any bond exists
    precisely so this term starts from data. `k` and the floor are Phase-0

@@ -78,6 +78,20 @@ holds on the book — a loop half-present after a merge would be half a
 reliance proof. Per-maker keying inherits U8 (two-layer offer
 authenticity) when it lands.
 
+**Cleared, not delivered (decided 2026-09-07).** The measure counts a loop
+at clearing and never at settlement. Reliance is created when the loop
+commits under a root that pinned the edge; delivery discharges it, it does
+not add to it. Counting delivered legs instead would buy no sybil
+resistance — countersign is optimistic, mutual silence confirms, so
+colluders manufacture a delivered loop exactly as cheaply as a cleared
+one — and would cost determinism, since a statistic that waits on liveness
+windows and oracle events is no longer recomputable from pinned roots. The
+settlement layer enters the ledger in two ways only: negatively, as
+adjudicated failures (lost disputes, paid claims, slashed bonds — the
+events that are expensive to fake), and as the *exit* of exposure (the
+epoching resolution under open problems). A maker's standing is cleared
+volume against loss experience; nothing positive ever flows from delivery.
+
 Static graph centrality was rejected, and the rejection is load-bearing.
 Degree or betweenness in the offer/catalogue graph costs only postage to
 manufacture (T2); wash loops are graph-indistinguishable from real ones —
@@ -257,10 +271,22 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
   The structural half of the indemnity cap is free; the monetary half is
   not — legs have no external price, so caps rest on declared coverage
   plus ceilings, honest only while overstatement costs premium.
-- **Centrality epoching and decay** (work package: `mechanism-design.md`
-  §2's k calibration + `phase0-simulation.md` §6). How fast cleared
-  reliance stops counting: a stale hub keeps an inflated bond, a fresh
-  hub sits underbonded, and the decay rate interacts with fact rot.
+- **Centrality epoching and decay** — *shape resolved 2026-09-07,
+  calibration open* (work package unchanged: `mechanism-design.md` §2's k
+  calibration + `phase0-simulation.md` §6). The question was how fast
+  cleared reliance stops counting: a stale hub keeps an inflated bond, a
+  fresh hub sits underbonded, and any decay constant interacts with fact
+  rot. Resolution: open reliance on a subject grows when a loop clears
+  relying on it and shrinks when the relying legs *settle* — attested by
+  their oracle, or their liveness window closes undisputed. Once a leg has
+  settled, the harm a wrong edge could do to it can no longer land, so the
+  bond stops carrying it. That replaces an arbitrary decay rate with an
+  event the coupling already records, and makes the bond track live
+  exposure rather than lifetime volume. Still open: legs whose settlement
+  is disputed stay counted until the ruling (the disputed share is itself
+  a reliability signal); edges whose consumers never settle anything —
+  out-of-clearing reliance, `insurance-products.md` OP-1 — get no exit
+  event and fall back to a calibrated decay.
 - **Witness-replay sampling** (work package: this document +
   `phase0-simulation.md` adversary playbooks). Recomputable in principle,
   but replay costs real fetches against a published book; the pool cannot

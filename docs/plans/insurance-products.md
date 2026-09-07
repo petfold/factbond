@@ -6,7 +6,7 @@ enforced where reliance is provable, payout-cap proxy where it is not;
 pricing from per-fact-type loss tables over an uninformative cold-start
 prior; the pseudonymous moral-hazard exclusion set with fail-closed
 aggregate caps; the payout→dispute auto-coupling including appeal funding.
-Open here: reliance measurement outside loopmarket settlement; insurable
+Open here: reliance measurement outside loopmarket clearing; insurable
 interest without identity; interpretive basis risk on semantic edges;
 manipulation of the published premium gap.
 
@@ -86,20 +86,20 @@ pricing desk, not in the courtroom.
 The honest part is the scoping — reliance is only sometimes provable:
 
 - **Provable: the loopmarket coupling.** A settling loop *relied on*
-  specific catalogue edges — `satisfies` walked them, settlement
+  specific catalogue edges — `satisfies` walked them, clearing
   re-verified every leg against pinned roots (loopmarket
-  `ARCHITECTURE.md` §4, §8). The settlement root *is* a reliance proof:
-  insured edge, relying legs, and settled value are one auditable object,
-  so settlement-attached insurance enforces F3 exactly — payout capped by
-  the value of the settled legs that provably pinned the edge — for free
+  `ARCHITECTURE.md` §4, §8). The clearing root *is* a reliance proof:
+  insured edge, relying legs, and cleared value are one auditable object,
+  so clearing-attached insurance enforces F3 exactly — payout capped by
+  the value of the cleared legs that provably pinned the edge — for free
   (decided 2026-08; ships per `loopmarket-coupling.md` sequencing:
   Phase-0 green *and* loopmarket's P2 record-format freeze).
 - **Unprovable: the agents-first wedge.** The first customers (§8)
-  consume facts *outside* any settlement — a route plan is not a
+  consume facts *outside* any clearing — a route plan is not a
   committed loop. There the buyer's true reliance is private and the
   interim rule is the proxy: **hard per-policy payout caps at
   micro-insurance scale**, sized so arson cannot pay even when reliance
-  is wholly fabricated. Measuring reliance outside settlement is a
+  is wholly fabricated. Measuring reliance outside clearing is a
   registered open problem (OP-1), not a solved one wearing a cap.
 
 Rejected: unlimited notional with reinsurance layered later. The solvency
@@ -279,7 +279,7 @@ channels, in order:
   the worked example — "how much is this answer insured for?" becomes a
   field, not a research project (`loopmarket-coupling.md` §2;
   `INTEGRATION.md` §7) (decided 2026-08, lands with Phase 2).
-- **Settlement auto-attach (the flagship).** loopmarket settlement
+- **Clearing auto-attach (the flagship).** loopmarket clearing
   attaches verification bets on the witness edges each loop relied on;
   payouts are indemnity-exact (§2), and every paid claim audits the
   shared catalogue (§6). Gated on Phase-0 green and loopmarket's P2
@@ -306,13 +306,13 @@ not a mechanism-design one, and nothing here depends on them.
 - **G-I4 (Phase 2).** Caps fail closed under test: a simulated breach of
   a per-fact aggregate cap or the F4 final-rung condition halts new sales
   on that fact with no manual intervention.
-- **G-I5 (settlement-attached variant).** Ships only after Phase-0 green
+- **G-I5 (clearing-attached variant).** Ships only after Phase-0 green
   *and* loopmarket P2 record-format freeze (`loopmarket-coupling.md`);
   until then the only live product is the capped agents-first wedge.
 
 ## Open problems
 
-- **OP-1 Out-of-settlement reliance measurement.** F3 is enforceable only
+- **OP-1 Out-of-clearing reliance measurement.** F3 is enforceable only
   where reliance is provable; the wedge runs on payout caps as a proxy.
   Candidate directions — declared-reliance commitments at purchase,
   plan-hash escrows, post-hoc reliance attestation — all either invite
@@ -322,7 +322,7 @@ not a mechanism-design one, and nothing here depends on them.
 - **OP-2 Insurable interest without identity.** The controls-source
   exclusion is a heuristic, not a theory: under pseudonymity, "who can
   influence this fact" is estimated from structure (source ownership,
-  edit history, settlement adjacency), never known. A principled
+  edit history, clearing adjacency), never known. A principled
   pseudonymous insurable-interest test — or a proof that caps are the
   best attainable — is open. Work package: `THREATS.md` T5 residuals plus
   the Phase-2 spec here.

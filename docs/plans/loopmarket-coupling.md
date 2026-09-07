@@ -1,11 +1,13 @@
 # factbond: the loopmarket coupling
 
+> **Vocabulary (2026-09-07).** loopmarket renamed its atomic commit from "settlement" to **clearing** (`clearing.py`, `MockClearing`, U3 "clearing trusts no solver"); *settlement* now means the makers delivering, which is exactly the P3 territory this coupling secures. This document and the rest of factbond's docs follow: clearing roots, clearing-weighted centrality, clearing-attached insurance, `P2-clearing-pricing.md`.
+
 Status: design, 2026-08-07. Decided here: the shipping gate (Phase-0 green
 AND loopmarket's P2 record-format freeze, jointly necessary); witness
 telemetry as the early, ungated feed and the pool's demand stream;
-settlement-weighted centrality (settled fee-paid loops only) as the sole
+clearing-weighted centrality (cleared fee-paid loops only) as the sole
 centrality input to bond sizing; the three product couplings —
-settlement-attached indemnity-exact insurance with payout→sibling-dispute
+clearing-attached indemnity-exact insurance with payout→sibling-dispute
 auto-filing, the per-edge/per-maker premium feed consumed as solver edge
 weights, solver registration bonds as the pool's second customer; the
 no-assumption boundary (B1, F6, `annotations.factbond` gating); the
@@ -17,7 +19,7 @@ This is factbond's half of the coupling with its first structured
 consumer — the contract seen from the pool's side; `INTEGRATION.md` §8
 records the underlying fit. The mirror document is
 `../../../loopmarket/docs/plans/P3-guarantee-coupling.md`, which owns
-everything solver- and settlement-side: witness instrumentation
+everything solver- and clearing-side: witness instrumentation
 mechanics, leg-oracle enforcement, risk-priced routing. Companions:
 `mechanism-design.md` (bond sizing consumes §2's measure),
 `insurance-products.md` (the products §3 attaches),
@@ -33,11 +35,11 @@ loopmarket's `docs/plans/THREATS.md`).
 
 loopmarket is the one deployment where reliance is provable for free. A
 settling loop relied on specific catalogue ⊑ edges — `satisfies` walked
-them, settlement re-verified every leg against pinned roots — and the
-settlement root pins exactly which paying transactions depended on which
+them, clearing re-verified every leg against pinned roots — and the
+clearing root pins exactly which paying transactions depended on which
 edge. So **F3: indemnity (payout ≤ provable reliance; payout-cap proxy
 where unprovable)** is enforceable *exactly* here, not by proxy: insured
-edge, relying legs, and settled value are one auditable object. Everywhere
+edge, relying legs, and cleared value are one auditable object. Everywhere
 else — the agents-first wedge — reliance is private and the product runs
 on payout caps until OP-1 (`insurance-products.md`) is solved. loopmarket
 arrives as the flagship: insurable facts with natural consumers, carrying
@@ -52,25 +54,25 @@ experience; §2 is that agreement.
 ## 2. The witness feed and the only honest centrality
 
 **Witness telemetry jumps every gate.** loopmarket instruments
-`satisfies`/`is_below` at settlement re-verification and emits, per
-settled loop, the deduplicated ⊑ edge list its *own* verifier walked,
+`satisfies`/`is_below` at clearing re-verification and emits, per
+cleared loop, the deduplicated ⊑ edge list its *own* verifier walked,
 keyed by `(loop_id, ontology_root)` — the verifier's walk, never the
 solver's, because a reliance proof built from an untrusted walk would be
 no proof. This is pure telemetry with **no factbond dependency**:
 derived, recomputable by anyone from the pinned `{book_root,
 ontology_root}`, published beside the book, never in it. It lands
 loopmarket-side ahead of any factbond phase (mirror §2, gate G1) so the
-sizing term — bond = max(adjudication-cost floor, k × settlement-weighted
+sizing term — bond = max(adjudication-cost floor, k × clearing-weighted
 reliance/centrality), `mechanism-design.md` §2 — starts from accumulated
 data rather than priors (consumption decided 2026-08, lands with Phase 1).
 
-**Settlement-weighted centrality, precisely.** The centrality of a claim
-subject over an epoch is the aggregate settled value of the legs whose
-settlement re-verification walked an edge reducing to that subject —
+**Clearing-weighted centrality, precisely.** The centrality of a claim
+subject over an epoch is the aggregate cleared value of the legs whose
+clearing re-verification walked an edge reducing to that subject —
 computed by joining witness records against the book's fill and receipt
-records under pinned roots, counting **settled, fee-paid loops only**.
+records under pinned roots, counting **cleared, fee-paid loops only**.
 This is loopmarket's planned **U12: reward/reputation statistics count
-settled fee-paid loops only**, mirrored into bond sizing; the join is
+cleared fee-paid loops only**, mirrored into bond sizing; the join is
 well-defined only because U11 (no partially-filled loop survives a merge)
 holds on the book — a loop half-present after a merge would be half a
 reliance proof. Per-maker keying inherits U8 (two-layer offer
@@ -82,8 +84,8 @@ manufacture (T2); wash loops are graph-indistinguishable from real ones —
 every legitimate loop *is* a self-financing cycle (Victor & Weintraud,
 WWW'21), so loop-shaped traffic proves nothing; and any liquid measure of
 structural importance spawns a farming market (the Curve-wars lesson —
-`mechanism-design.md` §2). Settlement-weighted reliance is farmable only
-by paying real external-asset fees on real settled loops — loopmarket's
+`mechanism-design.md` §2). Clearing-weighted reliance is farmable only
+by paying real external-asset fees on real cleared loops — loopmarket's
 U13 (wash-loop budget-balance by construction, fees external-asset only)
 keeps the farm strictly negative-sum, and **F9: no volume-linked
 emissions anywhere** guarantees factbond never mints the subsidy that
@@ -101,11 +103,11 @@ subjects before any money attaches (`records-and-anchoring.md` §2).
 
 ## 3. The three product couplings
 
-**1. Settlement-attached insurance** (decided 2026-08, lands with
-Phase 2, gated by §5). Settlement offers each participant a verification
+**1. Clearing-attached insurance** (decided 2026-08, lands with
+Phase 2, gated by §5). Clearing offers each participant a verification
 bet on the witness edges its loop relied on, priced per
 `insurance-products.md` §3. F3 binds exactly: payout ≤ the value of the
-settled legs that provably pinned the edge — which kills insurance arson
+cleared legs that provably pinned the edge — which kills insurance arson
 (T5) at the pricing desk, because breaking an edge you insured returns at
 most what you provably had at stake, minus premium. A payout **auto-funds
 and auto-files** the sibling `attribute-matches-source` dispute
@@ -126,14 +128,14 @@ double as the catalogue's reliability audit — is published back to
 loopmarket, where solvers consume it as edge weights:
 `rate × (1 − expected-loss premium)`. Consumption is strictly
 loopmarket-side and strictly solver-side — `Match.rate` and everything
-settlement re-verifies stay premium-free, so loopmarket's U3 checklist is
+clearing re-verifies stay premium-free, so loopmarket's U3 checklist is
 untouched (mirror §5 owns routing, acceptance limits and concentration
 fee; here, only what the numbers mean). Rejected: pricing the feed off
 asserters' stated confidence alone — self-quoted premia would let
 asserters print cheap insurance on their own claims
 (`insurance-products.md` §3). Cold-start discipline carries over: silence
 is thin data, never safe edges (T8's mirror pathology); premiums start
-wide and narrow only on settled history.
+wide and narrow only on cleared history.
 
 **3. Solver registration bonds** (decided 2026-08; custody lands with
 Phase 1's pool, activates when loopmarket's P2 auction does). loopmarket's
@@ -149,9 +151,9 @@ bad token allowances, drained over 67 txs, detected in ~1 minute) — with
 a 72-hour cure window before slashing. Strategic manipulation is handled
 by loopmarket's mechanism shape (marginal-contribution rewards, fairness
 filter, reserve bid), so the bond targets residual channels: winning and
-failing to settle, proposal spam, wash-loop score inflation (T1, T3). F9
+failing to clear, proposal spam, wash-loop score inflation (T1, T3). F9
 binds both customer classes: no reward proportional to assertion or
-settlement volume anywhere — assertion-mining and solver-emission farming
+clearing volume anywhere — assertion-mining and solver-emission farming
 are the same FCoin, and one pool refuses both.
 
 ## 4. What factbond must not assume
@@ -200,7 +202,7 @@ formats are frozen.** Neither alone suffices:
   disputes are manufactured (T9).
 - **The P2 freeze without Phase-0 green** sells hedges through a fabric
   that has not shown it can make honest verification profitable —
-  settlement would auto-attach insurance that certifies nothing, the
+  clearing would auto-attach insurance that certifies nothing, the
   lazy-verification silent failure (`DESIGN.md` §5) deployed at flagship
   scale. The go/no-go is factbond's alone to declare
   (`phase0-simulation.md` §9); no loopmarket milestone accelerates it.
@@ -210,8 +212,8 @@ path flows back before any product does: the **correction feed** (lands
 with Phase 1, `records-and-anchoring.md` §6). loopmarket consumes
 `Refuted` events on catalogue edges through three lanes: (a) *pricing* —
 loss tables widen the edge's premium and solvers re-route, no write
-access needed; (b) *settlement* — the correction bites the moment a
-settlement operator adopts a corrected catalogue root, since U3
+access needed; (b) *clearing* — the correction bites the moment a
+clearing operator adopts a corrected catalogue root, since U3
 re-verifies against its own ontology; (c) *the catalogue* — a
 reclassify-shaped intervention (retraction + motivating evidence +
 keep-list, tracking ontodag EVOLUTION.md §5's discussion draft, never
@@ -226,7 +228,7 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
   published witness telemetry and fee ledger alone, factbond recomputes
   §2's measure; replaying sampled loops from their pinned `{book_root,
   ontology_root}` reproduces witness lists byte-for-byte (consuming the
-  mirror's G1); loops without fee-paid settlement contribute zero.
+  mirror's G1); loops without fee-paid clearing contribute zero.
 - **G-LC2 (the coupling proper; mirrors loopmarket's G3).** Both owner
   sign-offs recorded: Phase-0's four pre-registered panels passed
   (owner: factbond, `phase0-simulation.md` §1–§2, half-life first among
@@ -234,8 +236,8 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
   freeze declared (owner: loopmarket, `proof-fabric.md` +
   `P2-batch-auction.md`). Either absent blocks; Peter signs both mirrors.
 - **G-LC3 (Phase 2, shared harness).** Indemnity exactness in the
-  provable-reliance regime: no settlement-attached payout exceeds the
-  settled-leg value that pinned the insured edge under any T5 playbook,
+  provable-reliance regime: no clearing-attached payout exceeds the
+  cleared-leg value that pinned the insured edge under any T5 playbook,
   and arson ROI < 0 with reliance proofs on (G-I1 extended past the
   payout-cap proxy).
 - **G-LC4 (continuous).** The no-fabric regression: loopmarket's suite
@@ -251,12 +253,12 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
 
 - **Reliance denomination under U14** (work package:
   `insurance-products.md` OP-1, jointly with loopmarket's
-  `P2-settlement-pricing.md`; the mirror registers it as leg valuation).
+  `P2-clearing-pricing.md`; the mirror registers it as leg valuation).
   The structural half of the indemnity cap is free; the monetary half is
   not — legs have no external price, so caps rest on declared coverage
   plus ceilings, honest only while overstatement costs premium.
 - **Centrality epoching and decay** (work package: `mechanism-design.md`
-  §2's k calibration + `phase0-simulation.md` §6). How fast settled
+  §2's k calibration + `phase0-simulation.md` §6). How fast cleared
   reliance stops counting: a stale hub keeps an inflated bond, a fresh
   hub sits underbonded, and the decay rate interacts with fact rot.
 - **Witness-replay sampling** (work package: this document +
@@ -279,7 +281,7 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
 ## What this document does not promise
 
 - **Certified ≠ true (F7), on every coupled surface.** A bonded, insured,
-  premium-priced edge is not a true edge; a settled loop certifies
+  premium-priced edge is not a true edge; a cleared loop certifies
   re-verification under pinned roots, not delivery; a hedge is a priced
   promise to pay under stated caps, not a guarantee the leg happens — and
   no loopmarket surface (receipts, envelopes, `annotations.factbond`) may
@@ -289,13 +291,13 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
   adjudicated, dispute-adjusted experience; a captured rung poisons the
   audit exactly as it poisons payouts.
 - **Centrality measures paid reliance, not importance.** An edge nobody
-  settles across stays cheap to assert — that is the design (verification
+  clears across stays cheap to assert — that is the design (verification
   effort allocates with consumption), not a defect awaiting a patch.
 - **CoW's numbers are another system's measurements** — calibration
   anchors and precedent for damage-sizing, never results about this
   pool's solvency or slash behavior.
 - **Nothing here makes loopmarket need factbond, and nothing promises the
   coupling ships.** Every mechanism in this document can be absent and
-  loopmarket must still import, match, solve and settle exactly as it
+  loopmarket must still import, match, solve and clear exactly as it
   does today; both halves of §5's gate sit outside this document's
   control, and a no-go on either is the process working, not failing.

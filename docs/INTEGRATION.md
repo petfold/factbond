@@ -146,6 +146,8 @@ product surface seen from two sides.
 
 ## 8. loopmarket: the first structured consumer
 
+*(Vocabulary, 2026-09-07: loopmarket's atomic commit is now called **clearing**; **settlement** is reserved for delivery. `MockSettlement` is `MockClearing`; `loopmarket.settlement` survives one release as an alias.)*
+
 loopmarket's roadmap has reserved the slot since P0: `bond`, `oracle`,
 `arbitrator` ride in every offer's canonical encoding (carried, unenforced)
 and `Ontology.assert_edge` already takes `bond=` — "bonded assertions,
@@ -156,9 +158,9 @@ disputes, the shared bond pool, the escalation ladder.
 The insurance coupling instantiates with unusual precision there:
 
 - A settling loop *relied on* specific catalogue edges — `satisfies` walked
-  them; settlement re-verified them. Those edges are exactly the facts
+  them; clearing re-verified them. Those edges are exactly the facts
   whose falsity costs the participants money — i.e. **insurable facts with
-  natural consumers**. Settlement can auto-attach information insurance on
+  natural consumers**. Clearing can auto-attach information insurance on
   the edges it relied on; a payout auto-files a dispute on the edge that
   lied (`DESIGN.md` §7's coupling). Loop participants become the shared
   catalogue's verification workforce without ever thinking about it.
@@ -174,11 +176,11 @@ The insurance coupling instantiates with unusual precision there:
   verifies claim subjects the same way. One proof path, two consumers.
 
 *(Concretized 2026-08-07.)* Three details graduated from fit to specified
-mechanism: **witness edges** — loopmarket settlement instruments
-`satisfies`/`is_below` to emit the exact ⊑ edges each settled loop relied
+mechanism: **witness edges** — loopmarket clearing instruments
+`satisfies`/`is_below` to emit the exact ⊑ edges each cleared loop relied
 on, pure telemetry that lands before any bond exists and accumulates the
 centrality data bond sizing needs; **reliance as the payout ceiling** — the
-settlement root proves which paying transactions pinned an edge, so
+clearing root proves which paying transactions pinned an edge, so
 information-insurance payouts are capped by provable reliance (invariant
 F3), which is what makes insurance-arson structurally unprofitable here
 first; and **solver bonds as the pool's second customer** — loopmarket's

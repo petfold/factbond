@@ -19,7 +19,7 @@ tables), `THREATS.md` (supplies the adversaries), `evidence-policy.md`
 (owns the fabrication-cost model this simulation can only parameterize),
 `records-and-anchoring.md` (the record shapes the harness uses natively),
 `loopmarket-coupling.md` (sequences the coupling on this gate), and
-loopmarket's `docs/plans/P2-settlement-pricing.md` (the shared harness's
+loopmarket's `docs/plans/P2-clearing-pricing.md` (the shared harness's
 second consumer, §9).
 
 ## 1. What the simulation must decide
@@ -137,7 +137,7 @@ the plan documents commit to, runs in silico before any of it is code:
 the game theory `mechanism-design.md` names as the design's main risk and
 its paper, `DESIGN.md` §11.2); **indemnity-bounded insurance** — F3,
 "indemnity — payout ≤ provable reliance, payout-cap proxy where reliance
-is unprovable"; the sim's consumers sit outside settlement, so it runs on
+is unprovable"; the sim's consumers sit outside clearing, so it runs on
 payout caps, exactly the wedge product's operating condition
 (`insurance-products.md`); **the escalation ladder** with F4 enforced —
 "reliance-bounded adjudication — final rung integrity cost ≥ aggregate
@@ -251,11 +251,11 @@ a stop rule, run against every grid cell:
 
 ## 9. The shared harness: one harness, two consumers
 
-The same simulation core runs loopmarket's settlement-pricing **shading
-experiments** (loopmarket's `docs/plans/P2-settlement-pricing.md`): maker
+The same simulation core runs loopmarket's clearing-pricing **shading
+experiments** (loopmarket's `docs/plans/P2-clearing-pricing.md`): maker
 agents shade stated rates under candidate pricing rules, testing whether
 the equal log-surplus split keeps truthful pricing undominated — the Roth
-safety criterion applied to loop settlement. One harness because the
+safety criterion applied to loop clearing. One harness because the
 populations overlap (makers are insurance consumers in the coupled
 system), the record shapes are shared, and two divergent harnesses would
 make the eventual coupling (`loopmarket-coupling.md`) untestable as a
@@ -312,7 +312,7 @@ no parameter or mechanism change ships in any phase without a green run.
   models can disagree. Both run; a verdict that differs between them is
   itself a reported result. Work package: the §8 sensitivity analysis,
   feeding `mechanism-design.md`.
-- **Reliance measurement outside settlement.** The sim models only the
+- **Reliance measurement outside clearing.** The sim models only the
   payout-cap proxy, mirroring the product's own limitation (F3); provable
   reliance exists only in the loopmarket coupling. Work package:
   `insurance-products.md`, with the registered open problem it inherits.

@@ -4,7 +4,7 @@ Status: design, 2026-08-07. Decided here: the odds-weighted bond primitive
 with its stake direction fixed (the asserter's capital scales with stated
 confidence) and coarse buckets as the only confidence surface; the revised
 two-term sizing doctrine — bond = max(adjudication-cost floor,
-k × settlement-weighted reliance/centrality), final-rung integrity cost ≥
+k × clearing-weighted reliance/centrality), final-rung integrity cost ≥
 aggregate open reliance, per-claim caps failing closed (F4) — amending the
 founding adjudication-cost-only doctrine; the four-rung escalation ladder as
 a written constitution: certificate rung zero (F8), policy-bound evidence
@@ -139,16 +139,16 @@ The revised doctrine (decided 2026-08, ratified by owner sign-off
 2026-08-20, lands with Phase 1; amends `DESIGN.md` §3 per its note),
 three clauses:
 
-1. **bond = max( adjudication-cost floor , k × settlement-weighted
+1. **bond = max( adjudication-cost floor , k × clearing-weighted
    reliance/centrality of the claim ).** The floor keeps template claims
-   cheap; the reliance term makes a hub claim — one that much settled value
+   cheap; the reliance term makes a hub claim — one that much cleared value
    walks through — expensive to assert casually and expensive to attack.
-   Centrality is **settlement-weighted, never static graph degree**: a
+   Centrality is **clearing-weighted, never static graph degree**: a
    liquid measure of structural importance invites farming (the Curve-wars
    lesson — liquid governance weight spawned Votium's industrialized
-   vote-buying), whereas settlement-weighted reliance is farmable only by
-   paying real fees on real settled loops — loopmarket's U12
-   (*reward/reputation statistics count settled fee-paid loops only*)
+   vote-buying), whereas clearing-weighted reliance is farmable only by
+   paying real fees on real cleared loops — loopmarket's U12
+   (*reward/reputation statistics count cleared fee-paid loops only*)
    applied to bond sizing. The measure is supplied by loopmarket's
    witness-edge telemetry (loopmarket `docs/plans/P3-guarantee-coupling.md`
    §2; `loopmarket-coupling.md` §1), which lands before any bond exists
@@ -157,7 +157,7 @@ three clauses:
 2. **The ladder's final rung must have integrity cost ≥ the aggregate open
    reliance on the claim.** Reliance means everything that pays out or
    re-prices on the answer: open insurance, dispute-market open interest
-   (§5), settlement exposure in the coupling. Nexus Mutual's quorum rule is
+   (§5), clearing exposure in the coupling. Nexus Mutual's quorum rule is
    the production precedent for scaling adjudication weight with what rides
    on the ruling: a claims-assessment result stands only if the assessing
    stake exceeds 5× the claim amount, else it escalates.
@@ -217,7 +217,7 @@ change must re-verify this inequality.
 built from certified-by-timeout claims nobody watched is free to
 manufacture — assert trivialities at 0.999, wait out liveness, collect a
 reputation. So the ledger that gates §4's fast path counts only resolutions
-that carried consumption (insured, or settlement-pinned in the coupling)
+that carried consumption (insured, or clearing-pinned in the coupling)
 or survived a real dispute — the U12 shape again, applied to reputation.
 Silence remains uninformative (`insurance-products.md` §3's cold-start
 discipline); an unwatched certification is a non-event in the ledger.

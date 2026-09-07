@@ -42,8 +42,8 @@ chronic). Re-rankings re-sort presentation by dated edit (G5).
 **The structural fact, from factbond's side.** A legitimate loop is a
 self-financing cycle (Victor & Weintraud, WWW'21), so loop-shaped traffic
 proves nothing: bond-sizing centrality and the calibration ledger count
-only settled fee-paid loops (loopmarket's planned U12 —
-"reward/reputation statistics count settled fee-paid loops only"), and
+only cleared fee-paid loops (loopmarket's planned U12 —
+"reward/reputation statistics count cleared fee-paid loops only"), and
 every defense below is by construction, never shape policing. The ten
 fee/bond rules compressing that design law live in the primary register;
 rules 7–9 (indemnity cap, two-part bond sizing, soulbound stake) are
@@ -72,7 +72,7 @@ bonds, never mints the subsidy that would flip U13's sign. Residual:
 off-protocol budgets (grants, airdrop scores) re-fund from outside.
 
 **Tripwire & work package.** Per funding cluster, Σ(rewards + rebates) /
-Σ(external-asset fees) > 0.8 over 7 days, or one cluster > 10% of settled
+Σ(external-asset fees) > 0.8 over 7 days, or one cluster > 10% of cleared
 volume, pages (mirrored). loopmarket `P2-batch-auction.md` §9 (P2); the
 self-dealing playbook in `phase0-simulation.md` §7 (Phase 0).
 
@@ -88,13 +88,13 @@ Linea ~517k of 1.3M claimants (**~40% sybils**); rented World IDs at
 **Defense & residual.** A cost curve, not detection (loopmarket
 `P1-federated-book.md` §6/§8): postage as the offer's rent, U8's
 two-layer authenticity. The Circles property bounds damage — no sybil
-enters a *settled* loop without a real counterparty on every leg — so U12
-routes every consequential statistic through the settled fee-paid ledger,
+enters a *cleared* loop without a real counterparty on every leg — so U12
+routes every consequential statistic through the cleared fee-paid ledger,
 the only feed factbond's centrality and calibration ledger consume.
-Residual: anything not settlement-weighted; the witness-replay sampling
+Residual: anything not clearing-weighted; the witness-replay sampling
 rate that bounds poisoning at acceptable cost (`loopmarket-coupling.md`).
 
-**Tripwire & work package.** Never-settled offer share per funding
+**Tripwire & work package.** Never-cleared offer share per funding
 cluster: pages when any cluster exceeds 10% of the live book or any
 `idx/` prefix (mirrored). loopmarket `P1-federated-book.md` §8 (P1); here
 the witness-sampling open problem.
@@ -147,7 +147,7 @@ retreats to partial permissioning with the DVM rung still capturable.
 **Defense (by construction).** The revised sizing doctrine
 (`mechanism-design.md` §2, amending `../DESIGN.md` §3; decided 2026-08,
 lands with Phase 1): bond = max(adjudication-cost floor, k ×
-settlement-weighted reliance/centrality); final-rung integrity cost ≥
+clearing-weighted reliance/centrality); final-rung integrity cost ≥
 aggregate open reliance, dispute-market open interest included; and F4 —
 "reliance-bounded adjudication + fail-closed caps" — halts
 reliance-bearing sales with no override (Nexus Mutual's stake > 5× claim
@@ -192,7 +192,7 @@ corrupt its adjudication — the assassination-politics generalization: a
 market paying on an adverse event is a purse for causing it. Variants,
 each a scripted Phase-0 playbook: the single arsonist; *aggregation* —
 many small legit-looking policies across sybil buyers on one breakable
-fact (T2 × T5); *reliance inflation* — real settled loops run through an
+fact (T2 × T5); *reliance inflation* — real cleared loops run through an
 edge to raise its indemnity ceiling before breaking it; *fabrication-fed
 arson* — the payout event manufactured as evidence (T13's economics in
 T5's service). Profit = payout − premium − corruption cost, unbounded
@@ -204,7 +204,7 @@ small independent attacks, no single expensive rung to buy.
 **Defense (by construction).** F3 — "indemnity (payout ≤ provable
 reliance; payout-cap proxy where unprovable)" — kills arson at the
 pricing desk, not in the courtroom. In the loopmarket coupling reliance
-is provable for free: settlement roots pin which settled legs walked the
+is provable for free: clearing roots pin which cleared legs walked the
 insured edge, so breaking an edge you insured returns at most what you
 provably had at stake, minus premium (`loopmarket-coupling.md` §3;
 decided 2026-08, ships per its two-gate sequencing). In the agents-first
@@ -219,7 +219,7 @@ cap); and adverse selection priced, not screened — demand concentration
 raises the quote, tightens the cap, triggers a pre-emptive dispute.
 
 **Residual.** Reliance inflation costs real external-asset fees (U13) and
-only settled fee-paid loops count (U12), so the ceiling is bought at fee
+only cleared fee-paid loops count (U12), so the ceiling is bought at fee
 price — but it is buyable. Cap-griefing inverts the defense: farmed
 reliance can freeze insurance sales on a rival's edge — the designed
 failure mode as denial-of-service (open problem). Insurable interest
@@ -238,7 +238,7 @@ grid cell — one profitable cell is a no-go, not an outlier.
 
 **Attack & economics.** Patient accumulation of assertion and
 adjudication power over hub subjects; bribe markets for edge disputes;
-re-meaning categories under settled offers; capture of the maintainer
+re-meaning categories under cleared offers; capture of the maintainer
 surfaces factbond adds — the evidence-class demotion authority, the
 pool's auto-assertion policy, the emergency brake; complexity attacks
 (structure-adding axioms taxing everyone's netting). Croatian Wikipedia:
@@ -248,11 +248,11 @@ study (TeBlunthuis et al., CSCW 2024) attributes capture to missing
 token spawned an industrial bribe market — Convex over a third of veCRV,
 Votium industrializing the vote-buying, the Mochi attack stopped only by
 an ad hoc nine-member Emergency DAO. A hub subject underwrites vastly
-more settled value than a leaf — and the contested edges will be
+more cleared value than a leaf — and the contested edges will be
 value-laden category placements (organic, halal, refurbished), the
 Wikidata pattern of edit wars on identity-adjacent properties.
 
-**Defense (by construction).** Bonds scale with **settlement-weighted
+**Defense (by construction).** Bonds scale with **clearing-weighted
 centrality** — realized reliance from the witness feed, never static
 degree, which costs only postage to farm (`mechanism-design.md` §2;
 `loopmarket-coupling.md` §2). F5 keeps adjudication stake soulbound: no
@@ -281,7 +281,7 @@ and the horizon problem — the Croatian-Wikipedia timescale is years, so
 Phase 0 instruments tripwires but cannot simulate the attack to its end.
 
 **Tripwire & work package.** Single-principal bonded share over the top
-decile of settlement-weighted subjects pages at > 25% (mirrored; the
+decile of clearing-weighted subjects pages at > 25% (mirrored; the
 offer-side stuffing and schema-merge tripwires ride in the mirror);
 assertion-power concentration over hub subjects, instrumented from
 Phase 0; demotion/promotion actions per maintainer key against the
@@ -306,7 +306,7 @@ supplied by factbond's per-edge/per-maker loss tables — the reliability
 audit — published as the premium feed (`insurance-products.md` §3),
 consumed strictly solver-side. The pricing discipline is law here:
 silence is thin data, never safe edges; premiums start wide and narrow
-only on settled history; never priced off asserter confidence alone.
+only on cleared history; never priced off asserter confidence alone.
 Residual: cold start taxes honest newcomers exactly as hard as lemons;
 the feed's inputs are T2-attackable until volume exists.
 
@@ -550,7 +550,7 @@ with one aggregator worth reading it becomes unilateral market shaping.
 Omission is free at the margin and yields a perfectly valid `book_root`;
 running a competitor costs a full pinning Bee node, so the market
 concentrates by default. factbond exposure: the pool's loss experience,
-premium feeds and settlement-weighted reliance measures are computed
+premium feeds and clearing-weighted reliance measures are computed
 over what the fold shows — a censoring aggregator skews the dataset
 factbond prices from.
 
@@ -567,13 +567,13 @@ of independent aggregators running. **Owner directive (2026-08-21):
 several independent aggregators are the deployment floor; a
 single-aggregator steady state is a failure condition; read-path
 decentralization is a mandated investigation before P1 completes.** The
-P1 settlement-instance chokepoint stands until P2.
+P1 clearing-instance chokepoint stands until P2.
 
 **Tripwire & work package.** Count of independently-operated manifests
 (pages below two); unexplained `book_root` divergence; a planted-offer
 inclusion probe across watched manifests. loopmarket
 `P1-federated-book.md` §2/§8 + `adoption-and-thickness.md` §9;
-settlement half: `P2-batch-auction.md`.
+clearing half: `P2-batch-auction.md`.
 
 ## The invariant ↔ threat coverage matrix
 
@@ -616,7 +616,7 @@ arms races no invariant closes: priced, instrumented, and said out loud.
   playbook (`phase0-simulation.md` §7).
 - **G3 — tripwires are derivation-clean.** Every tripwire is computable
   from signed speech-act records, anchor readings, pinned roots and the
-  settled fee-paid ledger alone (F1; U12) — a tripwire fed by pollutable
+  cleared fee-paid ledger alone (F1; U12) — a tripwire fed by pollutable
   statistics is itself a T2/T10 target.
 - **G4 — mirror sync.** Diff against loopmarket's register empty modulo
   primary/secondary marking, checked at every phase gate; edits land

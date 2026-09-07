@@ -106,7 +106,7 @@ succeeded precisely because a ~$750 bond gated disputes on ~$7M of open
 reliance — the last rung's integrity cost was decoupled from what rode on
 the answer. The revised doctrine (full mechanism in
 `docs/plans/mechanism-design.md`): bond = max(adjudication-cost floor,
-k × settlement-weighted reliance/centrality of the claim); the dispute
+k × clearing-weighted reliance/centrality of the claim); the dispute
 ladder's *final* rung must have integrity cost ≥ the aggregate open
 reliance on the claim; and per-claim insurance exposure is capped, with
 sales stopping — failing closed — when the cap or the final-rung condition
@@ -200,10 +200,10 @@ The honest complications, in order of severity:
    payout-smallness is demoted from primary defense to belt-and-braces. The
    primary structural defense is now the **indemnity principle**, invariant
    F3: a payout never exceeds the buyer's provable reliance on the fact.
-   Where consumption is a loopmarket settlement, the settlement root proves
+   Where consumption is a loopmarket clearing, the clearing root proves
    reliance for free and the bound is exact; where reliance is unprovable —
    the agents-first wedge of §5.5 — payout caps remain the proxy, and
-   out-of-settlement reliance measurement is a registered open problem.
+   out-of-clearing reliance measurement is a registered open problem.
    See `docs/plans/insurance-products.md`.)*
 4. **Adverse selection is the pool's core pricing problem — and tolerable.**
    The $1-to-win-$100 buyer disproportionately knows something. Real
@@ -391,7 +391,7 @@ modelling that scenario first; see `docs/plans/THREATS.md`.)*
   adversary playbooks keyed to the threat register, the pre-registered
   acceptability threshold and its owner — in
   `docs/plans/phase0-simulation.md`. The same harness runs loopmarket's
-  settlement-pricing shading experiments: one instrument, two consumers.)*
+  clearing-pricing shading experiments: one instrument, two consumers.)*
 - **Phase 1** — layers 1–2 plus a naive bond pool on a testnet, against a
   frozen snapshot of one narrow domain (OSM `opening_hours` in one city:
   high error base rate, cheap physical verification, crisp evidence).

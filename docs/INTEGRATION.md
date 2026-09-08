@@ -146,7 +146,7 @@ product surface seen from two sides.
 
 ## 8. loopmarket: the first structured consumer
 
-*(Vocabulary, 2026-09-07: loopmarket's atomic commit is now called **clearing**; **settlement** is reserved for delivery. `MockSettlement` is `MockClearing`; `loopmarket.settlement` survives one release as an alias.)*
+*(Vocabulary, 2026-09-07: loopmarket's atomic commit is now called **clearing**; **settlement** is reserved for delivery. `MockSettlement` is `MockClearing`; `loopmarket.settlement` survives one release as an alias. Also 2026-09-07: a *loop* is any cleared **circulation** — conserved at every maker on its own scale, with hyper-legs where one want is composed from several gives — and *cycle* is the strict circle; "cleared loop" below reads in the wide sense.)*
 
 loopmarket's roadmap has reserved the slot since P0: `bond`, `oracle`,
 `arbitrator` ride in every offer's canonical encoding (carried, unenforced)

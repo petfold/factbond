@@ -1,6 +1,6 @@
 # factbond: the loopmarket coupling
 
-> **Vocabulary (2026-09-07).** loopmarket renamed its atomic commit from "settlement" to **clearing** (`clearing.py`, `MockClearing`, U3 "clearing trusts no solver"); *settlement* now means the makers delivering, which is exactly the P3 territory this coupling secures. This document and the rest of factbond's docs follow: clearing roots, clearing-weighted centrality, clearing-attached insurance, `P2-clearing-pricing.md`.
+> **Vocabulary (2026-09-07).** loopmarket renamed its atomic commit from "settlement" to **clearing** (`clearing.py`, `MockClearing`, U3 "clearing trusts no solver"); *settlement* now means the makers delivering, which is exactly the P3 territory this coupling secures. This document and the rest of factbond's docs follow: clearing roots, clearing-weighted centrality, clearing-attached insurance, `P2-clearing-pricing.md`. Same day, loopmarket reframed the cleared object: a **loop** is any cleared *circulation* — a flow conserved at every maker on that maker's own scale, with *hyper-legs* where one want is composed from several unconditional gives (six lifters; a shop plus a courier) — and a **cycle** is the strict circle, all its P0 solver finds (`P2-loop-selection.md` §10–11). Every "cleared loop" in this document reads in the wide sense; nothing here depends on the object being a circle.
 
 Status: design, 2026-08-07. Decided here: the shipping gate (Phase-0 green
 AND loopmarket's P2 record-format freeze, jointly necessary); witness
@@ -58,7 +58,11 @@ experience; §2 is that agreement.
 cleared loop, the deduplicated ⊑ edge list its *own* verifier walked,
 keyed by `(loop_id, ontology_root)` — the verifier's walk, never the
 solver's, because a reliance proof built from an untrusted walk would be
-no proof. This is pure telemetry with **no factbond dependency**:
+no proof. Composed legs (loopmarket's hyper-legs) add edges to the walk
+rather than changing its shape: the verifier also checks the operator
+fits — that the courier's transport input fits the station's give and its
+output fits the traveller's want — and those ⊑ edges are witnessed and
+insurable exactly like the categorical ones. This is pure telemetry with **no factbond dependency**:
 derived, recomputable by anyone from the pinned `{book_root,
 ontology_root}`, published beside the book, never in it. It lands
 loopmarket-side ahead of any factbond phase (mirror §2, gate G1) so the

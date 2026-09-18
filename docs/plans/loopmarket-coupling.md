@@ -174,6 +174,42 @@ binds both customer classes: no reward proportional to assertion or
 clearing volume anywhere — assertion-mining and solver-emission farming
 are the same FCoin, and one pool refuses both.
 
+## 3a. The escrow loopmarket asks for (Peter's direction, 2026-09-18)
+
+loopmarket's slashed-bond doctrine (`loopmarket/docs/plans/
+P3-guarantee-coupling.md` §3a) and its revision of what a bond is held in
+(`P3-release-and-reclearing.md` §5–§5a) change the pool this document
+assumed. What loopmarket needs from the guarantee side:
+
+- **No single external asset.** The pool assumed coverage "in the pool's
+  external asset". loopmarket's protocol names none: a wanter names the
+  durable, escrowable asset categories she accepts, each with her own price
+  per unit on her scale; a giver deposits an asset under one of them; the
+  quantity reserved for a fill is compared in the asset's own unit. The
+  escrow is therefore **multi-asset by category**. "External" keeps its
+  real content — not the maker's own scale (F9/U13 stand) — and loses the
+  "one money" reading.
+- **Conversion happens once, at clearing, on private scales.** The escrow
+  never converts; on a ruling it transfers the reserved quantity of the
+  asset the wanter named to the wanter's key.
+- **The medium-term agent is a smart contract that is a loopmarket
+  maker.** It signs by state (registers its standing offers' ids in its own
+  storage; announces its book by calling the registry itself), takes no
+  personal tokens (fee-less; its holding is a condition on the giver's give,
+  not a leg — a zero-priced leg would break loopmarket's U5), and exposes
+  `deposit(loop, fill, token, amount)` by the giver's key,
+  `release(loop, fill)` on the adjudicator's ruling of failure (paying the
+  wanter the reserved quantity — the cancellation quantity if the giver
+  cancelled before the leg's window), and `refund` on the wanter's
+  countersignature of delivery or after the window with no claim. It
+  listens to a verdict hook on loopmarket's clearing contract; the
+  adjudicator is factbond's.
+- **Reservation per fill, a floor collected once and split among several
+  defaulters by their shares, staked claims** — as before.
+- **Physical custody is at the end of loopmarket's roadmap**: custodians of
+  goods, agents with fees on their own scale, agents that can themselves
+  fail (the recursion smart-contract agents end for on-chain assets).
+
 ## 4. What factbond must not assume
 
 The boundary keeps the coupling adoptable; written from factbond's side,

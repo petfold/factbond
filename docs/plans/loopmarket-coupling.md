@@ -269,6 +269,21 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
 
 ## Open problems
 
+**Asked by loopmarket, 2026-09-18 — the maker's bond in the beat's
+objective** (`loopmarket/docs/plans/P2-loop-selection.md` §4a). loopmarket's
+selection scores nominal surplus; performance risk is solver-side
+(premium-weighted edges) and the offer's own `bond` is carried, not
+weighed. To decide whether bonds enter winner determination loopmarket
+needs from here: (a) the **doctrine size** of a bond per leg — adjudication
+cost plus reliance — so a posted bond has a dimensionless ratio to it
+(U14 forbids the amount itself beside a numeraire-free gain); (b) a
+**pinned adjudication-outcome record** readable as a performance
+statistic under loopmarket's U12 (settled, cost-borne, adjudicated
+failures subtracting), since a normative objective may use only pinned
+inputs (F6 keeps premiums out of canonical knowledge); (c) who receives a
+slashed bond — the harmed counterparty under the indemnity principle, or
+adjudication. Decided with the escrow bump.
+
 - **Reliance denomination under U14** (work package:
   `insurance-products.md` OP-1, jointly with loopmarket's
   `P2-clearing-pricing.md`; the mirror registers it as leg valuation).

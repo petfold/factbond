@@ -279,8 +279,11 @@ by declaration; the slashed-bond doctrine in loopmarket's
 `P3-guarantee-coupling.md` §3a), the escrow's mechanics: the payout of a
 wanter's required floor on the oracle's verdict, the adjudication cost off
 the top, the remainder back to the defaulter, a floor split among several
-defaulters by their shares, a bond reserved per fill of a divisible give,
-and staked claims — (a) the **doctrine size** of a bond per leg — adjudication
+defaulters by their shares, a bond reserved per fill of a divisible give
+(ruled and gated in loopmarket the same evening: the share is
+bond × taken / quantity), an `early` floor owed on a declaration before
+the leg's window, the solver's first-response repair paid from the
+reserved share, and staked claims — (a) the **doctrine size** of a bond per leg — adjudication
 cost plus reliance — so a posted bond has a dimensionless ratio to it
 (U14 forbids the amount itself beside a numeraire-free gain); (b) a
 **pinned adjudication-outcome record** readable as a performance

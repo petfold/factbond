@@ -393,6 +393,10 @@ modelling that scenario first; see `docs/plans/THREATS.md`.)*
   `docs/plans/phase0-simulation.md`. The same harness runs loopmarket's
   clearing-pricing shading experiments: one instrument, two consumers.)*
 - **Phase 1** — layers 1–2 plus a naive bond pool on a testnet, against a
+  frozen snapshot of one narrow domain. *(First step built 2026-09-19,
+  ahead of Phase 0 because a consumer existed: the assertion contract's
+  consumer-facing edge, `contracts/Assertions.sol`, for loopmarket's
+  escrow — `loopmarket-coupling.md` §3b.)* Then: against a
   frozen snapshot of one narrow domain (OSM `opening_hours` in one city:
   high error base rate, cheap physical verification, crisp evidence).
 - **Phase 2** — the insurance product and the dispute-triggered mini-market.

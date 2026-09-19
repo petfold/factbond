@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "factbond"
+version = "0.1.0"
+description = "Bonded assertions and information insurance for factual claims: the assertion primitive's consumer-facing edge on the EVM, and the design corpus"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = []
+
+[project.optional-dependencies]
+chain = ["web3>=6"]
+evm = ["web3>=6", "py-solc-x", "eth-tester[py-evm]"]
+test = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+factbond = ["contracts/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

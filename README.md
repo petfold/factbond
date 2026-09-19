@@ -5,13 +5,17 @@ design for attaching economic guarantees ("someone will pay if this is
 wrong") to millions of ordinary facts: opening hours, database entries,
 knowledge-graph edges.
 
-**Status: design stage. Nothing is implemented.** This repo holds the
-design documents. The next concrete step (decided 2026-09-19 with a first
-consumer in hand): the assertion contract's consumer-facing edge — a
-subject hash, `hold`/`resolve` to a registered consumer, the assertion
-lifecycle behind it — for loopmarket's escrow, whose contested claims it
-adjudicates (`docs/plans/loopmarket-coupling.md` §3b); the simulation
-(`docs/DESIGN.md` §10) still gates the insurance product.
+**Status: design stage, first code 2026-09-19.** The design documents are
+the substance; the first code is the assertion primitive's consumer-facing
+edge — `contracts/Assertions.sol` (assert with a bond at a stated
+confidence, dispute at the odds it sets, certify by timeout, rule only when
+contested, escalate when no ruling comes; a consumer contract told
+`hold(subject)` and `resolve(subject, outcome)`), `factbond.assertions`,
+and tests on a local EVM — built for loopmarket's escrow, whose contested
+claims it adjudicates (`docs/plans/loopmarket-coupling.md` §3b; the
+cross-repo gate is loopmarket's `tests/test_escrow.py`). The simulation
+(`docs/DESIGN.md` §10) still gates the insurance product. `CLAUDE.md` maps
+what is built to the plans.
 
 ## The idea in one paragraph
 

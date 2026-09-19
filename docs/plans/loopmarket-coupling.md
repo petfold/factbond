@@ -245,9 +245,18 @@ the *consumer* twice:
     resolve(subject, outcome)      // the assertion resolved; `outcome` in the consumer's own units
 
 where `subject` is a bytes32 the consumer chose (loopmarket: keccak of
-offer id and loop id; a Wikidata guarantee: the statement's hash) and the
-consumer address was registered with the subject when the reservation (or
-the guarantee) was made. factbond knows nothing about offers, loops,
+offer id and loop id; a Wikidata guarantee: the statement's hash). **Built
+the same day** (`contracts/Assertions.sol`, `CLAUDE.md`): there is no
+registration step — the assertion names its consumer, the consumer's
+`hold` may refuse, and only a consumer that fixed this contract as the
+subject's resolver accepts, so nobody can pre-empt a subject with a market
+the consumer never chose; loopmarket's `LoopEscrow` gained the key-only
+`hold(bytes32)`/`resolve(bytes32, uint256)` for exactly this, and its
+`tests/test_escrow.py::test_factbond_as_the_resolver` runs a claim on a
+real reservation both ways. v0's ladder is one rung (the adjudicator) and
+a no-ruling dispute escalates by returning both stakes and resolving at a
+fixed share of the outcome — the stand-in until the constitution's rungs
+exist. factbond knows nothing about offers, loops,
 ladders or asset categories; loopmarket knows nothing about stakes,
 challenge periods, rungs or fees. **This is the shape every consumer
 gets** — the escrow is the first, ontodag edges and Wikidata entries are

@@ -397,8 +397,10 @@ modelling that scenario first; see `docs/plans/THREATS.md`.)*
   ahead of Phase 0 because a consumer existed: the assertion contract's
   consumer-facing edge, `contracts/Assertions.sol`, for loopmarket's
   escrow — `loopmarket-coupling.md` §3b.)* Then: against a
-  frozen snapshot of one narrow domain (OSM `opening_hours` in one city:
-  high error base rate, cheap physical verification, crisp evidence).
+  frozen snapshot of one narrow domain — **POI liveness in one city**
+  (existence, identity, opening hours, wheelchair, address; decided
+  2026-09-19, `docs/plans/domain-choice.md`): high error base rate, cheap
+  physical verification, crisp evidence, and the quest apps as the channel.
 - **Phase 2** — the insurance product and the dispute-triggered mini-market.
 - **Phase 3** — the graph layer, once real correlation data makes netting
   mean something.

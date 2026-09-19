@@ -84,16 +84,52 @@ PRE-REGISTRATION BLOCK (append-only)
   set by / date                        : ⟨unset⟩
 ```
 
+**Amended 2026-09-19 (Peter): λ\* is not a number to fix — it is the
+axis.** The system starts with a handful of people editing a few facts a
+month, so any single reference consumption rate is either a launch
+figure at which no mechanism moves error lifetimes (the plan's own
+prediction: verification tracks consumption) or a steady-state guess.
+The deliverable is therefore the **half-life-versus-participation curve**
+with T marked on it, read as *the consumption the product needs to reach
+T* — an adoption target, not an assumption. T stays the owner's judgment
+for the scaled regime. D\* is two costs the harness keeps apart: the
+challenger's own **verification** cost ($10–30 of a person's time for a
+physical fact, $2–5 for a phone call, cents for a certificate) and the
+**adjudication** cost per rung ($5–10 automated, $30–60 read by a person,
+panels and arbitrators above); the earlier $5 was the cheapest rung
+alone. The block as now kept in `preregistration.json`:
+
+```
+PRE-REGISTRATION BLOCK v2 (append-only)
+  T                (median planted-error half-life, scaled regime) : ⟨unset⟩
+  D*.verification  (per fact type, $)                              : ⟨unset⟩
+  D*.adjudication  (per rung, $)                                    : ⟨unset⟩
+  λ range          (the curve's axis: launch … steady state)        : ⟨unset⟩
+  set by / date                                                     : ⟨unset⟩
+```
+
+The **launch regime** the curve's low end describes has its own
+question — what gets people to verify before consumption carries it —
+answered in `domain-choice.md` §4 within F9: bounties per *adjudicated*
+correction, the calibration ledger as a visible non-transferable score,
+district sweeps, and the existing quest apps as the channel.
+
 ## 3. The synthetic KB: a frozen domain, planted errors, real rot
 
-The KB is not abstract. Per `DESIGN.md` §10 Phase 1, the target domain is
-**OSM `opening_hours` in one city** — high error base rate, cheap physical
-verification, crisp evidence — and Phase 0 simulates over a **frozen
-snapshot of that same domain**, so the sim-to-testnet comparison in
-Phase 1 is apples-to-apples rather than a change of subject.
+The KB is not abstract. **The domain is POI liveness in one city**
+(decided by Peter 2026-09-19 on the survey in `domain-choice.md`,
+replacing `opening_hours` alone): a place at a location carrying linked
+claims — it **exists** (not gone, moved or renamed), it **is what the
+record says** (name, category), its **opening hours**, its **wheelchair
+access**, its **address**. Existence and identity carry the most
+reliance (the wasted trip), wheelchair the highest stakes per consumer,
+hours the most-asked question, address the least noticed. Phase 0
+simulates over a **frozen snapshot of that same domain**, so the
+sim-to-testnet comparison in Phase 1 is apples-to-apples rather than a
+change of subject.
 
-- **Scale:** 10⁵–10⁶ facts across 3–5 fact-types (opening hours, address,
-  phone, category membership, existence), each with its own error base
+- **Scale:** 10⁵–10⁶ facts across the five fact-types above (existence,
+  identity, opening hours, wheelchair, address), each with its own error base
   rate and verification cost. The `opening_hours` error prior is
   high-single-digit percent (consistent with `DESIGN.md` §5.4's
   illustrative "~92% reliable"); actual base rates are **measured at

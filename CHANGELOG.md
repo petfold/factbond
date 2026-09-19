@@ -24,6 +24,14 @@ trusted publishing).
   challengers who follow consumption verify the clean records, since the
   coupling corrects the consumed errors first — the marginal challenger's
   edge has to be information, not search.
+- **POI liveness** as the domain (Peter, 2026-09-19; `domain-choice.md`,
+  a survey of Wikidata's random statements and human edits and OSM's
+  notes and changesets): the harness's five fact types on one place with
+  realistic verification costs, `bounty` per adjudicated correction,
+  `LAMBDA_AXIS` and `curve` (half-life against participation, §2's
+  amended deliverable), the v2 pre-registration block. Plans updated:
+  phase0-simulation §2–§3, DESIGN §10, insurance-products §1,
+  loopmarket-coupling §3c.
 
 ## [0.1.0] — 2026-09-19
 

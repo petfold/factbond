@@ -71,6 +71,21 @@ and it says the marginal challenger's edge must be *information*
 (personal knowledge, an informed buyer's signal) rather than search —
 the launch-regime question Peter raised the same night (below).
 
+**POI liveness (Peter's decision, 2026-09-19, `docs/plans/domain-choice.md`):**
+the harness's fact types are existence, identity, opening hours,
+wheelchair and address on one place (placeholder error priors until a
+snapshot measures them; verification $15–20 of a person's time),
+`rung_cost` is the automated evidence rung ($8; a person reading $30–60),
+`bounty` pays per *adjudicated* correction from fees first (F9), and
+`python -m factbond.sim curve` is §2's amended deliverable — median
+half-life against consumption rate over `LAMBDA_AXIS` from launch values
+up, T read off it when `preregistration.json` (v2 block: T, D\* as
+verification + adjudication, the λ range, sign-off) names it. Three
+threads Peter opened with the decision — bonded quests beside
+StreetComplete, the crawler as pre-emptive asserter on sources, and a
+reputation-first browser plugin for editors without crypto — are
+`domain-choice.md` §5, not started.
+
 **The launch regime (Peter, 2026-09-19):** five people editing three
 facts a month is where this starts, so a single λ\* is the wrong thing to
 pre-register; the deliverable is the half-life-versus-consumption curve
@@ -81,8 +96,7 @@ arbitrators above); the harness's verification costs were too low. What
 gets people involved, within F9: bounties per *adjudicated* correction,
 the calibration ledger as a visible non-transferable score, district
 sweeps, personal knowledge asserting against the pool's blanket
-confidence. Not yet written into the plan or the harness — pending
-Peter's word on the reframing.
+confidence. Written into the plan (§2 as amended) and the harness the same night.
 
 Exploratory findings at the defaults before those two (not a verdict): the honest dispute rate sits at ~0.4 %, below the UMA anchor,
 because scanning challengers find no positive expected value at

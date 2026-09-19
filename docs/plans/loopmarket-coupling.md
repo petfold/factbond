@@ -278,6 +278,18 @@ calls and the assertion lifecycle behind them, before the simulation
 finishes — the simulation answers whether the *pool* certifies anything,
 which is the insurance question, not the primitive's.
 
+## 3c. The consumption channel before clearing: the quest apps (Peter, 2026-09-19)
+
+The agents-first wedge (`INTEGRATION.md` §7) has a human-first sibling
+that exists today: StreetComplete's quests and Organic Maps' "place has
+gone" reports are consumption events with an on-the-spot witness, filed
+by people who know the street — the informed challenger the harness
+found the mechanism needs (`CLAUDE.md`). Before any loopmarket clearing
+carries reliance, this is where verification demand comes from; the
+coupling's reliance proof arrives later and adds the provable-reliance
+case to a channel that already works on caps. `domain-choice.md` §4 is
+the plan for attaching to it.
+
 ## 4. What factbond must not assume
 
 The boundary keeps the coupling adoptable; written from factbond's side,

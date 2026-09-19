@@ -72,6 +72,15 @@ record widens both. Published per fact-type and per source, the gap is a
 market-priced distinction between noise and error that no knowledge base
 has had — produced without a bet occurring on most facts.
 
+**First domains (2026-09-19, `domain-choice.md`):** the verification bet
+starts on POI liveness (existence, identity, hours, wheelchair, address);
+the parametric hedge's first domain is what has official feeds and higher
+stakes — the pharmacy on duty, clinic hours, an emergency department's
+status, transport disruptions — a second step once the feeds are wired.
+The T5 finding from the harness stands over both: F3's proxy cap alone
+leaves arson profitable while the control exclusion leaves any residue
+(§5), so the cap and the exclusion are sized together.
+
 ## 2. Indemnity — F3, scoped honestly
 
 Any market that pays on an adverse event creates a purse for causing it

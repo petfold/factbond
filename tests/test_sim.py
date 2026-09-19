@@ -6,7 +6,7 @@ filled (§2), arson negative under a full control exclusion (F3/T5)."""
 
 import pytest
 
-from factbond.sim import Params, artifact, run, run_grid
+from factbond.sim import Params, artifact, curve, run, run_grid
 from factbond.sim.records import (ASSERTED, CERTIFIED, CONTESTED, REFUTED, UNASSERTED, Assertion,
                                   Claim, Dispute, Fold, Retraction, Ruling, status)
 
@@ -85,3 +85,10 @@ def test_the_grid_runs_and_writes_content_addressed_artifacts(tmp_path):
     rows = run_grid(SMALL.replace(ticks=10), {"bond_floor": (0.5, 8.0)}, seeds=(1,), out_dir=str(tmp_path))
     assert len(rows) == 2 and all((tmp_path / (r["ref"][:16] + ".json")).exists() for r in rows)
     assert rows[0]["ref"] != rows[1]["ref"]
+
+
+def test_the_curve_runs_over_the_axis_and_a_bounty_only_pays_adjudicated_corrections():
+    rows = curve(SMALL.replace(ticks=15), axis=(0.001, 0.05), seeds=(1,))
+    assert [r["consumption_rate"] for r in rows] == [0.001, 0.05] and all(r["meets_T"] is None for r in rows)
+    with_bounty = run(SMALL.replace(ticks=30, bounty=5.0), adversaries=False)
+    assert with_bounty["bounties"] <= with_bounty["refuted"]

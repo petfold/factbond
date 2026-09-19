@@ -16,12 +16,17 @@ class FactType:
     claim_type: str = "attribute-matches-world"
 
 
+#: POI liveness (domain-choice.md, decided 2026-09-19): one place, five linked
+#: claims. Error priors are placeholders until measured at snapshot time (§3);
+#: verification costs are a person's time for a physical check ($10–30), a call
+#: for the cheap ones; consumption shares follow what people ask (hours most,
+#: existence and identity the wasted trip, wheelchair the highest stakes).
 FACT_TYPES = (
-    FactType("opening_hours", 0.08, 2.0, 0.0008, 0.50),
-    FactType("address", 0.03, 3.0, 0.0002, 0.20),
-    FactType("phone", 0.05, 1.0, 0.0004, 0.10),
-    FactType("category", 0.04, 1.5, 0.0001, 0.10, "attribute-matches-source"),
-    FactType("existence", 0.02, 4.0, 0.0003, 0.10, "entity-exists"),
+    FactType("existence", 0.04, 20.0, 0.0004, 0.25, "entity-exists"),
+    FactType("identity", 0.05, 20.0, 0.0003, 0.20, "attribute-matches-world"),
+    FactType("opening_hours", 0.08, 20.0, 0.0008, 0.35),
+    FactType("wheelchair", 0.06, 20.0, 0.0001, 0.10),
+    FactType("address", 0.03, 15.0, 0.0002, 0.10),
 )
 
 
@@ -41,7 +46,8 @@ class Params:
     buckets: tuple = (900, 970, 990, 999)
     pool_confidence: int = 990
     liveness: int = 14                     # ticks
-    rung_cost: float = 5.0                 # D: the adjudication cost the challenger's floor covers
+    rung_cost: float = 8.0                 # D.adjudication: the automated evidence rung; a person reading is 30–60
+    bounty: float = 0.0                    # paid per *adjudicated* correction to the challenger (the one reward F9 permits)
     delay_externality: float = 1.0
     winner_share: float = 0.75             # of the loser's stake; the rest burned/treasury
     ruling_error: float = 0.02             # honest adjudicator's error rate
@@ -81,7 +87,12 @@ class Params:
 #: the sweep of §6, small enough to run in minutes; the full grid is the same call with more values
 GRID = {
     "bond_floor": (0.5, 2.0, 8.0, 20.0),
-    "rung_cost": (2.0, 5.0, 15.0),
-    "consumption_rate": (0.01, 0.05, 0.2),
+    "rung_cost": (8.0, 30.0, 60.0),
+    "consumption_rate": (0.001, 0.01, 0.05, 0.2),
     "k_reliance": (0.0, 0.5),
 }
+
+#: the curve's axis (§2 as amended): from launch — a handful of people, a few
+#: facts a month over the whole KB — up to a steady state where most facts are
+#: acted on within days
+LAMBDA_AXIS = (0.0002, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3)

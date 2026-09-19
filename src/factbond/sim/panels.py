@@ -51,6 +51,7 @@ def panels(engine, adversaries, capture_on=None, capture_off=None) -> dict:
         "refusals": engine.refused, "sales_stopped": engine.sales_stopped,
         "challenger_exits": engine.stats["challenger_exits"],
         "minted": round(engine.ledger.minted, 2),
+        "bounties": engine.stats["bounties"],
         "loss_tables": loss_tables(engine),
     }
     if capture_on is not None:

@@ -8,14 +8,14 @@ import argparse
 import json
 import sys
 
-from .params import GRID, Params
-from .run import artifact, preregistration, run, run_grid
+from .params import GRID, LAMBDA_AXIS, Params
+from .run import artifact, curve, preregistration, run, run_grid
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="factbond.sim")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("run", "grid"):
+    for name in ("run", "grid", "curve"):
         s = sub.add_parser(name)
         s.add_argument("--facts", type=int, default=Params.facts)
         s.add_argument("--ticks", type=int, default=Params.ticks)
@@ -40,6 +40,15 @@ def main(argv=None) -> int:
         print("pre-registration:", "filled" if preregistration() else "UNSET — exploratory only (§2)")
         return 0
     seeds = tuple(int(s) for s in args.seeds.split(","))
+    if args.cmd == "curve":
+        block = preregistration()
+        print("T:", block["T"] if block else "unset (exploratory)")
+        for row in curve(base, LAMBDA_AXIS, seeds=seeds, scored=args.scored):
+            print(f"λ {row['consumption_rate']:<7} seed {row['seed']}: half-life {row['half_life']} "
+                  f"(corrected {row['corrected']}, open at end {row['open_at_end']}) challenger ROI {row['challenger_roi']} "
+                  f"disputes {row['dispute_rate']} bounties {row['bounties']} solvent {row['solvent']}"
+                  + (f" meets T: {row['meets_T']}" if block else ""))
+        return 0
     for row in run_grid(base, GRID, scored=args.scored, seeds=seeds, out_dir=args.out):
         v = row["verdict"]
         print(f"{row['cell']} seed {row['seed']}: half-life {row['half_life']} challenger ROI {row['challenger_roi']} "

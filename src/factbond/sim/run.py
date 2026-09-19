@@ -13,20 +13,25 @@ import os
 from .adversaries import Capturer, suite
 from .engine import Engine
 from .panels import panels
-from .params import GRID, Params
+from .params import GRID, LAMBDA_AXIS, Params
 from .world import World
 
 PREREG = os.path.join(os.path.dirname(__file__), "..", "..", "..", "preregistration.json")
 
 
 def preregistration() -> dict | None:
-    """T, D*, λ* and the owner's sign-off, or None while unset."""
+    """The v2 block (§2 as amended 2026-09-19): T, D*.verification,
+    D*.adjudication, the λ range and the owner's sign-off — or None while
+    any is unset."""
     try:
         with open(PREREG, encoding="utf-8") as fh:
             block = json.load(fh)
     except FileNotFoundError:
         return None
-    return block if all(block.get(k) not in (None, "", 0) for k in ("T", "D_star", "lambda_star", "set_by")) else None
+    d = block.get("D_star") or {}
+    ok = block.get("T") not in (None, "", 0) and block.get("set_by") and block.get("lambda_range") \
+        and isinstance(d, dict) and d.get("verification") and d.get("adjudication")
+    return block if ok else None
 
 
 def _capture_replay(p: Params) -> tuple[str, str]:
@@ -94,3 +99,23 @@ def run_grid(base: Params, grid: dict = GRID, *, scored: bool = False, seeds=(1,
                             "challenger_roi": r["challenger_roi"], "adversary_roi": r["adversary_roi"],
                             "dispute_rate": r["dispute_rate"], "solvent": r["solvent"]})
     return results
+
+
+def curve(base: Params, axis=LAMBDA_AXIS, *, seeds=(1,), scored: bool = False, adversaries: bool = False) -> list:
+    """The deliverable §2 now names: median planted-error half-life against
+    consumption rate, from launch values up, with the challenger's ROI, the
+    open-error share and the dispute rate beside it; T is read off it, not
+    assumed. Adversaries are off by default here (the curve is the honest
+    world's; panel 3 is the grid's business)."""
+    rows = []
+    block = preregistration() if scored else None
+    for lam in axis:
+        for seed in seeds:
+            r = run(base.replace(consumption_rate=lam, seed=seed), scored=scored, adversaries=adversaries)
+            hl = r["half_life"]
+            rows.append({"consumption_rate": lam, "seed": seed, "half_life": hl["_all"],
+                         "corrected": hl["_corrected"], "open_at_end": hl["_open_at_end"],
+                         "challenger_roi": r["challenger_roi"], "dispute_rate": r["dispute_rate"],
+                         "bounties": r.get("bounties", 0), "solvent": r["solvent"],
+                         "meets_T": (hl["_all"] is not None and hl["_all"] <= block["T"]) if block else None})
+    return rows

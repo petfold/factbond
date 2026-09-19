@@ -1,8 +1,8 @@
 {
-  "_": "PRE-REGISTRATION BLOCK (phase0-simulation.md §2). Append-only in spirit: never edit a filled block; add a new one. Unset means no scored run may start.",
+  "_": "PRE-REGISTRATION BLOCK v2 (phase0-simulation.md §2 as amended 2026-09-19). Append-only in spirit: never edit a filled block; add a new one. Unset means no scored run may start. T is the owner's judgment for the scaled regime; D_star keeps verification (per fact type, $) and adjudication (per rung, $) apart; lambda_range is the curve's axis from launch to steady state.",
   "T": null,
-  "D_star": null,
-  "lambda_star": null,
+  "D_star": {"verification": null, "adjudication": null},
+  "lambda_range": null,
   "set_by": null,
   "date": null
 }

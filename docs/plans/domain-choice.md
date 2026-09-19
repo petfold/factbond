@@ -115,16 +115,65 @@ factbond should attach to it rather than invent a game:
   non-transferable, per district or per WikiProject — the reputation that
   cannot be bought, which is what these communities already run on.
 
-## 5. What to change in the plans
+## 5. Decided (Peter, 2026-09-19): POI liveness, and three threads to pursue
 
-`phase0-simulation.md` §3: the frozen domain becomes POI liveness in one
-city (existence, identity, hours, wheelchair, address as the fact types,
-existence and identity carrying the highest reliance); `DESIGN.md` §10's
-Phase-1 target the same. `insurance-products.md`: healthcare and
-transport as the first parametric domain. `loopmarket-coupling.md`: the
-quest apps as the consumption channel outside clearing (the agents-first
-wedge has a human-first sibling). Not yet written into them — this note
-records the evidence and the proposal for Peter's decision.
+The domain is POI liveness; the plans and the harness follow it (§6). Three
+threads Peter opened with the decision, each with a shape and a caveat:
+
+1. **StreetComplete and its community.** The app is open source
+   (github.com/streetcomplete/StreetComplete; quests are declared per tag,
+   photos attach to notes) and its people are on the OSM community forum
+   (community.openstreetmap.org, the StreetComplete category), the app's
+   GitHub discussions, and the OSM Slack/Matrix channels. The proposal to
+   take there, once the harness has a curve to show: **bonded quests** —
+   the pool's standing assertion is the quest's prior, a contradicting
+   answer with a photo opens a dispute the pool funds, a bounty per
+   adjudicated correction pays the player, and the calibration ledger is
+   the district leaderboard. Nothing in the app changes first: a
+   companion service reading the notes feed and the changeset stream can
+   run the whole loop beside it, which is how to arrive with something
+   working rather than a request.
+2. **Automated sources checked and bonded — the crawler as asserter.**
+   Wikidata's bulk and much of OSM's hours are imported from sources; a
+   crawler that finds a business's hours on its own website and compares
+   them with the record is rung 1 of the ladder (the automated evidence
+   check, `evidence-policy.md`) run *pre-emptively*: the pool asserts
+   with a bond on the records that check out, at a confidence the
+   crawler's own calibration earns, and refuses the ones that do not —
+   refusal being signal. This is `DESIGN.md` §7's pool-as-asserter with
+   an evidence policy behind it, and it seeds the loss tables before any
+   human verifies anything. Caveat: a website is a source, not the world
+   (the record matches the source; the shop may still be closed) — the
+   claim type is `attribute-matches-source`, priced as such, and the
+   matches-world claim stays the quest apps' job.
+3. **Abstract knowledge, missing high-level statements, and a browser
+   plugin for editors' own bonds.** The subsumption edges ontodag carries
+   (`X ⊑ A`) and Wikidata's `subclass of` / `instance of` are the
+   high-level statements most often missing or wrong, and they are the
+   claims factbond's structural rung settles by certificate. A browser
+   plugin letting a Wikidata editor attach a bond to a statement they
+   just made is the natural asserter surface. Peter's caveat is the
+   binding one: **most editors have no crypto.** Two answers that keep
+   F9: (a) the *score* needs no money — the calibration ledger is a
+   signed speech act plus outcomes, so an editor can assert at a stated
+   confidence and be scored without staking, and a bond can be *sponsored*
+   by the pool on the editor's calibration record (the pool stakes, the
+   editor's reputation is at risk, the slash is the pool's and priced
+   into the editor's future sponsorship); (b) a fiat on-ramp is a product
+   decision for later, not a mechanism one. The plugin is therefore a
+   reputation-first surface: sponsored bonds for scored editors, real
+   stakes for those who have them. Not started.
+
+## 6. What changed in the plans and the harness (2026-09-19)
+
+`phase0-simulation.md` §3 (the domain), §2 (λ as the curve's axis, D\* as
+verification plus adjudication); `DESIGN.md` §10 (Phase 1's target);
+`insurance-products.md` §1 (the parametric first domain);
+`loopmarket-coupling.md` §3c (the quest apps as the consumption channel).
+The harness: the five fact types with realistic verification costs, a
+bounty per adjudicated correction, and `python -m factbond.sim curve` —
+half-life against consumption rate from launch values up, T marked when
+the block names it.
 
 ## What this document does not promise
 

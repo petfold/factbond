@@ -261,6 +261,12 @@ class Engine:
             self.ledger.move("escrow", TREASURY, 0.0)
             if refuted:
                 self.pay_out("escrow", challenger, d.stake, a.bond)
+                if p.bounty and challenger != POOL:
+                    src = TREASURY if self.ledger.balances[TREASURY] >= p.bounty else POOL
+                    self.ledger.move(src, challenger, p.bounty)   # per adjudicated correction only (F9)
+                    self.stats["bounties"] += 1
+                    if challenger in self.challengers:
+                        self.challengers[challenger][0] += p.bounty
                 self.world.correct(f, self.now)
                 f.assertion_ref = None
                 self.stats["refuted"] += 1

@@ -31,7 +31,11 @@ trusted publishing).
   `LAMBDA_AXIS` and `curve` (half-life against participation, §2's
   amended deliverable), the v2 pre-registration block. Plans updated:
   phase0-simulation §2–§3, DESIGN §10, insurance-products §1,
-  loopmarket-coupling §3c.
+  loopmarket-coupling §3c. Then the population half-life (censored when
+  the run ends first), escrowed bonds as pool assets, and the sweep
+  population with `sweeps` — half-life against sweep capacity at a launch
+  consumption rate; finding: no consumption rate reaches the cold errors,
+  sweeps do.
 
 ## [0.1.0] — 2026-09-19
 

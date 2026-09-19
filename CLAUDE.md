@@ -80,7 +80,19 @@ snapshot measures them; verification $15–20 of a person's time),
 `python -m factbond.sim curve` is §2's amended deliverable — median
 half-life against consumption rate over `LAMBDA_AXIS` from launch values
 up, T read off it when `preregistration.json` (v2 block: T, D\* as
-verification + adjudication, the λ range, sign-off) names it. Three
+verification + adjudication, the λ range, sign-off) names it. **The population half-life and the sweep axis** (the same night): the
+half-life panel is measured on the errors planted at t0 — the tick by
+which half were corrected, censored when the run ends first — since a
+median over the corrected ones alone flattered every cell; the pool's
+escrowed bonds count as its assets. The first honest curve (2,000 facts,
+120 ticks): at *every* consumption rate on `LAMBDA_AXIS` the half-life
+exceeds the run — consumption is Zipf, so the cold errors are never
+consumed and the coupling never reaches them; a higher rate corrects more
+hot errors (30 of ~200 at λ = 0.3) and leaves the population alone. That
+is the launch problem in numbers, and `sweep_capacity` (`sweep()`,
+`python -m factbond.sim sweeps`) is the lever it points at: volunteers
+verifying the least-recently-verified facts a street at a time at
+`sweep_cost` each, the pool funding the dispute, the bounty theirs. Three
 threads Peter opened with the decision — bonded quests beside
 StreetComplete, the crawler as pre-emptive asserter on sources, and a
 reputation-first browser plugin for editors without crypto — are

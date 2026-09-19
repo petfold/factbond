@@ -21,4 +21,6 @@ the record of what landed.
   artifact, `scripts/build.py`, `scripts/deploy_assertions.py`; seven
   tests on a local EVM, and loopmarket's cross-repo gate running a claim
   on a real escrow reservation. Deployed on Gnosis at
-  `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99` the same evening.
+  `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99` the same evening, and gated
+  live that night: assertion 1 on a loopmarket reservation, held, certified
+  by timeout, resolved and paid through the escrow.

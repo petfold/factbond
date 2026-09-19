@@ -28,7 +28,7 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   registration, the consumer's acceptance ties a subject to this resolver)
   and `resolve(subject, outcome)` when it closes. `Refuted` is the
   correction feed's event.
-- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver.
+- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver. **Live gate the same night:** assertion 1 — a claim on a real reservation (subject = the escrow's key), the escrow's `hold` fired by `assert_`, certified by timeout after its hour, `resolve` paying the wanter 0.01 xDAI through the escrow, the bond returned.
 - `src/factbond/assertions.py` — `AssertionsClient` (web3 lazy, the
   `chain` extra), `BUCKETS`, `abi()` reading the shipped artifact
   `src/factbond/contracts/Assertions.json` (`scripts/build.py`; solc 0.8.24,

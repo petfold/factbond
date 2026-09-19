@@ -5,9 +5,13 @@ design for attaching economic guarantees ("someone will pay if this is
 wrong") to millions of ordinary facts: opening hours, database entries,
 knowledge-graph edges.
 
-**Status: design stage. Nothing is implemented.** This repo currently holds
-the design documents; the next concrete step is a simulation (see
-`docs/DESIGN.md` §10), not contracts.
+**Status: design stage. Nothing is implemented.** This repo holds the
+design documents. The next concrete step (decided 2026-09-19 with a first
+consumer in hand): the assertion contract's consumer-facing edge — a
+subject hash, `hold`/`resolve` to a registered consumer, the assertion
+lifecycle behind it — for loopmarket's escrow, whose contested claims it
+adjudicates (`docs/plans/loopmarket-coupling.md` §3b); the simulation
+(`docs/DESIGN.md` §10) still gates the insurance product.
 
 ## The idea in one paragraph
 

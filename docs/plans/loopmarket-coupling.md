@@ -210,6 +210,65 @@ assumed. What loopmarket needs from the guarantee side:
   goods, agents with fees on their own scale, agents that can themselves
   fail (the recursion smart-contract agents end for on-chain assets).
 
+## 3b. The resolver interface: custody in loopmarket, adjudication here (Peter, 2026-09-19)
+
+loopmarket built its escrow contract on 2026-09-19 and first put a claim
+mechanism inside it — every payout a ruling by an arbiter key. Peter's
+correction, agreed the same day: **a ruling or a timeout**; rulings are for
+contested claims only; and the claim mechanism is factbond's, not a second
+copy in the escrow. Two levels are not needed. The agreed arbiter a leg
+names is the top rung of *this* ladder (`mechanism-design.md`), not a
+system in front of it.
+
+What loopmarket's escrow keeps (it alone knows these facts): the
+reservation per fill, the leg's handover window, the cancellation ladder,
+the wanter's countersignature, the giver's cancellation — and it settles
+every undisputed case from them by itself: refund after a quiet claim
+period (anyone may call it), refund now on countersignature, the ladder
+amount on the giver's own cancellation.
+
+What factbond owns: the contested claim. "This giver failed this leg" is
+a bonded assertion whose subject is the hash of (offer id, loop id); the
+unchallenged assertion certifying by timeout is the primitive's normal
+case; the wanter's stake is the assertion bond, the giver's contest the
+challenge bond, sized by §1's rule; the adjudicator at the top is the one
+both offers declared acceptable (loopmarket's `arbitrator` field and the
+wanter's accepted witness types, fixed at clearing); the escalation when
+no ruling arrives in the agreed period is the constitution's; the loser
+pays adjudication off the top.
+
+**The interface — the first concrete thing factbond builds, and generic
+by construction.** The escrow calls nothing; factbond's contract calls
+the *consumer* twice:
+
+    hold(subject)                  // an assertion about `subject` is open
+    resolve(subject, outcome)      // the assertion resolved; `outcome` in the consumer's own units
+
+where `subject` is a bytes32 the consumer chose (loopmarket: keccak of
+offer id and loop id; a Wikidata guarantee: the statement's hash) and the
+consumer address was registered with the subject when the reservation (or
+the guarantee) was made. factbond knows nothing about offers, loops,
+ladders or asset categories; loopmarket knows nothing about stakes,
+challenge periods, rungs or fees. **This is the shape every consumer
+gets** — the escrow is the first, ontodag edges and Wikidata entries are
+the same call with a different consumer — so it cannot be designed for
+loopmarket alone: `outcome` is an integer the consumer interprets (a
+payout share, a boolean, a corrected value's hash), and the subject
+registration carries the declared adjudicator and periods.
+
+**Sequencing.** This does not jump §5's gate: the *insurance* product
+still waits for Phase-0 green and the P2 freeze. The resolver interface is
+not the product; it is the assertion primitive's consumer-facing edge,
+which Phase 1 builds anyway, given a first consumer that exists today.
+Until it lands, loopmarket's resolver is one key ruling directly through
+the same two calls, and the escrow does not change when factbond takes
+the resolver's address. Peter's observation (2026-09-19): the confusion
+about where bonding lives came from factbond being plans without
+implementation; the next step on this side is a contract with these two
+calls and the assertion lifecycle behind them, before the simulation
+finishes — the simulation answers whether the *pool* certifies anything,
+which is the insurance question, not the primitive's.
+
 ## 4. What factbond must not assume
 
 The boundary keeps the coupling adoptable; written from factbond's side,

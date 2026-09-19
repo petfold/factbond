@@ -175,6 +175,20 @@ bounty per adjudicated correction, and `python -m factbond.sim curve` —
 half-life against consumption rate from launch values up, T marked when
 the block names it.
 
+## 7. The first number (harness, 2026-09-19 night)
+
+At a launch consumption rate no consumption reaches the cold errors; the
+half-life of the seeded error population exceeds a 120-day run at every
+rate on the axis. Sweeps do reach them: on a 2,000-fact KB, 100 facts
+verified a day (each fact revisited every ~20 days) gives an 11-day
+half-life and holds drift down; 30 a day corrects a quarter of the
+errors; half a fact a day — five people, three facts a month — corrects
+nothing. Scaled: ~1,800 verifications a day for a 50,000-POI city at
+T = 14, about 60 person-hours a day at a street a time. That is the
+participation the product needs, and why thread 2 (the crawler as
+asserter on sources) is not optional: it is the only verifier that scales
+without people.
+
 ## What this document does not promise
 
 That any of these communities will adopt bonded quests; that one

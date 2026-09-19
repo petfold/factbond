@@ -92,7 +92,18 @@ hot errors (30 of ~200 at λ = 0.3) and leaves the population alone. That
 is the launch problem in numbers, and `sweep_capacity` (`sweep()`,
 `python -m factbond.sim sweeps`) is the lever it points at: volunteers
 verifying the least-recently-verified facts a street at a time at
-`sweep_cost` each, the pool funding the dispute, the bounty theirs. Three
+`sweep_cost` each, the pool funding the dispute, the bounty theirs. The
+sweep curve at a launch consumption rate (λ = 0.001, 2,000 facts, 120
+ticks): 0.5 facts/day (five people, three facts a month) corrects
+nothing; 30/day corrects 27 of 98 seeded errors and the half-life still
+exceeds the run; **100/day — every fact revisited about every 20 days —
+gives a half-life of 11 days** and holds drift down (133 open at the end
+against 203). The rule of thumb this yields: the half-life is about half
+the revisit period plus drift, so a city of 50,000 POIs needs ~1,800
+verifications a day for T = 14 — about 60 person-hours a day at a street
+a time. That is the adoption target §2's amendment asked for, and the
+argument for the crawler as asserter (`domain-choice.md` §5, thread 2):
+sources are the one verifier that scales without people. Three
 threads Peter opened with the decision — bonded quests beside
 StreetComplete, the crawler as pre-emptive asserter on sources, and a
 reputation-first browser plugin for editors without crypto — are

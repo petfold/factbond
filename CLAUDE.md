@@ -54,8 +54,37 @@ exploratory. Each adversary (`sim/adversaries.py`: arson, capture, the
 under E(t)) runs in a world of its own so its ROI is its own. What v0
 leaves out is listed in `sim/__init__.py`.
 
-Exploratory findings at the defaults (4,000 facts, 360 ticks; not a
-verdict): the honest dispute rate sits at ~0.4 %, below the UMA anchor,
+**The reliance term and consumption-targeted challengers** (built 2026-09-19,
+after the first findings): `k_reliance` sizes the pool's bond as
+max(floor, k × the open insured exposure riding on the record), reliance
+counting at sale and retiring over the liveness window, a live assertion
+topped up by retraction and re-assertion when the reliance outgrows it
+(the fee is the price); `target_consumption` makes challengers scan by
+consumption weight and read the pool's loss table as their prior. On one
+2,000 × 120 cell the combination made challengers *act* (117 exits, median
+ROI −1.04) without finding more errors (refuted 8 → 10): the consumed
+records are the clean ones, since the payout→dispute coupling corrects
+them first, so a challenger who follows consumption verifies clean records
+at full cost while the errors that survive are the cold ones under floor
+bonds. That is the lazy-verification structure seen from the other side,
+and it says the marginal challenger's edge must be *information*
+(personal knowledge, an informed buyer's signal) rather than search —
+the launch-regime question Peter raised the same night (below).
+
+**The launch regime (Peter, 2026-09-19):** five people editing three
+facts a month is where this starts, so a single λ\* is the wrong thing to
+pre-register; the deliverable is the half-life-versus-consumption curve
+with T marked on it, read as the participation the product needs. D\*
+is verification ($10–30 of a person's time for a physical fact) plus
+adjudication ($5–10 automated, $30–60 read by a person, panels and
+arbitrators above); the harness's verification costs were too low. What
+gets people involved, within F9: bounties per *adjudicated* correction,
+the calibration ledger as a visible non-transferable score, district
+sweeps, personal knowledge asserting against the pool's blanket
+confidence. Not yet written into the plan or the harness — pending
+Peter's word on the reframing.
+
+Exploratory findings at the defaults before those two (not a verdict): the honest dispute rate sits at ~0.4 %, below the UMA anchor,
 because scanning challengers find no positive expected value at
 adjudication-cost floors (panel 2 fails everywhere in the small grid — the
 reliance term and consumption-targeted challengers are the unmodelled

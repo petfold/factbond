@@ -18,7 +18,12 @@ trusted publishing).
   loss tables; deterministic seeds and content-addressed artifacts; a
   scored run refused until the pre-registration block is filled. Status
   is a pure derivation from the speech-act records (F1), the schema's
-  first consumer. Seven tests.
+  first consumer. Seven tests. Then the reliance term (bond = max(floor,
+  k × open reliance), top-ups by retraction and re-assertion) and
+  consumption-targeted challengers with the loss table as prior; finding:
+  challengers who follow consumption verify the clean records, since the
+  coupling corrects the consumed errors first — the marginal challenger's
+  edge has to be information, not search.
 
 ## [0.1.0] — 2026-09-19
 

@@ -19,7 +19,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 from .params import Params
-from .records import (ASSERTED, CERTIFIED, CONTESTED, REFUTED, Assertion, Dispute, Fold, Ruling,
+from .records import (ASSERTED, CERTIFIED, CONTESTED, REFUTED, Assertion, Dispute, Fold, Retraction, Ruling,
                       status)
 from .world import Fact, World
 
@@ -105,7 +105,7 @@ class Engine:
     def tick(self, adversaries=()) -> None:
         p, w = self.p, self.world
         self.now += 1
-        w.drift(self.now)
+        w.drift(self.now, retire=1.0 / max(1, p.liveness))
         self.assert_all()
         events = w.consume(p, self.now)
         self.consumers(events)
@@ -116,24 +116,46 @@ class Engine:
         for hook in self.consumers_hook:
             hook(self)
 
+    def bond_for(self, f: Fact) -> float:
+        """mechanism-design §2 clause 1: bond = max(adjudication-cost floor,
+        k × the reliance riding on the claim) — a hub claim is expensive to
+        assert casually and lucrative to challenge; a cold one stays cheap."""
+        return max(self.p.bond_floor, self.p.k_reliance * f.reliance)
+
     def assert_all(self) -> None:
         """The pool as asserter (§4): every fact without a live assertion gets
-        one at the pool's bucket, bond at the floor, fee to the treasury —
-        unless the fact is refused (a demand-concentration tripwire)."""
+        one at the pool's bucket, bond by `bond_for`, fee to the treasury —
+        unless the fact is refused (a demand-concentration tripwire). A live
+        undisputed assertion whose bond has fallen behind the reliance on it
+        is retracted (the fee is the price, §1) and re-asserted at the larger
+        bond: the latest assertion stands (F1), so the record itself carries
+        the bond's history."""
         p = self.p
         for f in self.world.facts:
             if f.assertion_ref is not None:
                 st = status(self.fold, f.claim_id, self.now)
-                if st in (ASSERTED, CONTESTED, CERTIFIED):
+                if st in (CONTESTED, CERTIFIED):
                     continue
+                if st == ASSERTED:
+                    a = self.fold.assertions[f.assertion_ref]
+                    want = self.bond_for(f)
+                    if a.author != POOL or want <= a.bond * 1.5:
+                        continue
+                    self.fold.add(Retraction(a.ref, POOL, self.now))     # top up: retract and re-assert
+                    self.ledger.move("escrow", POOL, a.bond)
+                    self.stats["topups"] += 1
             if f.consumed > 50 and self.losses[f.type] > self.sold[f.type] * 0.3 + 3:
                 self.refused += 1
                 continue
-            a = Assertion(f.claim_id, POOL, p.pool_confidence, p.bond_floor, p.liveness, self.now)
+            bond = self.bond_for(f)
+            if self.ledger.balances[POOL] < bond + p.fee:
+                self.stats["pool_short"] += 1
+                continue
+            a = Assertion(f.claim_id, POOL, p.pool_confidence, bond, p.liveness, self.now)
             self.fold.add(a)
             f.assertion_ref = a.ref
             self.ledger.move(POOL, TREASURY, p.fee)
-            self.ledger.move(POOL, "escrow", p.bond_floor)
+            self.ledger.move(POOL, "escrow", bond)
             self.stats["assertions"] += 1
 
     def consumers(self, events) -> None:
@@ -156,6 +178,7 @@ class Engine:
             self.ledger.move(buyer, POOL, prem)
             self.sold[f.type] += 1
             self.exposure += p.payout_cap
+            f.reliance += p.payout_cap            # reliance counts at sale
             bites = (not f.correct) and (informed or rng.random() < p.detect_rate)
             self.exposure -= p.payout_cap
             if bites:
@@ -166,25 +189,36 @@ class Engine:
     def challengers_act(self) -> None:
         """Profit-driven challengers with free entry and exit (§4): each scans
         facts, verifies at the type's cost, disputes a wrong one when the
-        expected win covers the stake at risk and the cost."""
+        expected win covers the stake at risk and the cost. With
+        `target_consumption` they scan where consumption — and so reliance,
+        and so the bond — is, weighting by the facts' consumption and reading
+        the pool's own loss table as their prior for the type (public data:
+        the loss table is the audit, insurance-products §3); without it they
+        scan uniformly with the base rate as prior."""
         p, rng, w = self.p, self.world.rng, self.world
+        weights = [f.weight for f in w.facts] if p.target_consumption else None
         for name, state in self.challengers.items():
             profit, active = state
             if not active:
                 if rng.random() < 0.05:            # re-entry
                     state[1] = True
                 continue
-            sample = rng.sample(w.facts, min(p.scan_per_tick, len(w.facts)))
+            k = min(p.scan_per_tick, len(w.facts))
+            sample = rng.choices(w.facts, weights=weights, k=k) if weights else rng.sample(w.facts, k)
             spent = 0.0
+            seen = set()
             for f in sample:
-                if f.assertion_ref is None or status(self.fold, f.claim_id, self.now) != ASSERTED:
+                if f.id in seen or f.assertion_ref is None or status(self.fold, f.claim_id, self.now) != ASSERTED:
                     continue
+                seen.add(f.id)
                 a = self.fold.assertions[f.assertion_ref]
                 stake = self.stake_for(a.bond, a.confidence)
                 win = p.winner_share * a.bond
                 cost = w.types[f.type].verify_cost
-                # prior that a scanned fact is wrong: the type's base rate (the challenger's belief)
-                prior = w.types[f.type].error_rate
+                # the challenger's belief that this fact is wrong: the pool's realized loss
+                # frequency for the type once it has data, else the type's base rate
+                n, losses = self.sold[f.type], self.losses[f.type]
+                prior = losses / n if (p.target_consumption and n >= 20) else w.types[f.type].error_rate
                 ev = prior * ((1 - p.ruling_error) * win - p.ruling_error * stake) - cost
                 if ev <= p.entry_threshold:
                     continue

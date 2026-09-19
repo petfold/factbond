@@ -35,6 +35,8 @@ class Params:
     seed: int = 1
     # the mechanism (§5–§6)
     bond_floor: float = 2.0                # $0.5–$20 swept
+    k_reliance: float = 0.5                # bond = max(floor, k × open reliance) (mechanism-design §2 clause 1); 0 = floor only
+    target_consumption: bool = True        # challengers scan where consumption is, with the loss table as prior
     fee: float = 0.05
     buckets: tuple = (900, 970, 990, 999)
     pool_confidence: int = 990
@@ -81,4 +83,5 @@ GRID = {
     "bond_floor": (0.5, 2.0, 8.0, 20.0),
     "rung_cost": (2.0, 5.0, 15.0),
     "consumption_rate": (0.01, 0.05, 0.2),
+    "k_reliance": (0.0, 0.5),
 }

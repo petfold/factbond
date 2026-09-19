@@ -25,6 +25,7 @@ class Fact:
     assertion_ref: str | None = None
     controlled_by: str = ""       # an attacker who controls the source (T5)
     consumed: int = 0
+    reliance: float = 0.0         # open insured exposure riding on this record, $ (retires over the liveness window)
 
     @property
     def claim_id(self) -> str:
@@ -59,10 +60,16 @@ class World:
                               planted_at=None if correct else 0))
         return cls(facts, rng, types)
 
-    def drift(self, now: int) -> int:
-        """Facts decay true→false at their type's hazard; returns how many."""
+    def drift(self, now: int, retire: float = 0.0) -> int:
+        """Facts decay true→false at their type's hazard; returns how many.
+        Reliance retires at `retire` per tick (counts at sale, retires as
+        the policies run off — mechanism-design §2)."""
         n = 0
         for f in self.facts:
+            if f.reliance:
+                f.reliance *= 1.0 - retire
+                if f.reliance < 0.01:
+                    f.reliance = 0.0
             if f.correct and self.rng.random() < self.types[f.type].drift_hazard:
                 f.correct = False; f.planted_at = now; f.corrected_at = None; n += 1
         return n

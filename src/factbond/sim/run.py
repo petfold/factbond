@@ -13,7 +13,7 @@ import os
 from .adversaries import Capturer, suite
 from .engine import Engine
 from .panels import panels
-from .params import GRID, LAMBDA_AXIS, Params
+from .params import GRID, LAMBDA_AXIS, SWEEP_AXIS, Params
 from .world import World
 
 PREREG = os.path.join(os.path.dirname(__file__), "..", "..", "..", "preregistration.json")
@@ -114,8 +114,28 @@ def curve(base: Params, axis=LAMBDA_AXIS, *, seeds=(1,), scored: bool = False, a
             r = run(base.replace(consumption_rate=lam, seed=seed), scored=scored, adversaries=adversaries)
             hl = r["half_life"]
             rows.append({"consumption_rate": lam, "seed": seed, "half_life": hl["_all"],
+                         "half_life_note": "censored: longer than the run" if hl["_all"] is None else "",
+                         "corrected_median": hl["_corrected_median"], "seeded": hl["_seeded"],
                          "corrected": hl["_corrected"], "open_at_end": hl["_open_at_end"],
                          "challenger_roi": r["challenger_roi"], "dispute_rate": r["dispute_rate"],
                          "bounties": r.get("bounties", 0), "solvent": r["solvent"],
+                         "meets_T": (hl["_all"] is not None and hl["_all"] <= block["T"]) if block else None})
+    return rows
+
+
+def sweeps(base: Params, axis=SWEEP_AXIS, *, seeds=(1,), scored: bool = False) -> list:
+    """The launch regime's curve: half-life against sweep capacity at the
+    base consumption rate — what a few people verifying a street a week do
+    to the cold errors consumption never reaches."""
+    rows = []
+    block = preregistration() if scored else None
+    for cap in axis:
+        for seed in seeds:
+            r = run(base.replace(sweep_capacity=cap, seed=seed), scored=scored, adversaries=False)
+            hl = r["half_life"]
+            rows.append({"sweep_capacity": cap, "seed": seed, "half_life": hl["_all"], "seeded": hl["_seeded"],
+                         "corrected": hl["_corrected"], "open_at_end": hl["_open_at_end"],
+                         "swept": r["swept"], "sweep_disputes": r["sweep_disputes"], "bounties": r["bounties"],
+                         "pool_balance": r["pool_balance"], "solvent": r["solvent"],
                          "meets_T": (hl["_all"] is not None and hl["_all"] <= block["T"]) if block else None})
     return rows

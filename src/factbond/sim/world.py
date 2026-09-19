@@ -26,6 +26,7 @@ class Fact:
     controlled_by: str = ""       # an attacker who controls the source (T5)
     consumed: int = 0
     reliance: float = 0.0         # open insured exposure riding on this record, $ (retires over the liveness window)
+    seeded: bool = False          # a planted error present at t0 (the population the half-life is measured on)
 
     @property
     def claim_id(self) -> str:
@@ -57,7 +58,7 @@ class World:
             correct = rng.random() >= t.error_rate
             claim = Claim(f"{t.name}/{i}", "root:snapshot", t.claim_type, f"policy:{t.name}:v1")
             facts.append(Fact(i, t.name, correct, ranks[i] ** (-p.zipf_s), claim,
-                              planted_at=None if correct else 0))
+                              planted_at=None if correct else 0, seeded=not correct))
         return cls(facts, rng, types)
 
     def drift(self, now: int, retire: float = 0.0) -> int:
@@ -93,3 +94,14 @@ class World:
 
     def open_errors(self) -> int:
         return sum(1 for f in self.facts if not f.correct)
+
+    def population_half_life(self, ticks: int):
+        """§1's metric proper: the tick by which half of the errors planted at
+        t0 had been corrected — None when the run ended first (censored:
+        the half-life is longer than the run)."""
+        seeded = [f for f in self.facts if f.seeded]
+        if not seeded:
+            return None
+        times = sorted(f.corrected_at for f in seeded if f.corrected_at is not None)
+        need = (len(seeded) + 1) // 2
+        return times[need - 1] if len(times) >= need else None

@@ -48,6 +48,8 @@ class Params:
     liveness: int = 14                     # ticks
     rung_cost: float = 8.0                 # D.adjudication: the automated evidence rung; a person reading is 30–60
     bounty: float = 0.0                    # paid per *adjudicated* correction to the challenger (the one reward F9 permits)
+    sweep_capacity: float = 0.0            # facts verified per tick by volunteers walking a district (domain-choice §4)
+    sweep_cost: float = 1.5                # a sweeper's cost per fact — batched, a street at a time, not a trip each
     delay_externality: float = 1.0
     winner_share: float = 0.75             # of the loser's stake; the rest burned/treasury
     ruling_error: float = 0.02             # honest adjudicator's error rate
@@ -96,3 +98,8 @@ GRID = {
 #: facts a month over the whole KB — up to a steady state where most facts are
 #: acted on within days
 LAMBDA_AXIS = (0.0002, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3)
+
+#: the launch regime's other axis: sweep capacity in facts verified per tick —
+#: five people doing three facts a month is 0.5/day; one afternoon a week
+#: walking a district is ~30/day averaged
+SWEEP_AXIS = (0.0, 0.5, 2.0, 5.0, 10.0, 30.0, 100.0)

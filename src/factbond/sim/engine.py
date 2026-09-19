@@ -110,6 +110,7 @@ class Engine:
         events = w.consume(p, self.now)
         self.consumers(events)
         self.challengers_act()
+        self.sweep()
         for adv in adversaries:
             adv.act(self)
         self.settle()
@@ -231,6 +232,32 @@ class Engine:
                 state[1] = False                    # exit: wiped out
                 self.stats["challenger_exits"] += 1
 
+    def sweep(self) -> None:
+        """Volunteers walking a district (domain-choice §4): `sweep_capacity`
+        facts a tick, the least recently verified first, at `sweep_cost`
+        each (their time, minted as such); a wrong one is disputed by the
+        pool on their behalf (§6: the pool funds the fight) and the bounty,
+        if any, is theirs. This is the launch regime's lever: it reaches the
+        cold errors consumption never touches."""
+        p = self.p
+        if p.sweep_capacity <= 0:
+            return
+        self._sweep_carry = getattr(self, "_sweep_carry", 0.0) + p.sweep_capacity
+        n = int(self._sweep_carry)
+        if n <= 0:
+            return
+        self._sweep_carry -= n
+        facts = sorted(self.world.facts, key=lambda f: (getattr(f, "verified_at", -1), f.id))[:n]
+        for f in facts:
+            f.verified_at = self.now
+            self.ledger.mint("sweepers", p.sweep_cost); self.ledger.move("sweepers", "spent", p.sweep_cost)
+            self.stats["swept"] += 1
+            if not f.correct and f.assertion_ref is not None:
+                ref = self.file_dispute(f, POOL)
+                if ref:
+                    self.disputes_by[ref] = (f, "sweepers")
+                    self.stats["sweep_disputes"] += 1
+
     def file_dispute(self, f: Fact, challenger: str, stake: float | None = None) -> str | None:
         if f.assertion_ref is None:
             return None
@@ -260,7 +287,7 @@ class Engine:
             self.fold.add(Ruling(ref, self.adjudicator.name, "refuted" if refuted else "upheld", 1, self.now))
             self.ledger.move("escrow", TREASURY, 0.0)
             if refuted:
-                self.pay_out("escrow", challenger, d.stake, a.bond)
+                self.pay_out("escrow", POOL if challenger == "sweepers" else challenger, d.stake, a.bond)
                 if p.bounty and challenger != POOL:
                     src = TREASURY if self.ledger.balances[TREASURY] >= p.bounty else POOL
                     self.ledger.move(src, challenger, p.bounty)   # per adjudicated correction only (F9)
@@ -271,7 +298,7 @@ class Engine:
                 f.assertion_ref = None
                 self.stats["refuted"] += 1
             else:
-                self.pay_out("escrow", a.author, a.bond, d.stake)
+                self.pay_out("escrow", a.author, a.bond, d.stake)   # the pool's stake, lost to itself as asserter
                 self.stats["upheld"] += 1
             if challenger in self.challengers:
                 self.challengers[challenger][0] += (p.winner_share * a.bond if refuted else -d.stake)
@@ -292,5 +319,17 @@ class Engine:
         rois = sorted(v[0] / 100.0 for v in self.challengers.values())
         return rois[len(rois) // 2] if rois else 0.0
 
+    def pool_escrowed(self) -> float:
+        """The pool's capital standing as bonds on live assertions — an asset,
+        not a loss, until a refutation takes it."""
+        total = 0.0
+        for f in self.world.facts:
+            if f.assertion_ref is None:
+                continue
+            a = self.fold.assertions[f.assertion_ref]
+            if a.author == POOL and status(self.fold, f.claim_id, self.now) in (ASSERTED, CONTESTED, CERTIFIED):
+                total += a.bond
+        return total
+
     def solvent(self) -> bool:
-        return self.ledger.balances[POOL] > 0
+        return self.ledger.balances[POOL] + self.pool_escrowed() > 0

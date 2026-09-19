@@ -6,7 +6,7 @@ filled (§2), arson negative under a full control exclusion (F3/T5)."""
 
 import pytest
 
-from factbond.sim import Params, artifact, curve, run, run_grid
+from factbond.sim import Params, artifact, curve, run, run_grid, sweeps
 from factbond.sim.records import (ASSERTED, CERTIFIED, CONTESTED, REFUTED, UNASSERTED, Assertion,
                                   Claim, Dispute, Fold, Retraction, Ruling, status)
 
@@ -92,3 +92,10 @@ def test_the_curve_runs_over_the_axis_and_a_bounty_only_pays_adjudicated_correct
     assert [r["consumption_rate"] for r in rows] == [0.001, 0.05] and all(r["meets_T"] is None for r in rows)
     with_bounty = run(SMALL.replace(ticks=30, bounty=5.0), adversaries=False)
     assert with_bounty["bounties"] <= with_bounty["refuted"]
+
+
+def test_sweeps_reach_the_cold_errors_consumption_never_touches():
+    quiet = SMALL.replace(ticks=40, consumption_rate=0.001)
+    rows = sweeps(quiet, axis=(0.0, 20.0), seeds=(1,))
+    assert rows[0]["corrected"] <= rows[1]["corrected"] and rows[1]["swept"] > 0
+    assert rows[1]["half_life"] is not None or rows[1]["corrected"] > rows[0]["corrected"]

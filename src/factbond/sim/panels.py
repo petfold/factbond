@@ -16,9 +16,11 @@ def half_life(engine) -> dict:
         by[t].append(ticks)
     out = {t: statistics.median(v) for t, v in by.items()}
     all_ = [x for v in by.values() for x in v]
-    out["_all"] = statistics.median(all_) if all_ else None
+    out["_corrected_median"] = statistics.median(all_) if all_ else None   # over the corrected ones only
+    out["_all"] = engine.world.population_half_life(engine.now)             # §1: the seeded population's
     out["_open_at_end"] = engine.world.open_errors()
     out["_corrected"] = len(all_)
+    out["_seeded"] = sum(1 for f in engine.world.facts if f.seeded)
     return out
 
 
@@ -52,6 +54,7 @@ def panels(engine, adversaries, capture_on=None, capture_off=None) -> dict:
         "challenger_exits": engine.stats["challenger_exits"],
         "minted": round(engine.ledger.minted, 2),
         "bounties": engine.stats["bounties"],
+        "swept": engine.stats["swept"], "sweep_disputes": engine.stats["sweep_disputes"],
         "loss_tables": loss_tables(engine),
     }
     if capture_on is not None:

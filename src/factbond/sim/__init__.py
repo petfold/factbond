@@ -28,8 +28,8 @@ What v0 models and what it leaves (each a §-reference in the plan):
   they attach).
 """
 
-from .params import Params, GRID, LAMBDA_AXIS
-from .run import run, run_grid, artifact, curve
+from .params import Params, GRID, LAMBDA_AXIS, SWEEP_AXIS
+from .run import run, run_grid, artifact, curve, sweeps
 from .panels import panels
 
-__all__ = ["Params", "GRID", "LAMBDA_AXIS", "run", "run_grid", "artifact", "curve", "panels"]
+__all__ = ["Params", "GRID", "LAMBDA_AXIS", "run", "run_grid", "artifact", "curve", "sweeps", "SWEEP_AXIS", "panels"]

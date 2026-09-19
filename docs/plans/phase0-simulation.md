@@ -22,6 +22,11 @@ tables), `THREATS.md` (supplies the adversaries), `evidence-policy.md`
 loopmarket's `docs/plans/P2-clearing-pricing.md` (the shared harness's
 second consumer, §9).
 
+**Status 2026-09-19: harness v0 built** (`src/factbond/sim`; `CLAUDE.md`
+lists what it models and its first exploratory findings). The
+pre-registration block below is still unset, so no scored run has
+happened; `preregistration.json` at the repo root is where it is filled.
+
 ## 1. What the simulation must decide
 
 `DESIGN.md` §10 states the go/no-go question: **at what dispute cost and

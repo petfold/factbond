@@ -5,6 +5,21 @@ trusted publishing).
 
 ## [Unreleased]
 
+### Added
+
+- **The Phase-0 simulation harness, v0** (`factbond.sim`,
+  `docs/plans/phase0-simulation.md`; 2026-09-19): the synthetic KB with
+  planted errors, drift and Zipf consumption; the pool as asserter,
+  profit-driven challengers, honest and informed buyers, the adjudicator;
+  the mechanism (fee, floor, odds-weighted stakes, liveness, the slashing
+  split, F3 caps, F4 fail-closed sales, premium updating from own losses,
+  the payout→dispute coupling); the adversary suite as scripted agents,
+  each in its own world; the four panels, the calibration anchors, the
+  loss tables; deterministic seeds and content-addressed artifacts; a
+  scored run refused until the pre-registration block is filled. Status
+  is a pure derivation from the speech-act records (F1), the schema's
+  first consumer. Seven tests.
+
 ## [0.1.0] — 2026-09-19
 
 ### Added

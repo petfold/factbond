@@ -13,9 +13,10 @@ contested, escalate when no ruling comes; a consumer contract told
 `hold(subject)` and `resolve(subject, outcome)`), `factbond.assertions`,
 and tests on a local EVM — built for loopmarket's escrow, whose contested
 claims it adjudicates (`docs/plans/loopmarket-coupling.md` §3b; the
-cross-repo gate is loopmarket's `tests/test_escrow.py`). The simulation
-(`docs/DESIGN.md` §10) still gates the insurance product. `CLAUDE.md` maps
-what is built to the plans.
+cross-repo gate is loopmarket's `tests/test_escrow.py`). The Phase-0 simulation harness (`factbond.sim`, v0) runs exploratory cells
+and refuses a scored run until the pre-registration block is filled; the
+go/no-go it computes (`docs/DESIGN.md` §10) still gates the insurance
+product. `CLAUDE.md` maps what is built to the plans. On PyPI: `pip install factbond`.
 
 ## The idea in one paragraph
 

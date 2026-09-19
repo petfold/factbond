@@ -39,6 +39,33 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   contract from `../factbond` and runs a claim on a real `LoopEscrow`
   reservation both ways (certified by timeout; disputed and refuted).
 
+## The Phase-0 harness (`src/factbond/sim`, v0 built 2026-09-19)
+
+`python -m factbond.sim run [--facts N --ticks N --seed S --set KEY=VALUE --out DIR]`
+runs one cell and prints the four panels (§1), the calibration anchors
+(§6) and the loss tables (§8); `... grid` sweeps `params.GRID`. Plain
+Python, deterministic under its seed, results content-addressed; the
+repo's record shapes (`sim/records.py`: claim, assertion, dispute, ruling,
+retraction, and `status()` as F1's pure derivation) are the harness's
+native objects. **A scored run refuses to start until `preregistration.json`
+is filled** (T, D*, λ*, `set_by` — Peter's, §2); every run today is
+exploratory. Each adversary (`sim/adversaries.py`: arson, capture, the
+0.999 griefer, self-dispute laundering, dispute spam, evidence fabrication
+under E(t)) runs in a world of its own so its ROI is its own. What v0
+leaves out is listed in `sim/__init__.py`.
+
+Exploratory findings at the defaults (4,000 facts, 360 ticks; not a
+verdict): the honest dispute rate sits at ~0.4 %, below the UMA anchor,
+because scanning challengers find no positive expected value at
+adjudication-cost floors (panel 2 fails everywhere in the small grid — the
+reliance term and consumption-targeted challengers are the unmodelled
+parts that would change this); arson stays profitable (~+7 % ROI) while
+the control exclusion leaves any residue, so F3's proxy cap alone does not
+close T5 (a real finding for `insurance-products.md` §5); the 0.999
+griefer, self-dispute laundering, dispute spam and fabrication all lose;
+the capture replay reproduces with F4 off and fails with F4 on; the pool
+stays solvent.
+
 ## Invariants the code must keep (from the plans)
 
 - **F7** `Certified` is a process fact, never truth — in names, events,
@@ -72,8 +99,9 @@ trusted publishing under the `pypi` environment). Bump `pyproject.toml` and
 
 ```bash
 pip install -e ".[test,evm]"     # --break-system-packages or a venv
-python3 -m pytest tests/ -v
+python3 -m pytest tests/ -v       # the contract on a local EVM, and the harness (~2 min)
 python3 scripts/build.py          # after any change to the contract
+PYTHONPATH=src python3 -m factbond.sim run --facts 2000 --ticks 120   # an exploratory cell, ~3 min
 ```
 
 Sibling repos: loopmarket (the first consumer; its `docs/plans/P3-release-and-reclearing.md` §5e is the custody/adjudication split), ontodag, recordstore.

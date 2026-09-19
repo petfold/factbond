@@ -1,9 +1,11 @@
 # Changelog
 
-Releases are tag-driven once a publish workflow exists; until then this is
-the record of what landed.
+Releases are tag-driven (`v*` tags run `.github/workflows/publish.yml`, PyPI
+trusted publishing).
 
 ## [Unreleased]
+
+## [0.1.0] — 2026-09-19
 
 ### Added
 

@@ -61,6 +61,13 @@ product and the reliance proof (`insurance-products.md`,
 (`phase0-simulation.md`), which gates the *insurance* product, not this
 primitive.
 
+## Releasing
+
+Tag-driven: `git tag -a vX.Y.Z && git push origin vX.Y.Z` runs
+`.github/workflows/publish.yml` (the suite with the `evm` extra, then PyPI
+trusted publishing under the `pypi` environment). Bump `pyproject.toml` and
+`src/factbond/__init__.py` together and move the changelog's Unreleased.
+
 ## Running tests
 
 ```bash

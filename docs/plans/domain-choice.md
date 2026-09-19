@@ -189,6 +189,47 @@ participation the product needs, and why thread 2 (the crawler as
 asserter on sources) is not optional: it is the only verifier that scales
 without people.
 
+## 8. Start with the boxes (Peter, 2026-09-19)
+
+Within POI liveness, the first target is the **automated boxes** —
+parcel lockers and pickup stations. Three reasons, all Peter's:
+
+- **No person speaks for a box.** A shop that has a person at the
+  loopmarket interface reports its own state through that person; a box
+  is unattended, so its liveness is exactly the fact nobody is
+  responsible for and a guarantee is for.
+- **The claims are few and crisp:** it exists at the mapped place; when
+  it is accessible (24/7, a host's hours, a locked lobby); and its
+  **handover model** — whether one private person can hand a thing to
+  another through it, at what fee, through which app. That last claim is
+  the one loopmarket needs: most networks admit only their own carrier's
+  parcels, a few allow peer drop-off, and the map does not say which.
+- **Use produces the verification.** Once boxes carry loopmarket
+  handovers, every handover is a report: the operator's signed event (the
+  parametric feed class of `insurance-products.md` §1) and the
+  counterparty's *received* act say whether and when the box worked. The
+  box's loss table writes itself from traffic, and sweeps are only for
+  boxes nobody has used yet.
+
+Sizing (OSM, 2026-09-19, Ljubljana bbox): **203 mapped lockers**
+(Pošta Slovenije 101, GLS 68, DPD 30), of which 29 carry opening hours,
+48 a check date, 16 a reference, **1 any payment tag**, and 185/160 the
+mail-in/pickup flags. The record is present but thin exactly on the two
+claims that matter for handover, hours and model — the gap a bonded
+campaign fills. (The Vienna query timed out; other cities to follow.)
+
+The harness carries a `lockers` preset (`--preset lockers`): three fact
+types with cheap verification (a box is visible and its app answers, ~$5
+of a person's time; the handover model needs one attempted drop-off),
+low drift, and consumption events that are loopmarket handovers reporting
+back — the feed-driven regime, where the population half-life falls with
+traffic rather than with sweeps.
+
+Plans this touches: loopmarket's `P3-guarantee-coupling.md` §4b–§4c
+(the ranked claims a counterparty relies on; the boxes as the first
+bonded handover points; `countersign` split into *received* and *as
+described*), `P1-spacetime-terms.md` §4 (the seal rides in the same box).
+
 ## What this document does not promise
 
 That any of these communities will adopt bonded quests; that one

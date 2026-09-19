@@ -35,7 +35,9 @@ trusted publishing).
   the run ends first), escrowed bonds as pool assets, and the sweep
   population with `sweeps` — half-life against sweep capacity at a launch
   consumption rate; finding: no consumption rate reaches the cold errors,
-  sweeps do.
+  sweeps do. The automated boxes as the first target within the domain
+  (`domain-choice.md` §8; Ljubljana: 203 mapped lockers, 1 with a payment
+  tag) and the `lockers` preset.
 
 ## [0.1.0] — 2026-09-19
 

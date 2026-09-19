@@ -30,6 +30,18 @@ FACT_TYPES = (
 )
 
 
+#: the automated boxes (domain-choice.md §8): unattended handover points whose
+#: three claims are crisp and cheap to check, and whose consumption events are
+#: loopmarket handovers that report back — the feed-driven regime
+LOCKER_FACT_TYPES = (
+    FactType("box_exists", 0.03, 5.0, 0.0003, 0.40, "entity-exists"),
+    FactType("box_access_hours", 0.10, 5.0, 0.0006, 0.35),
+    FactType("box_handover_model", 0.15, 8.0, 0.0004, 0.25, "attribute-matches-source"),
+)
+
+PRESETS = {"poi": FACT_TYPES, "lockers": LOCKER_FACT_TYPES}
+
+
 @dataclass(frozen=True)
 class Params:
     # the world (§3)

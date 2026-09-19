@@ -103,8 +103,11 @@ the revisit period plus drift, so a city of 50,000 POIs needs ~1,800
 verifications a day for T = 14 — about 60 person-hours a day at a street
 a time. That is the adoption target §2's amendment asked for, and the
 argument for the crawler as asserter (`domain-choice.md` §5, thread 2):
-sources are the one verifier that scales without people. Three
-threads Peter opened with the decision — bonded quests beside
+sources are the one verifier that scales without people. **The first target is the automated boxes** (Peter, `domain-choice.md`
+§8): parcel lockers' existence, access hours and peer-handover model —
+no person speaks for a box, the claims are crisp, and every loopmarket
+handover through one reports back; `--preset lockers` in the harness.
+Three threads Peter opened with the decision — bonded quests beside
 StreetComplete, the crawler as pre-emptive asserter on sources, and a
 reputation-first browser plugin for editors without crypto — are
 `domain-choice.md` §5, not started.

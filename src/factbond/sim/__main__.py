@@ -8,7 +8,7 @@ import argparse
 import json
 import sys
 
-from .params import GRID, LAMBDA_AXIS, SWEEP_AXIS, Params
+from .params import GRID, LAMBDA_AXIS, PRESETS, SWEEP_AXIS, Params
 from .run import artifact, curve, preregistration, run, run_grid, sweeps
 
 
@@ -24,13 +24,14 @@ def main(argv=None) -> int:
         s.add_argument("--scored", action="store_true")
         s.add_argument("--out", default=None)
         s.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
+        s.add_argument("--preset", choices=sorted(PRESETS), default="poi", help="the fact types: poi (POI liveness) or lockers (the automated boxes)")
     args = ap.parse_args(argv)
     over = {}
     for kv in args.set:
         k, v = kv.split("=", 1)
         cur = getattr(Params, k)
         over[k] = type(cur)(v) if not isinstance(cur, bool) else v.lower() in ("1", "true", "on")
-    base = Params(facts=args.facts, ticks=args.ticks, seed=args.seed, **over)
+    base = Params(facts=args.facts, ticks=args.ticks, seed=args.seed, fact_types=PRESETS[args.preset], **over)
     if args.cmd == "run":
         r = run(base, scored=args.scored)
         ref, path = artifact(r, args.out)

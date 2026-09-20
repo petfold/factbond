@@ -63,6 +63,68 @@ claim), and a dispute path that takes a leaf, checks `is_below` locally
 and — the rung-0 verifier being the missing contract — rules through the
 adjudicator key for now. Then the harness cell above.
 
+## Bonded packs (Peter, 2026-09-20): makers insured against the catalogue
+
+Peter's extension the same morning: if anyone can publish a pack, nobody
+controls what goes into it, so the pack's author must have something at
+stake, and **no pack may be used to match bonded offers without a bond**.
+The rules this yields, with two corrections to the section above:
+
+1. **Two claims per pack.** The certificate (rung 0) settles only that an
+   edge is *in* the pack under its root — `attribute-matches-source`.
+   What a maker is insured against is the edge being *wrong* (a Vespa
+   under `bicycle`) — a semantic claim, `attribute-matches-world` on a
+   definition, decided by the ladder's adjudicating rungs with the
+   catalogue's own documentation as evidence. The ~3 % the second readings
+   rejected were semantic errors: the prior belongs to the semantic
+   claim, and the pack bond backs it.
+2. **The author's bond and the coverage are different money.** The
+   author's bond is process collateral — slashable on a refuted edge,
+   sized to the adjudication floor plus the reliance term
+   (mechanism-design §2), high enough that cheating loses. What a maker
+   is *paid* on a bad clearing is coverage: underwritten by the pool
+   against provable reliance (F3; the clearing root is the proof),
+   reserved per clearing, capped by reserves (F4). The author deters,
+   the pool covers, the slashed bond feeds the pool's loss. If the
+   author's bond alone had to cover every bad clearing, no individual
+   could publish a pack — reliance on core exceeds any one person's
+   capital.
+3. **The gate, by declaration.** A wanter's `requires` gains a coverage
+   floor: the edges her match relies on must carry standing bonded claims
+   with *free* coverage at least her point. At clearing the edges
+   `satisfies` walked are known; each covering claim's free coverage is
+   checked and a share **reserved per clearing**, exactly as the escrow
+   reserves a deposit per fill; a claim whose free coverage is exhausted
+   admits no further bonded clearing until more bond is posted — F4
+   failing closed. So a pack is usable for bonded offers precisely as far
+   as its coverage goes, and unbonded offers may still match through
+   unbonded packs (the shallow regime stays alive at launch). "No pack
+   without a bond" is therefore a gate the checklist runs, not a policy.
+4. **Parts, and the sum above.** A claim on a subtree covers every edge
+   under it; a finer claim on a sub-subtree adds to the edges it
+   contains; **an edge's coverage is the sum of the free coverage of every
+   standing claim whose scope contains it** — the sum above it, as Peter
+   put it, with one refinement: a bond backs all edges in its scope at
+   once, so two failures in one scope draw on the same bond, and the
+   honest worst case is the largest failure cluster (one bad hinge edge
+   fails everything derived through it) — `netting-and-reserves.md` §7's
+   cluster term, computed, not assumed. Reservations draw on the **most
+   specific claim first** (the specialist who knew the subtree) with the
+   root claim as the backstop, reinsurance-layer style.
+5. **Core is the hub claim.** The hinge set carries the most reliance, so
+   it needs the largest coverage and is where F4's final-rung condition
+   binds first; the pool bonds it first, and everyone who relies on it
+   co-bonds through endorsements (`records-and-anchoring.md` §2) — the
+   sum above every edge grows with the reliance on it.
+6. **Refusal is signal here too.** A pack or subtree nobody will bond is
+   one the gate keeps bonded offers away from — the market's verdict on a
+   catalogue, without a governance vote.
+
+What this asks of loopmarket: a coverage floor in `Requires` (v6), the
+clearing checklist reserving coverage on the covering claims per cleared
+leg (the escrow's `reserve` shape, one call per claim), and `Ontology`
+exposing the edges a match walked (`satisfies` already computes them).
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

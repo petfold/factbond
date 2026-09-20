@@ -135,6 +135,11 @@ griefer, self-dispute laundering, dispute spam and fabrication all lose;
 the capture replay reproduces with F4 off and fails with F4 on; the pool
 stays solvent.
 
+**Next (Peter, 2026-09-20): factbond on ontodag** — `docs/plans/ontodag-first.md`:
+batch root-claims per pack version disputed at the leaf by `is_below`
+certificate (rung 0), the packs' measured ~3 % single-source error rate as
+the first real planted-error prior, `factbond.claims` as the first code.
+
 ## Invariants the code must keep (from the plans)
 
 - **F7** `Certified` is a process fact, never truth — in names, events,

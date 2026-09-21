@@ -395,6 +395,29 @@ event, loss tables per scope, the calibration ledger, the harness cell
 with the packs' measured prior. factbond never learns offers or loops:
 its resolver sees a subject and an outcome.
 
+## Remark (Peter's question, 2026-09-21): is the catalogue walk part of the loop search?
+
+In principle yes: makers and catalogue nodes form one graph (a give an
+arc maker → concept at its price, an edge X ⊑ A an arc X → A at cost 0
+or the coverage premium, a want an arc concept → maker), and a loop is a
+cycle through it; Bellman–Ford would find loops and choose covers at
+once. But the catalogue part is a DAG, so no cycle closes inside it and
+it only ever contributes a path between a give's concept and a want's;
+contracting each such path to its cost yields exactly today's match
+graph. **The two-stage search is the unified search with its acyclic half
+contracted — exact, not an approximation.** Running it as one search
+would also be awkward: a match is a conjunction over dimensions (a
+hyperedge, not an arc — why a leg is one want and several gives), the
+exact gates (units, steps, floors, both-ways handover containment,
+declared requirements) are checks rather than weights, and ontodag's one
+cone query per want is the pruning a million-node relaxation would
+lose. The one genuinely joint part — a coverage give's free capacity
+shared across legs — has the structure of a divisible give's remainder
+and lives where selection already handles it (`selection.pack`, coverage
+gives as gives with capacity). The flow formulation of
+`P2-loop-selection.md` §11 can carry catalogue arcs explicitly if a
+reason appears; none has.
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

@@ -125,6 +125,59 @@ clearing checklist reserving coverage on the covering claims per cleared
 leg (the escrow's `reserve` shape, one call per claim), and `Ontology`
 exposing the edges a match walked (`satisfies` already computes them).
 
+## Peter's questions (2026-09-21) and the answers taken into the design
+
+1. **Coverage for a proposed circulation.** A leg's match walked a set of
+   edges (`satisfies` computes them); what a bad edge loses is the leg, so
+   the exposure is the wanter's point *per leg*, not per edge. Rule: for
+   each leg and each edge it walked, the free coverage of every standing
+   claim whose scope contains the edge, summed, must reach the wanter's
+   point; **one reservation of the point per leg on each claim whose
+   scope the leg touches**, drawn on the most specific claim first. The
+   sum above an edge is the admissibility test; the per-leg reservation
+   is the accounting (a leg fails once). Reservations are records beside
+   fills (`coverage/<claim>/<loop>`), so free coverage is derivable from
+   the fold like a remainder, and U11's shape applies to them.
+2. **Who includes a pack.** A maker proposes by pinning a root that
+   contains it; a clearing decides by adopting that root (U3 re-derives
+   against the clearing's own catalogue); a pack no clearing adopts is
+   unused. Merges commute, so a root is a set of packs. Bonded packs add
+   only this: a clearing may adopt unbonded packs, and the coverage gate
+   keeps *bonded* offers off their edges.
+3. **An apple without OntoDAG.** Exact-name matching is the degenerate
+   catalogue (every name a node, no edges): apple meets apple, and fails
+   the moment the want says fruit. An exact-name match walks no edges and
+   so needs **no coverage** — coverage is owed only for what a match
+   relied on, and the shallow regime (no packs, no bonds) is a valid
+   corner of the same system, not a different one.
+4. **Why publish a pack: the bond is an underwriting position.** Every
+   bonded clearing that relies on an edge pays a **coverage premium**
+   (priced off the loss table, in the asset, on the wanter's side of the
+   leg), and the premium goes to the claims that covered the edge, pro
+   rata to their reservations. A true-but-contested pack earns exactly
+   when it is relied on and nobody can refute it, and loses only on a
+   refuted edge — a prediction market's payoff for being right without
+   the counterparty, the notional or the settlement (`DESIGN.md` §3's
+   spectrum, from the other end). Consequences:
+   - a giver's **own low-level pack** (its products under core's hinges)
+     is the intended shape; it bonds its taxonomy, earns on its use, and
+     a competitor does the same;
+   - **the same claim in two packs** is two co-bonds on one claim subject
+     when the names agree (more coverage); different names are different
+     claims — ontodag's synonym problem, not factbond's;
+   - **disagreement** (one pack files a thing where another would not)
+     is a dispute; the refuted side's bond is slashed; no vote;
+   - **core is the commons and funds itself by use**: it carries the most
+     reliance, so its underwriters earn the most premium; the pool or the
+     foundation underwrites it at bootstrap, and co-bonding
+     (`records-and-anchoring.md` §2's endorsement) is open to anyone who
+     relies on it and wants the premium share.
+
+Open: the premium rule for coverage (a per-clearing charge on the
+wanter's point, from the loss table per edge — `insurance-products.md`
+§3 applies with the edge as the fact type), and whether a clearing's
+adopted root must itself carry a minimum coverage to post beats.
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

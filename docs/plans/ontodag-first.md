@@ -299,6 +299,44 @@ adopted root must itself carry a minimum coverage to post beats.
   standing case needs the reservation bookkeeping `LoopEscrow` already
   has — the second contract of the ontodag step.
 
+## Superseding note (Peter's question, 2026-09-21): no wanter deposit — the premium is a leg
+
+The "wanter pays at finalization in the asset" choice and the v6 wanter
+deposit above are **withdrawn**. Two facts settle it:
+
+- **A wanter is a maker with a give.** In a loop every node gives and
+  receives, so her give's v5 deposit is already the custody for her
+  performance *and* her cancellation (leaving the loop cancels her give
+  and her want together). The symmetric ladder never needed a second
+  deposit.
+- **Coverage is a give; the premium is its price.** The underwriter is a
+  maker: `give coverage(S) … p` — "I cover reliance on edges under scope
+  S", backed by a `Bond` on that give exactly as any give is (the payout
+  on a refuted link *is* the give's performance). A wanter's coverage
+  requirement is satisfied by **composition**: her leg is composed with a
+  coverage give the way a transport give moves a thing to her door — the
+  coverage give moves the leg from uncovered to covered. The premium is
+  the coverage give's price on the underwriter's scale and **cancels in
+  the loop**; nothing moves at clearing, nobody pays offline, nothing is
+  held for it.
+
+What this reuses (all existing): the underwriter's bond reserved per
+fill (bond × taken / quantity — the per-clearing reservation); the
+wanter's floor as her `requires` point on that give (the gate); the
+standing position as a give open across many fills under the escrow's
+notice and reservations; the coverage leg verified as a leg (on chain,
+one more leg); the underwriter paid in loop value, or in `xdai` (money is
+a thing someone gives). The "second contract" of the previous note is
+gone: the escrow already holds a coverage give's deposit. The routed
+dispute stands: a wrong link fails the coverage leg, and its deposit pays.
+
+What is new (small): a `coverage` head in the catalogue whose argument is
+the scope node (the operator-term machinery); a coverage requirement in
+`requires` the solver satisfies by composition; the solver's cover choice
+as a choice among coverage gives — cheapest scope-covering set first,
+gas per distinct give. Premium aggregation per underwriter is then the
+loop's own accounting.
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

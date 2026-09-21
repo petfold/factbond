@@ -224,6 +224,45 @@ adopted root must itself carry a minimum coverage to post beats.
    the ask — keeps wanters deposit-free at the cost of the principle.
    Recommendation: the wanter pays.
 
+## Deposits, payers, abuse, aggregation, gas (Peter, 2026-09-21)
+
+- **Why a deposit.** Liability between pseudonymous keys is enforceable
+  only as custody; per-fill reservation keeps the idle part small. For
+  the premium specifically: it is paid at finalization in someone else's
+  transaction while the wanter is offline, and an allowance can be spent
+  between clearing and finalization, so the pull could fail after the leg
+  cleared — settlement risk in the one step meant to have none. Locked
+  funds are what make the pull unable to fail. And the wanter needs a
+  deposit regardless: the cancellation ladder is symmetric (§5c), so a
+  wanter who cancels owes the giver her ladder — the **v6 wanter
+  deposit**, which the premium rides on.
+- **Wanter pays** (decided): whoever requires, pays; a floor is chosen
+  knowing its price; a wanter without crypto sets the floor to 0. Giver
+  pays was rejected: the wanter would choose a cost the giver bears, and
+  premiums pulled from the giver's deposit drop it below the declared
+  bond so the held gate refuses the giver's next legs — a grief vector.
+- **The giver's deposit under attack.** Reservation exhaustion is bounded
+  by the bond and is what a give is for; holding a reservation with a
+  claim costs the claimant fee plus a floor-sized bond for a bounded
+  window and loses the stake if refuted; clearing-and-vanishing requires
+  the attacker to give something (a loop needs it), and with the wanter
+  deposit her own no-show costs her ladder; the notice period is by
+  design. Resistant once the wanter deposit exists; the claim's fee and
+  floor are the anti-spam device.
+- **Aggregation.** Premiums are never transferred per link: at
+  finalization the beat sums them **per underwriter and per asset** and
+  credits them in the escrow's ledger (pull payments — one storage write
+  each, withdrawn when the underwriter likes, reentrancy-safe);
+  reservations aggregate per claim per beat.
+- **Gas.** The submitter pays it (the clearing key today) and recovers it
+  through the solver's spread leg (`P2-batch-auction.md` §7, the reward
+  the fee decision left). On Gnosis: submit ~0.5 M, finalize ~0.3 M, a
+  reservation ~0.1 M, a credit ~30 k — small, not zero. It shapes the
+  cover: the solver's objective carries a **fixed gas cost per distinct
+  claim and per distinct underwriter**, favouring one wide claim over
+  several narrow ones at equal premium; the clearing verifies sums, not
+  the choice, so nothing in the checklist changes.
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

@@ -178,6 +178,52 @@ wanter's point, from the loss table per edge — `insurance-products.md`
 §3 applies with the edge as the fact type), and whether a clearing's
 adopted root must itself carry a minimum coverage to post beats.
 
+## The coverage market (Peter, 2026-09-21): quoted premiums, covers, verification
+
+1. **A claim quotes a premium.** Beside confidence and bond, a claim on
+   a scope carries a **premium rate** — what a wanter pays per unit of
+   point reserved per clearing. The bonded assertion, already a limit
+   order on the dispute side (mechanism-design §1), becomes an offer to
+   insure at a price; anyone may post another claim on the same scope at
+   their own rate, and competition drives rates toward the loss rate plus
+   capital cost. The going rate per edge is `DESIGN.md` §5's signal.
+2. **Scopes are nodes.** A claim's scope is a node of the pinned
+   catalogue (a pack root, or any node under it: the subtree), never an
+   arbitrary edge set. Scopes are then nested (a laminar family), which
+   is what keeps the cover cheap to find.
+3. **The walk is fixed; the cover is chosen.** A leg's edges are what
+   `satisfies` walked — no route finding. The choice is which claims to
+   draw coverage from: for one edge, cheapest free coverage first until
+   the point is met (a fractional knapsack); across a leg, a wide claim
+   reserves the point *once* for every walked edge in its scope, so one
+   wide claim at a higher rate may beat several narrow ones — minimum-
+   cost cover of the walked edges by nested scopes, a tree DP, exact and
+   linear. Across a circulation the cost is the sum over legs and enters
+   each leg's gain on the wanter's side, so `selection.pack` already
+   weighs it.
+4. **The solver chooses, the clearing verifies validity, never
+   optimality** (U3's shape). The proposal names each leg's cover: claim
+   refs, reserved amounts, rates. The checklist re-derives the walk,
+   checks every walked edge lies in some chosen scope, each chosen claim
+   has free coverage ≥ the reservation, the rates are the claims' own,
+   the sum is the proposal's — O(edges × chosen claims). A cheaper cover
+   is a better proposal; the beat's score rewards it.
+5. **On chain, optimistic.** Full verification would need one inclusion
+   proof per walked edge (that it lies under the scope's node) at ~1 M
+   gas each. The beat pattern applies: the cover is in the loop record,
+   reservations are recorded at finalization like fills
+   (`coverage/<claim>/<loop>`), and a challenge that an edge lies outside
+   every chosen scope or a claim's free coverage was short verifies that
+   one fact — one proof, one sum. Free coverage is then derivable by
+   anyone from the records plus the chain's reservations.
+6. **Who pays, when — the open choice.** By the declaration principle
+   (whoever requires, pays) the wanter pays the premium at finalization,
+   in the asset, and it stays with the underwriters pro rata when the leg
+   settles clean; that needs a wanter-side deposit the v5 record lacks
+   (v6). The alternative — the giver's deposit carries it, priced into
+   the ask — keeps wanters deposit-free at the cost of the principle.
+   Recommendation: the wanter pays.
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

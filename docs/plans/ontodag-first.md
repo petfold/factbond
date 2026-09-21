@@ -263,6 +263,42 @@ adopted root must itself carry a minimum coverage to post beats.
   several narrow ones at equal premium; the clearing verifies sums, not
   the choice, so nothing in the checklist changes.
 
+## Clarifications (Peter, 2026-09-21): custody, discovery, who is slashed, standing claims
+
+- **"Liability without custody"** meant only this: a key's promise "I pay
+  if this link is wrong" is enforceable only if the money is posted. The
+  pack bond is that custody, and it is what is slashed.
+- **A wrong link is found two ways.** Opportunistically — the pack is
+  public and any challenger may dispute `black ⊑ light-colour` with a
+  stake at any time, no loop needed (factbond's ordinary dispute). And
+  **at settlement, through a leg that relied on it** — the usual way: the
+  wanter's *as described* dispute finds the giver delivered what the
+  offer declared, and the match held only because of the link; the leg
+  dispute is **routed to the link's claim** (insurance-products.md §6's
+  sibling-dispute wiring, the leg as the paid claim and the link as the
+  record relied on).
+- **Who pays, who is slashed.** The wanter is paid from the link's
+  coverage; the giver's deposit is untouched (he delivered what he
+  declared); the link's **bonder** — the claim's asserter — is slashed
+  and the link corrected. Never the clearing that adopted the pack, never
+  a maker who merely pinned it, unless they are the bonder. A link with
+  no bonder means the wanter bore the risk by requiring no coverage —
+  what the gate means.
+- **The supermarket** makes two declarations and backs both: "this item
+  is what I say" (the give's deposit) and "what I say is filed where I
+  put it" (its pack bond). Same party, same principle, two bonds; a wrong
+  thing received through its own taxonomy is paid by it either way.
+- **Correction — pack claims are standing positions.** An ordinary
+  assertion's bond returns at certification (`Assertions.certify`); a
+  coverage claim's bond must stay posted while any reliance on it is
+  open. So a coverage claim is the escrow's deposit shape applied to a
+  claim: bond posted and kept, a share **reserved per clearing** that
+  relies on it, released when that leg settles clean, paid out on a
+  refutation routed from a leg, withdrawable only with notice and no
+  open reservations. `Assertions.sol` as built is the one-shot case; the
+  standing case needs the reservation bookkeeping `LoopEscrow` already
+  has — the second contract of the ontodag step.
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

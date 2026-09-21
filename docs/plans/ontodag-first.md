@@ -337,6 +337,52 @@ as a choice among coverage gives — cheapest scope-covering set first,
 gas per distinct give. Premium aggregation per underwriter is then the
 loop's own accounting.
 
+## Who owns what (Peter's question, 2026-09-21)
+
+**ontodag — nothing has to change.** The catalogue stays money-blind:
+
+- claim subjects are names at a pinned root, already canonical; pack
+  version roots are canonical; the provenance store's records carry the
+  `ext` map factbond writes into (`records-and-anchoring.md` §2);
+- **the coverage gate needs no walk.** A match walks upward from the
+  give's concept to the want's, so every node on the walk lies under the
+  want's concept, and the walk lies within scope S iff the want's concept
+  ⊑ S — one `is_below`, which exists. A coverage give `coverage(S)`
+  therefore covers a leg iff the want's concept (and the handover terms it
+  relied on) sit under S; which pack authored an edge inside S is the
+  underwriter's business, not the gate's;
+- `coverage(S)` as a term is ontodag #15's role-head-takes-a-node,
+  declared by loopmarket's seed like `transport`; ordering by the graph
+  exists;
+- `is_below` certificates (`ontodag.certificates`, built 2026-08-01)
+  cover the dependency closure and settle the structural claim at
+  rung 0; edge-under-root is recordstore's inclusion proof.
+
+Two optional asks, neither blocking: a **minimal witness path** query
+(the edges one derivation used — for a dispute to name *which* link was
+wrong and for the correction to target it; the certificate's closure
+contains it but does not single it out), and, in ontodag-core, the
+**reading history per pack** as machine-readable pack metadata (readings,
+rejections) so an underwriter's confidence can start from data.
+
+**loopmarket** owns: the `coverage` head in its seed (argument: a scope
+node), `Requires.coverage` (v6) as the floor, the solver composing a
+coverage give into a leg when required (a composed-leg kind beside the
+operator's, chosen cheapest-first with gas per distinct give), the
+checklist re-deriving it (want's concept ⊑ S; the coverage give's deposit
+meets the point — `meets` as today), the received/as-described
+countersign split (v6), the box operator's event as a witness type, and
+`Ontology.assert_edge(bond=)` retired in favour of coverage gives.
+Nothing new in the escrow or the beat: a coverage leg is a leg.
+
+**factbond** owns: `factbond.claims` (claim records for edges and pack
+roots; one-shot root assertions on `Assertions`), the routed dispute (a
+leg's *as described* claim resolved against the coverage give's
+reservation, and the sibling dispute on the link's claim), the correction
+event, loss tables per scope, the calibration ledger, the harness cell
+with the packs' measured prior. factbond never learns offers or loops:
+its resolver sees a subject and an outcome.
+
 ## What this document does not promise
 
 That a root-claim's on-chain verifier (the `is_below` certificate checked

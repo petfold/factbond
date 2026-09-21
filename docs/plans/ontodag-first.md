@@ -70,14 +70,26 @@ controls what goes into it, so the pack's author must have something at
 stake, and **no pack may be used to match bonded offers without a bond**.
 The rules this yields, with two corrections to the section above:
 
-1. **Two claims per pack.** The certificate (rung 0) settles only that an
-   edge is *in* the pack under its root — `attribute-matches-source`.
-   What a maker is insured against is the edge being *wrong* (a Vespa
-   under `bicycle`) — a semantic claim, `attribute-matches-world` on a
+1. **One claim per edge or scope — the semantic one** (corrected
+   2026-09-21 on Peter's doubt; "two claims per pack" withdrawn). An
+   edge's *presence* under a root is a content-addressed fact with an
+   inclusion proof; a proof is evidence, not an assertion, and nobody
+   bonds what nobody can be wrong about. `attribute-matches-source` is
+   for a record against a *separate* source (a statement against the
+   paper it cites, recorded hours against the shop's site); a pack edge's
+   source is the pack. What a maker is insured against is the edge being
+   *wrong* (a Vespa under `bicycle`) — `attribute-matches-world` on a
    definition, decided by the ladder's adjudicating rungs with the
-   catalogue's own documentation as evidence. The ~3 % the second readings
-   rejected were semantic errors: the prior belongs to the semantic
-   claim, and the pack bond backs it.
+   catalogue's documentation as evidence; the ~3 % the second readings
+   rejected were such errors, and the pack bond backs that claim. The
+   inclusion proof and the `is_below` certificate keep their jobs *inside
+   a dispute*: the proof localizes the leaf a root-claim's challenger
+   attacks, the certificate confirms what the catalogue at that root
+   entails. What does settle by certificate is a different claim kind —
+   an **entailment claim**, "the catalogue at R relates these names",
+   asserted by whoever *uses* the catalogue (a solver's match, a beat's
+   leg), decided by computation: the structural half the beat's verifier
+   already checks, arising per use, never per pack edge.
 2. **The author's bond and the coverage are different money.** The
    author's bond is process collateral — slashable on a refuted edge,
    sized to the adjudication floor plus the reliance term

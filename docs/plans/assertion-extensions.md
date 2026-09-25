@@ -14,7 +14,7 @@ duplicating or contradicting factbond's corpus, and plan D1, D2 and D9
 replace them. factbond's scope does not grow: it rejects identity as a
 requirement and caps per-fact notionals (`insurance-products.md` §4–§5);
 adapters, registers and the insurer's product layer live in the new
-assurance repo, which *uses* these assertions.
+hansa repo, which *uses* these assertions.
 
 ## 1. Challenge windows
 
@@ -148,7 +148,7 @@ Electrical Engineering from the Technical University of Budapest since 1999,
 not revoked as of D" (Peter's example). What makes it usable:
 
 - **the key bound to the person**: a degree number, and the identity binding
-  level the relying party requires (assurance); the real holder is the
+  level the relying party requires (hansa); the real holder is the
   best-placed challenger of an impostor;
 - **floor set by the relying party**: loopmarket's `requires` ("self-bonded ≥
   B" for this category) — the bond must exceed what lying earns across all
@@ -171,7 +171,7 @@ not revoked as of D" (Peter's example). What makes it usable:
 
 Suitable for self-knowable, rarely revoked facts at modest stakes. Licences
 (often revoked, the asserter motivated to stay silent) need registers; large
-harms need insurance — both assurance's.
+harms need insurance — both hansa's.
 
 ## 5. Per-asserter loss ledger
 
@@ -206,7 +206,7 @@ Adjudicators have entries of their own (C3).
 | consumer | uses |
 |---|---|
 | loopmarket counterparty gate (*self-bonded* and deposit-backed *attested* statements) | §2 (burden shift, suspension), §4 (reservation-backed); no factbond window involved until a claim is asserted |
-| assurance attesters and certifiers (bonded statements) | §1, §2, §5 |
+| hansa attesters and certifiers (bonded statements) | §1, §2, §5 |
 | cover (title, "genuine", "not stolen"; plan D3) | §1 per-assertion windows for the *insured's* claim assertion; §5 pricing. No standing window: the insurer never asserts the covered fact at cover time |
 | loopmarket escrow claims (existing `hold`/`resolve`) | unchanged. *(corrected 2026-09-25)* The claim period (how long after the window a wanter may still claim) is `LoopEscrow`'s per-reservation `claimSeconds`, loopmarket's parameter and already long-able; factbond's window is how long the giver has to contest once `hold` is called. Lengthening one does not lengthen the other |
 

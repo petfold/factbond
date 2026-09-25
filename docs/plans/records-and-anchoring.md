@@ -91,7 +91,13 @@ machinery" (`PROVENANCE.md` §3). The set (decided 2026-08, lands Phase 1):
   `outcome ∈ {upheld, refuted}`, `rung`, `certificate_ref?` (mandatory at
   the mechanical rung — **F8**), `evidence_refs?`, `supersedes?` (an
   earlier ruling_ref, for reopening on new evidence —
-  `mechanism-design.md`'s constitution), `time?`.
+  `mechanism-design.md`'s constitution), `time?`; *(added 2026-09-25,
+  `credentials-cover-and-options.md` D2 C5:)* `referred_fact`,
+  `notice_refs` (the notice-and-cure records the claim cited, with their
+  timestamps), `submissions` (both parties' evidence hashes, or the
+  lapse), `policy_version`, `pack_root`, `reason` (a short text naming the
+  rule applied). The first two are what make a fast ruling survive
+  challenge; the versions make it reusable as precedent.
 - **endorsement** — `PROVENANCE.md` §3 verbatim; with
   `ext.factbond.bond_ref` it becomes co-bonding — capital joining an
   existing assertion (decided 2026-08, lands with Phase 2).
@@ -223,7 +229,11 @@ record shape carries the density field so ids don't churn when it lands.
 feed** — an owner-signed Swarm feed (the same primitive ontodag uses for
 "latest root", pointed at corrections — `../INTEGRATION.md` §9) carrying
 `{v, claimId, subject, basis_root, ruling_ref, adjudicated value?, evidence
-hashes, anchor reading}` per event (decided 2026-08, lands with Phase 1).
+hashes, anchor reading}` per event (decided 2026-08, lands with Phase 1),
+plus *(2026-09-25)* the **asserter** and the **stake**, which the on-chain
+`Refuted(id, subject)` event does not carry: the asserter-indexed loss
+view of the calibration ledger (`assertion-extensions.md` §5) joins
+`Asserted` and `Refuted` on `id` until the feed carries them.
 The system's output is an **authenticated correction feed, not corrected
 databases** (`../DESIGN.md` §7); the last mile is social, and every
 consumer document must say so.
@@ -382,6 +392,13 @@ they rely; how it is set is `netting-and-reserves.md`'s business.
   many leaf refutations exhaust it, is mechanism economics — but the record
   fields carrying density are fixed here first so batch-claim ids don't
   churn when the mechanism lands.
+- **The loss view's look-back and split (2026-09-25;
+  `credentials-cover-and-options.md` D9 G3–G4).** The asserter-indexed
+  view is queried with a look-back window, append-only underneath, and
+  separates "refuted" from "did not perform on a ruling"; a won dispute
+  leaves no negative entry. The record fields that carry the split are
+  the ruling's `outcome` and the consumer's `resolve` result; whether the
+  feed or the view holds the join is this work package's.
 - **Correction-feed payload vs `reclassify` (this work package, tracked
   upstream).** ontodag's retraction+evidence+keep-list operation is a
   discussion draft; committing the feed payload to its argument shape now

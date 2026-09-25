@@ -155,7 +155,11 @@ three clauses:
    witness-edge telemetry (loopmarket `docs/plans/P3-guarantee-coupling.md`
    §2; `loopmarket-coupling.md` §1), which lands before any bond exists
    precisely so this term starts from data. `k` and the floor are Phase-0
-   outputs (Gate G-M2).
+   outputs (Gate G-M2). *(2026-09-25:)* for a credential statement backed
+   by a deposit, loopmarket's gate reserves the requirer's floor per
+   relying leg for that leg's claim period (`credentials-cover-and-options.md`
+   D1), which is this clause's reliance made measurable leg by leg; the
+   requirer's floor, not this formula, is the whole mechanism there.
 2. **The ladder's final rung must have integrity cost ≥ the aggregate open
    reliance on the claim.** Reliance means everything that pays out or
    re-prices on the answer: open insurance, dispute-market open interest
@@ -308,6 +312,35 @@ Constitutional clauses, binding across all rungs:
   with status derivation — several rulings standing on one dispute — and
   the supersession order must be proven confluent
   (`records-and-anchoring.md` §3; registered open problem below).
+  *(Extended 2026-09-25, `credentials-cover-and-options.md` D2:)* **the
+  first ruling pays** — a ruling executes at once through the consumer
+  ("pay now, argue later"); the window above is the **finality window**
+  per fact type, within which a repeat challenge is also admissible at
+  **double the stake** with no novelty test (reality.eth's rule replaces a
+  ruling about newness); after it, only fraud or a contradicting primary
+  source reopens.
+- **Every rung has a clock, and the judge is paid and ledgered** (decided
+  2026-09-25). Each rung rules within its class's ruling period or the
+  claim moves up automatically and the lapsing adjudicator forfeits its
+  fee; adjudicators are paid per ruling, hold a deposit, and have an entry
+  in §3's calibration ledger in which a reversal at the final rung is
+  recorded and forfeits the deposit. **Ruling counts are never a signal**
+  — puppet cases manufacture them for the burn slice (loopmarket's U12
+  applied to judges); the one positive entry allowed is a ruling escalated
+  at doubled stake to the final rung and upheld there. A resolver is
+  acceptable to a leg only if the requirer's acceptance admits it (by key,
+  accrediting root, deposit floor or absence of reversals in a look-back
+  window) and it is not a party or the deposit's maker. The ruling record
+  carries the referred fact, the notice timestamps, both submissions'
+  hashes or the lapse, the resolver's key, the category and the policy
+  and pack versions applied, and a reason naming the rule
+  (`records-and-anchoring.md` §2).
+- **A class without a named final rung may not be used in a `requires`
+  gate** (decided 2026-09-25): the fail-closed interim for "the top rung's
+  existence" below, applied per fact-type class rather than system-wide.
+  The final rung is never a token-weighted vote (rung 3's rule, restated
+  after Polymarket/UMA, March 2025); for cover it is named at policy
+  start, as a dispute board is appointed at contract start.
 - **Conduct and removal rules are written before the first dispute** — for
   adjudicators at every rung *and* for the evidence-class demotion
   authority (`evidence-policy.md` §5 assigns its constitution here; the
@@ -540,7 +573,9 @@ totals low thousands of cases in eight years, largest claim ~£6,400 — so at
 the scale F4 contemplates the required rung may simply not exist yet.
 Fail-closed caps are the honest interim: reliance stops accumulating past
 what the ladder can actually defend, which bounds the system's size until
-the rung matures. Naming a concrete arbitrator is G-M3's problem; making
+the rung matures. *(2026-09-25:)* per fact-type class, the interim is
+now a gate rule — a class with no named, bonded final rung is not
+admissible in loopmarket's `requires` (§4). Naming a concrete arbitrator is G-M3's problem; making
 one exist at scale is nobody's yet, and this document says so.
 
 **The systemic adjudicator-failure loading** (work package:

@@ -212,6 +212,29 @@ and evidence fabrication — where the design wants it, because those are
 surfaces `mechanism-design.md` and `evidence-policy.md` defend with bonds,
 ladders, and admissibility classes rather than identity.
 
+**What this section does and does not reject (clarified 2026-09-25,
+`credentials-cover-and-options.md` D9).** It rejects identity as a
+*requirement* and unlimited notionals; "micro-scale" is the consequence
+of unprovable reliance (F3), and reliance in a cleared loop is provable.
+It does not reject large cover as such: it caps it. Cover on loopmarket
+legs therefore runs here, at the caps: **the insured asserts the trigger**
+(event or fact alike) as an ordinary assertion after notice and cure, the
+insurer is the natural disputer, and the escrow's reservation is the only
+payout, `min(limit, provable loss) − deductible`, reduced proportionately
+for a false **presentation** (the facts the insured declared, a
+self-knowable subject the insurer may negate), paid only after the
+insured's claim on the giver's reservation is **assigned** to the insurer
+and **net** of what it paid (D3); a term found unadjudicable is construed
+against its drafter. Cover terms use nested role heads
+(`insure(subject(…) peril(…) period(…) limit(…) deductible(…)
+presentation(…))`). **The first pooled form is a mutual** on §7's reserve
+(`netting-and-reserves.md`), with rules F1–F8 recorded there; a specialist
+insurer is the one-member case. **Negligence is not insurable here**:
+objective triggers only (D10); a mutual may judge conduct by its own
+named claims committee and pay from its pool, recording the decision as
+a bonded statement labelled discretionary, which may enter a `requires`
+gate only as "member of mutual M", never as a certified fact.
+
 ## 6. The payout→dispute coupling — funding the correction machinery
 
 The wiring that turns consumers into the verification workforce
@@ -297,6 +320,13 @@ channels, in order:
 Human-facing apps come last, wrapping the same machinery: a UX project,
 not a mechanism-design one, and nothing here depends on them.
 
+*(2026-09-25:)* composed cover on a leg is a third channel with the same
+machinery: a wanter's `requires.legs` names `insure(…)` and the solver
+composes an insurer's give into the loop as an argument-only operator
+(loopmarket `credentials-cover-and-options.md` D4); the reservation is
+made to the wanter at clearing. A standing policy as a *statement* waits
+for the pooled form.
+
 ## Gates
 
 - **G-I1 (Phase 0, pre-registered before first run).** Across the swept
@@ -328,6 +358,10 @@ not a mechanism-design one, and nothing here depends on them.
   fabrication or reintroduce identity. Until solved, the wedge stays
   micro-capped by construction. Work package: the Phase-2 product spec
   here, jointly with `loopmarket-coupling.md` (owner of the provable case).
+  *(2026-09-25:)* a credential relied on across many legs is the same
+  problem, and loopmarket's per-leg reservation of the requirer's floor
+  (`credentials-cover-and-options.md` D1) is what makes that reliance
+  provable leg by leg; out-of-clearing reliance stays open.
 - **OP-2 Insurable interest without identity.** The controls-source
   exclusion is a heuristic, not a theory: under pseudonymity, "who can
   influence this fact" is estimated from structure (source ownership,

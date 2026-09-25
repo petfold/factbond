@@ -60,6 +60,32 @@ dispute space settles at hash-computation cost (`INTEGRATION.md` §5), no
 trust root beyond the pinned root itself. Certificates are rung zero of
 every escalation path below; the roster serves the matches-world half.
 
+**The `self-knowable` class (decided 2026-09-25;
+`credentials-cover-and-options.md` D2; `assertion-extensions.md` §2).** A
+third claim class beside matches-source and matches-world, for facts the
+asserter can prove and a challenger may be unable to disprove ("key K
+holds this licence"): on dispute the burden shifts to the asserter, who
+must deliver evidence to the adjudicator within an **evidence period** of
+the order of 7–14 days; unproduced evidence is grounds to rule against,
+ex parte, on the record — never a contract default (the 2026-09-19
+escalation principle stands). Between lapse and ruling the statement is
+**suspended** (a register record loopmarket's gate reads as "meets
+nothing"). The challenger pre-pays an **evidence fee** E beside its stake,
+refunded on any ruling in her favour and when the asserter produces
+evidence only after the notice period; stake plus E is **capped** at a
+fraction of the reservation a claim is routed from. Every class names its
+**ruling period per rung** (lapse moves the claim up and forfeits the
+rung's fee), its **finality window** (reopening on new evidence, or at
+double the stake without a novelty test; after it only fraud or a
+contradicting primary source), its **adjudicator class** per category
+(holders of the same credential under the same root, or the register
+itself, each with a deposit) and a **named final rung**; a class without
+one may not be used in a `requires` gate. A resolver is never the key of a
+party or of the deposit's maker. All of it is policy data, none of it
+contract. The door witness types loopmarket's gate needs — `possession`
+(challenge–response), `photo-match`, `registry-transfer` — enter the
+roster below under this document's rules, as cumulative door levels.
+
 ## 2. The policy hash is the contract
 
 The empirical record is unambiguous about the cheapest attack on any
@@ -312,6 +338,12 @@ frequency that keeps collusive countersigning unprofitable at a given
 escrow bound is a simulation output, not a guess; it interacts with T5
 (arson via fabricated legs) and must be set before countersign backs
 insured claims.
+
+**The self-knowable class's numbers** (`credentials-cover-and-options.md`
+D2, `assertion-extensions.md` §7). The evidence period, the ruling period
+per rung, E, the cap fraction k and the finality window are policy data
+per category with the shapes fixed; the numbers come from the first real
+credential disputes and the Phase-0 harness, not from this document.
 
 **Per-source curation for zkTLS** (per-domain policy documents). zkTLS
 admissibility is per-source, so someone curates each domain's source

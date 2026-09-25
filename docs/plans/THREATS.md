@@ -575,6 +575,56 @@ inclusion probe across watched manifests. loopmarket
 `P1-federated-book.md` §2/§8 + `adoption-and-thickness.md` §9;
 clearing half: `P2-batch-auction.md`.
 
+## T15 — Register liveness as denial of service on issuees — primary: `loopmarket/docs/plans/THREATS.md`
+
+*(Mirrored 2026-09-25 with loopmarket's entry; condensed, substance
+complete.)*
+
+**Attack & economics.** loopmarket's counterparty gate reads a
+credential statement's status against pinned register roots and fails
+closed; a register that goes silent past a requirer's maximum root age
+invalidates every statement it issued, for every requirer that strict.
+Free for the register itself, cheap for an outsider who can outrun its
+heartbeat; value scales with how many makers depend on one register.
+factbond exposure: a statement backed by a deposit and reserved per leg
+(`credentials-cover-and-options.md` D1) stops matching while suspended
+or unreadable, and claims routed from those reservations wait on the
+register's evidence.
+
+**Defense (by construction).** Registers are append-only transparency
+logs with a declared cadence and consistency proofs between roots;
+mirrors are pinned content-addressed snapshots, so a stopped register's
+last root stays readable; trust roots are the requirer's, so a captured
+or silent root is routed around; "two inconsistent roots signed by one
+register" is a specific, refutable fact against the register's bond,
+adjudicated on this ladder. The residual is the price of hard-fail,
+named: a requirer who sets hours bears hours.
+
+## T16 — Puppet third parties and ruling-count washing — primary: `loopmarket/docs/plans/THREATS.md`
+
+*(Mirrored 2026-09-25 with loopmarket's entry; condensed, substance
+complete.)*
+
+**Attack & economics.** Keys are free: a giver names its own puppet as a
+leg's resolver or inspector, or a would-be adjudicator manufactures
+"unreversed rulings" with puppet cases (a puppet asserts, a puppet
+disputes, the adjudicator rules, nobody reverses) at the cost of the burn
+slice per case. Any acceptance criterion that counts volume is bought at
+that price. This is T11's shape aimed at the judge's record rather than
+the asserter's.
+
+**Defense (by construction).** No acceptance criterion counts
+(`mechanism-design.md` §4, 2026-09-25 clauses): a resolver or inspector
+is admitted by key, by an accrediting root whose own collateral is at
+stake, by a deposit floor, or by the absence of reversals within a
+look-back window; the resolver is fixed at clearing within the
+requirer's acceptance; its deposit is what a ruling puts at risk, and a
+reversal at the final rung forfeits it and enters the calibration
+ledger; the only positive ledger entry for an adjudicator is a ruling
+escalated at doubled stake to the final rung and upheld there, which
+costs a real review. The formality stays: never a party or the deposit's
+maker. loopmarket's U12 applied to judges.
+
 ## The invariant ↔ threat coverage matrix
 
 "Blocks" means the attack's profit inequality is negative by
@@ -635,6 +685,10 @@ arms races no invariant closes: priced, instrumented, and said out loud.
   a final rung whose integrity cost can exceed aggregate open reliance;
   deployed candidates are small. Fail-closed caps bound the system's size
   until the rung matures — the honest interim, not a solution.
+  *(2026-09-25:)* per fact-type class the interim is a gate rule: a class
+  with no named, bonded final rung is inadmissible in loopmarket's
+  `requires`, and the final rung is never a token-weighted vote
+  (`credentials-cover-and-options.md` D2 C2, D10).
 - **The systemic loading** (T12; `netting-and-reserves.md` §7). Size
   unknown; if it dominates at realistic ladder concentration, adjudicator
   diversity becomes a capital requirement.

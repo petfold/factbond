@@ -224,6 +224,28 @@ applied per catalogue subtree/root edge, with subtree exposure read directly
 off the closure computation. Crude gearing plus structural caps beats an
 unimplementable internal model; the caps admit that the model is crude.
 
+**The reserve applied to cover gives, and the mutual (decided 2026-09-25;
+`credentials-cover-and-options.md` D9).** Pooled cover on loopmarket legs
+is this reserve applied to cover gives, per-fact caps carried over,
+fail-closed at the cap; the first pooled form is a **mutual** of members'
+deposits under the minimum capital rule, with rules the record of
+friendly societies, P&I clubs, the diamond and cotton exchanges and Nexus
+Mutual converged on: admission by a survey *and* a member's bonded vouch,
+the voucher paid a share of the vouchee's premiums; **order of recourse**
+— the member's own deposit reservation first (its retention), the pool in
+excess, reinsurance above, the pool taking an automatic claim on the
+at-fault member's deposit; **no supplementary calls** (capital cannot be
+called from a key; the gap is upfront capital and reinsurance as a cover
+give from another pool, the free recursion); contributions risk-rated by
+reserved exposure and loss record, free exit, sibling mutuals; graduated
+sanctions and an internal second instance for exclusion; a named claims
+committee of bonded members with a separate reversal power, a claimant
+deposit, a fixed window and a cool-down; rule changes by non-liquid,
+one-member-one-voice proposals; and no restriction on members' dealings
+outside the mutual. The Nexus prior (4.8) and the concentration cap apply
+unchanged; the systemic term below applies to the mutual's named final
+rung as to any other.
+
 **The systemic term the min-cut cannot see.** Adjudicator failure respects no
 DAG structure: every claim whose escalation path ends at the same final rung
 fails together if that rung is captured (T4). It enters the reserve as an

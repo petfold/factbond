@@ -7,6 +7,27 @@ trusted publishing).
 
 ### Added
 
+- **Plans: credentials, cover and options** (2026-09-25). Two documents
+  entered the plan corpus from the assurance drafts:
+  `docs/plans/credentials-cover-and-options.md` (the cross-repository plan
+  shared with loopmarket) and `docs/plans/assertion-extensions.md` (F1, the
+  `self-knowable` class, disputes with clocks, the loss view). Existing
+  plans amended by dated edit: evidence-policy §1 (the class, its clocks,
+  fee, cap, suspension, adjudicator class and final rung; the door witness
+  types) and open problems; mechanism-design §2 (per-leg reliance), §4
+  (first ruling pays, finality window, doubled-stake re-challenge, clocks
+  per rung, the paid and ledgered judge, ruling counts never a signal, a
+  named final rung per class) and open problems; records-and-anchoring §2
+  (the ruling record's fields), §6 (the feed carries the asserter) and open
+  problems; insurance-products §5 (what it rejects and does not; cover on
+  legs; the mutual; negligence excluded), §8 (composed cover) and OP-1;
+  netting-and-reserves §7 (the reserve applied to cover gives; the
+  mutual's rules); ontodag-first (`Requires.coverage` reconciled with
+  `requires.legs` and the argument-only operator; the credential pack's
+  coverage give); loopmarket-coupling §3b (the escrow's new acts, the
+  acceptable resolver, the clocks) and open problems; THREATS T15–T16
+  mirrored from loopmarket; CLAUDE.md's decided-not-built list; the README.
+
 - **The Phase-0 simulation harness, v0** (`factbond.sim`,
   `docs/plans/phase0-simulation.md`; 2026-09-19): the synthetic KB with
   planted errors, drift and Zipf consumption; the pool as asserter,

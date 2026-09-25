@@ -278,6 +278,28 @@ calls and the assertion lifecycle behind them, before the simulation
 finishes — the simulation answers whether the *pool* certifies anything,
 which is the insurance question, not the primitive's.
 
+**The escrow's side, extended 2026-09-25** (loopmarket
+`credentials-cover-and-options.md` D3, D7, D10; mirrored here because the
+resolver interface sees them): a reservation the resolver has **held is
+released only by a ruling** or by a two-signature `settle(split)` between
+wanter and giver — never by the quiet path, so a silent asserter cannot
+exit with the bond; "unresolved" (the boolean escalation value) means the
+hold persists; cover reservations are `claimOnly` (never countersigned);
+`assign` redirects a claim to any key, and for cover the resolver requires
+assignment of the insured's claim on the giver's reservation before it
+pays, netting what that paid; `extendClaim` lets a giver lengthen its own
+exposure. **The resolver is fixed at clearing and must be acceptable to
+both sides** — within the requirer's acceptance (by key, accrediting
+root, deposit floor or absence of reversals; never a count) and never a
+party or the deposit's maker; its deposit is what a ruling puts at risk.
+Every claim path has a clock: a `notice/` with a cure deadline before any
+assertion, the claim within M days of it, the evidence period, a ruling
+period per rung with automatic move-up, a finality window; the first
+ruling pays. The claim period stays loopmarket's per-reservation
+parameter, now a matched term (the give's `claim_max`, a catalogue default
+and cap); factbond's window is how long the giver has to contest once
+`hold` is called — the two are never used for each other.
+
 ## 3c. The consumption channel before clearing: the quest apps (Peter, 2026-09-19)
 
 The agents-first wedge (`INTEGRATION.md` §7) has a human-first sibling
@@ -407,7 +429,12 @@ statistic under loopmarket's U12 (settled, cost-borne, adjudicated
 failures subtracting), since a normative objective may use only pinned
 inputs (F6 keeps premiums out of canonical knowledge); (c) who receives a
 slashed bond — the harmed counterparty under the indemnity principle, or
-adjudication. Decided with the escrow bump.
+adjudication. Decided with the escrow bump. *(2026-09-25:)* loopmarket
+answered its §4a (a) and (d) with the counterparty gate: the declared
+requirement may name a bond floor, witness types, a counterparty
+statement, loop structure and acceptable third parties, never history;
+the reserve bid may not propose below a declared requirement
+(`credentials-cover-and-options.md` D7).
 
 - **Reliance denomination under U14** (work package:
   `insurance-products.md` OP-1, jointly with loopmarket's

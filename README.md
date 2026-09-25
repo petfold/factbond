@@ -18,6 +18,15 @@ and refuses a scored run until the pre-registration block is filled; the
 go/no-go it computes (`docs/DESIGN.md` §10) still gates the insurance
 product. `CLAUDE.md` maps what is built to the plans. On PyPI: `pip install factbond`.
 
+Decided 2026-09-25 with loopmarket and the assurance drafts:
+`docs/plans/credentials-cover-and-options.md` (the cross-repository plan
+for credentials, cover and options: what factbond's assertions, evidence
+policy, ledger and reserve carry for them) and
+`docs/plans/assertion-extensions.md`. Compliance with any jurisdiction's
+law is the makers' concern; the standard the design holds itself to is
+good commercial practice (loopmarket's
+`docs/plans/commercial-practice-review.md`).
+
 ## The idea in one paragraph
 
 Prediction markets cannot scale down to millions of mundane, near-certainly-

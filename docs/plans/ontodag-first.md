@@ -387,6 +387,19 @@ countersign split (v6), the box operator's event as a witness type, and
 `Ontology.assert_edge(bond=)` retired in favour of coverage gives.
 Nothing new in the escrow or the beat: a coverage leg is a leg.
 
+*(Reconciled 2026-09-25, `credentials-cover-and-options.md` D4:)* the
+"composed-leg kind beside the operator's" is loopmarket's
+**argument-only operator** (`operator-argument`, an operator declared by
+its argument with no ends, composed by `check_composition` on
+`accepts(thing, terms)` alone), and `Requires.coverage` is one entry of
+the general **`requires.legs`** ("the loop must contain a give under
+category X whose argument accepts the wanted thing"), the same field
+that composes `insure(…)` and `inspect(…)` legs. One v6 bump carries them
+all. And the rule above — no pack may be used to match bonded offers
+without a bond — applies to the credential vocabulary pack the
+counterparty gate reads: it carries a coverage give once bonded offers
+match on it.
+
 **factbond** owns: `factbond.claims` (claim records for edges and pack
 roots; one-shot root assertions on `Assertions`), the routed dispute (a
 leg's *as described* claim resolved against the coverage give's

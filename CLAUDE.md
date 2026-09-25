@@ -162,6 +162,20 @@ product and the reliance proof (`insurance-products.md`,
 (`phase0-simulation.md`), which gates the *insurance* product, not this
 primitive.
 
+Decided 2026-09-25 with the assurance drafts, not built
+(`docs/plans/credentials-cover-and-options.md`, `assertion-extensions.md`):
+F1, a per-assertion challenge window with bounds and a default (the v0
+contract's single `challengeSeconds` catching up with the record design's
+per-assertion `liveness`); a per-fact-type escalation value (the stand-in
+reads a boolean outcome as 0); the `self-knowable` class with its clocks,
+evidence fee, challenger cap, finality window, suspension, adjudicator
+class and named final rung as evidence-policy data; adjudicators paid per
+ruling and in the calibration ledger; the asserter-indexed loss view with
+a look-back (from `Asserted ⋈ Refuted`, the feed to carry the asserter);
+cover on loopmarket legs at the caps with the insured asserting the
+trigger; the mutual as the first pooled form on the reserve, with its
+rules. None of it adds a subject-specific field to the contract.
+
 ## Releasing
 
 Tag-driven: `git tag -a vX.Y.Z && git push origin vX.Y.Z` runs

@@ -92,7 +92,11 @@ final rung. `policies/credential.json` is the placeholder that loopmarket's
 gate and hansa's adapter code against. Each class also names the
 **escalation value** a dispute with no ruling resolves at, a share of the
 outcome or `unresolved` (D10), which is the value an assertion passes to
-`Assertions.assert_`.)*
+`Assertions.assert_`. F4 added the notice's **expiry** (A2's third clock),
+let a class go without rung zero (`cure_period` 0, never for
+`self-knowable`), and gave each class the windows an assertion of it must
+name, `ruling_window()` and `windows_fit()`; `factbond.procedure` applies
+the class's rules on the adjudicator's path.)*
 
 ## 2. The policy hash is the contract
 

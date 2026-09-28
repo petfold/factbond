@@ -19,11 +19,17 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   the consumer's units, a confidence bucket {0.9, 0.97, 0.99, 0.999}, the
   fee plus a bond at least the floor); `dispute` at the stake the
   confidence sets, max(B·(1−c)/c, floor); `certify` by timeout when
-  undisputed; `rule` by the adjudicator on a contested claim (the loser's
-  stake mostly to the winner, the rest to the treasury); `escalate` when no
+  undisputed; `rule` by the adjudicator on a contested claim (the loser
+  pays the adjudicator's `rulingFeeWei`, at most the floor, and the winner
+  takes the rest; since 2026-09-28 there is no slice to the treasury);
+  `concede` by the asserter of a contested claim (the challenger takes the
+  whole bond and its stake, nobody rules, no fee; `Refuted` with `ruled`
+  false); `escalate` when no
   ruling arrives in the window (v0's stand-in for the next rung: both
   stakes back, the subject resolved at the assertion's escalation value);
-  `retract` returns the bond, never the fee. A consumer is told exactly
+  `retract` returns the bond, never the fee. `treasury` receives only the
+  assertion fees (the pool's address once it exists; today the deployer's
+  key). A consumer is told exactly
   twice — `hold(subject)` when the claim opens (and may refuse: no
   registration, the consumer's acceptance ties a subject to this resolver)
   and `resolve(subject, outcome)` when it closes. `Refuted` is the
@@ -37,8 +43,15 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   hold persists (status `Unresolved`), and the adjudicator's later `rule`
   resolves it with no clock, moving only the record and the consumer. Both
   are written before `hold`, so a consumer may read `assertions(count())`
-  there and refuse. `Asserted` carries `challengeUntil` and `escalation`.
-- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver. **Live gate the same night:** assertion 1 — a claim on a real reservation (subject = the escrow's key), the escrow's `hold` fired by `assert_`, certified by timeout after its hour, `resolve` paying the wanter 0.01 xDAI through the escrow, the bond returned. **That deployment is the 2026-09-19 source**; the per-assertion window and escalation value (constructor with the window bounds, the six-argument `assert_`) await their Gnosis redeploy, which loopmarket's one escrow redeploy (its E3) then names.
+  there and refuse. The **ruling window** is per assertion too (F4):
+  `rulingWindow`, 0 for the deployment's `rulingSeconds`, otherwise up to
+  `maxRulingSeconds`. It is never shorter than the default, since a short
+  one would let an asserter who expects to lose force the escalation that
+  returns its bond; a self-knowable claim names its evidence period plus
+  the rung's ruling period (`ClassRule.ruling_window()`), or it could
+  escalate before an ex parte ruling. `Asserted` carries `challengeUntil`,
+  `escalation` and `rulingWindow`.
+- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver. **Live gate the same night:** assertion 1 — a claim on a real reservation (subject = the escrow's key), the escrow's `hold` fired by `assert_`, certified by timeout after its hour, `resolve` paying the wanter 0.01 xDAI through the escrow, the bond returned. **That deployment is the 2026-09-19 source**, with its 25% slice to the treasury; the per-assertion windows and escalation value, the ruling fee and `concede` (an eleven-argument constructor, the seven-argument `assert_`) await their Gnosis redeploy, which loopmarket's one escrow redeploy (its E3) then names.
 - `src/factbond/assertions.py` — `AssertionsClient` (web3 lazy, the
   `chain` extra), `BUCKETS`, `abi()` reading the shipped artifact
   `src/factbond/contracts/Assertions.json` (`scripts/build.py`; solc 0.8.24,
@@ -50,8 +63,11 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   spelling; a `ClassRule` per claim type (`CLAIM_TYPES`, now with
   `self-knowable`) carrying the rungs, each with its adjudicator class,
   ruling period, fee, deposit and admitted evidence weights, plus the cure
-  period, evidence period and fee, challenger cap, finality window and
-  escalation value (`escalation_arg()` is what `assert_` takes). It
+  period (0: no rung zero, never for `self-knowable`) and the notice's
+  expiry, the evidence period and fee, challenger cap, finality window and
+  escalation value (`escalation_arg()` and `ruling_window()` are what
+  `assert_` takes; `windows_fit()` says whether an assertion's windows let
+  the procedure run). It
   refuses at load a class with no named, bonded final rung, a token vote,
   a structural class not settled by certificate alone (F8), an evidence
   period outside `self-knowable`, and the other fixed rules. `Suspension`
@@ -61,8 +77,21 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   (`src/factbond/policies/credential.json`) is the placeholder policy
   loopmarket's gate and hansa's adapter code against; its numbers and its
   arbitrator are placeholders.
+- `src/factbond/procedure.py` — the adjudicator's path (F4, 2026-09-28;
+  assertion-extensions §3, plan D2 with A2, A5 and B1): `decide(case,
+  now)` over a case file (`Accusation`, the claim record, `Notice`, `Cure`,
+  `Submission`, the policy) applies the rules that come before the merits.
+  A contest that names no claim record the policy covers is refused as a
+  label (THREATS T17); rung zero needs a cited notice from the accuser to
+  the accused about the same fact, its cure deadline passed, not expired,
+  not cured in time unless the cure is contested; under a burden shift,
+  the accused silent through the evidence period is ruled against ex
+  parte (`pending` before), and late evidence goes to the merits flagged
+  for B5. `Decision.upheld(accuser_is_asserter)` is `rule`'s argument for
+  a dispute (the accuser challenged) or a claim (the accuser asserted).
 - `tests/test_assertions.py` on a local EVM (the `evm` extra; skips per
-  test without it), `tests/test_policy.py`. The cross-repo gate lives in loopmarket:
+  test without it; the adjudicator path end to end is there too),
+  `tests/test_policy.py`, `tests/test_procedure.py`. The cross-repo gate lives in loopmarket:
   `tests/test_escrow.py::test_factbond_as_the_resolver` compiles this
   contract from `../factbond` and runs a claim on a real `LoopEscrow`
   reservation both ways (certified by timeout; disputed and refuted).
@@ -161,7 +190,14 @@ the control exclusion leaves any residue, so F3's proxy cap alone does not
 close T5 (a real finding for `insurance-products.md` §5); the 0.999
 griefer, self-dispute laundering, dispute spam and fabrication all lose;
 the capture replay reproduces with F4 off and fails with F4 on; the pool
-stays solvent.
+stays solvent. **Under the ruling fee** (2026-09-28, the default 2,000 × 120 cell
+against the same cell on the old split): corrections, disputes and the
+half-life are unchanged (12 refuted of 98 seeded); the launderer goes from
+−5 % to −16 % and the 0.999 griefer from −80 % to −96 %, arson stays at
++10 %; the pool's liquid balance falls from 13,670 to 2,960 and it makes
+2,110 assertions against 2,275, both most likely because the bond floor
+rose from $2 to the rung's $8 (more capital sits in bonds, fewer top-ups
+are needed; the harness records neither directly). Solvent in both.
 
 **Next (Peter, 2026-09-20): factbond on ontodag** — `docs/plans/ontodag-first.md`:
 batch root-claims per pack version disputed at the leaf by `is_below`
@@ -176,6 +212,14 @@ the first real planted-error prior, `factbond.claims` as the first code.
   the fee accrues to the treasury (the pool, later).
 - The asserter's capital at risk grows with stated confidence
   (mechanism-design §1); the dispute floor prices dispute spam.
+- **Deductions are costs** (Peter, 2026-09-28): the loser of a ruling pays
+  the adjudicator's fee and nothing more; a margin above cost is a price
+  only competition may set (a resolver both sides chose, a mutual one may
+  leave), never a protocol slice. The floor covers the fee for either
+  side, so the adjudicator is paid the same whichever way it rules.
+- **Surviving a dispute is never a positive signal** in the calibration
+  ledger or anywhere else: with no burned slice, a dispute of one's own
+  claim costs only the fees, so survival is for sale (THREATS T11).
 - The contract knows nothing of what a subject means; consumers interpret
   `outcome`. Never add loopmarket- or Wikidata-specific fields here.
 
@@ -194,11 +238,12 @@ Decided 2026-09-25 with the assurance drafts
 (`docs/plans/credentials-cover-and-options.md`, `assertion-extensions.md`;
 the order is `../assurance-drafts/development-sequence-2026-09-25.md`,
 Track F). Built 2026-09-28: F1 and F-esc (above, in the source, not yet
-redeployed) and F3's shapes (`factbond.policy`). Not built: the dispute
-rules on the adjudicator path (F4: specificity, the notice-and-cure
-record before a dispute, ex parte after lapse), since the policy names
-the periods and nothing enforces them yet; the evidence fee and cap
-charged on a real dispute; adjudicators paid per ruling and in the
+redeployed), F3's shapes (`factbond.policy`) and F4 (`factbond.procedure`,
+with the per-assertion ruling window). Open from F4, Peter's to decide
+(`assertion-extensions.md` §8): whether information claims take rung
+zero at all, since a cure lets the asserter keep its bond and leaves the
+hunter unpaid. Not built: the evidence fee and cap charged on a real
+dispute, and B5's return of E; adjudicators paid per ruling and in the
 calibration ledger, and the ruling record's fields (F6); the
 asserter-indexed loss view with a look-back (F5: from `Asserted ⋈
 Refuted`, the feed to carry the asserter); cover on loopmarket legs at the

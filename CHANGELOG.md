@@ -22,6 +22,31 @@ trusted publishing).
   `0xfa6f…bF99` is the old source until the redeploy.
   `AssertionsClient.assert_(…, window=, escalation=)` defaults both to
   the deployment's; `window_bounds()`, `escalation_bps()`, `UNRESOLVED`.
+- **The ruling window is per assertion too** (2026-09-28, F4): `assert_`
+  takes `rulingWindow` (0 for `rulingSeconds`, otherwise up to the
+  constructor's new `maxRulingSeconds`, never shorter than the default),
+  so that a self-knowable claim can be ruled on the asserter's silence
+  before it escalates. The constructor has eleven arguments and `assert_`
+  seven; `Asserted` carries `rulingWindow`; the client takes
+  `ruling_window=` and reads `ruling_bounds()`.
+
+- **The 25% slice is replaced by a ruling fee, and the asserter may
+  concede** (2026-09-28, Peter: a deduction is a cost; a margin above cost
+  is a price only competition may set). The constructor's `winnerBps`
+  becomes `rulingFeeWei` (at most the floor, so either side's stake covers
+  it): the loser pays it to the adjudicator that ruled and the winner takes
+  the rest; nothing goes to the treasury but the assertion fees. `concede`
+  lets the asserter of a contested claim hand the challenger the whole
+  bond with no ruling and no fee; `Refuted` gains `ruled`. The client gains
+  `concede()` and `ruling_fee()`. The harness follows: `winner_share` is
+  gone, the loser pays `rung_cost` to the adjudicator, and the bond floor
+  never falls below `rung_cost`, since a fee only one side could pay would
+  pay the judge to rule against that side. Plans: DESIGN §8,
+  mechanism-design §1, §3 (the calibration ledger no longer credits dispute
+  survival), §4 (reversal refunds from the adjudicator's forfeited deposit)
+  and open problems; THREATS T8, T10, T11, T16 and the honesty row;
+  phase0-simulation; assertion-extensions §2; the cross-repository plan's
+  D2 (in both repositories).
 
 ### Added
 
@@ -34,7 +59,17 @@ trusted publishing).
   bonded final rung and the other rules fixed in D2, D10 and F8.
   `Suspension` (`suspended/<statement>`) with `suspended()` deriving it.
   The placeholder `policies/credential.json` is shipped. `CLAIM_TYPES`
-  gains `self-knowable` and the harness reads the one vocabulary.
+  gains `self-knowable` and the harness reads the one vocabulary. With F4:
+  the notice's `notice_expiry` (A2), `cure_period` 0 for a class without
+  rung zero (refused for `self-knowable`), `ruling_window()` and
+  `windows_fit()`.
+- **The adjudicator's path, `factbond.procedure`** (2026-09-28; F4). The
+  rules before the merits, as pure functions of the case file and the
+  clock: labels refused, rung zero (a cited notice, lapsed, unexpired,
+  uncured), ex parte against a notified, silent accused under a burden
+  shift, late evidence to the merits with B5's flag. `Decision.upheld`
+  gives `rule`'s argument for a dispute or a claim. THREATS T17
+  (defamation on a permanent store) added, mirrored in loopmarket.
 
 - **Plans: credentials, cover and options** (2026-09-25). Two documents
   entered the plan corpus from the assurance drafts:

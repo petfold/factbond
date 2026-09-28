@@ -51,19 +51,20 @@ class Params:
     consumption_rate: float = 0.05         # λ: consumption events per fact per tick, on average
     seed: int = 1
     # the mechanism (§5–§6)
-    bond_floor: float = 2.0                # $0.5–$20 swept
+    bond_floor: float = 2.0                # $0.5–$20 swept; in effect never below rung_cost (Engine.floor)
     k_reliance: float = 0.5                # bond = max(floor, k × open reliance) (mechanism-design §2 clause 1); 0 = floor only
     target_consumption: bool = True        # challengers scan where consumption is, with the loss table as prior
     fee: float = 0.05
     buckets: tuple = (900, 970, 990, 999)
     pool_confidence: int = 990
     liveness: int = 14                     # ticks
-    rung_cost: float = 8.0                 # D.adjudication: the automated evidence rung; a person reading is 30–60
+    rung_cost: float = 8.0                 # D.adjudication: the automated evidence rung; a person reading is 30–60.
+                                           # The loser pays it to the adjudicator as the ruling fee, the winner
+                                           # takes the rest (2026-09-28: costs only, no slice to a treasury)
     bounty: float = 0.0                    # paid per *adjudicated* correction to the challenger (the one reward F9 permits)
     sweep_capacity: float = 0.0            # facts verified per tick by volunteers walking a district (domain-choice §4)
     sweep_cost: float = 1.5                # a sweeper's cost per fact — batched, a street at a time, not a trip each
     delay_externality: float = 1.0
-    winner_share: float = 0.75             # of the loser's stake; the rest burned/treasury
     ruling_error: float = 0.02             # honest adjudicator's error rate
     # insurance (§5, insurance-products.md)
     payout_cap: float = 20.0               # F3's proxy cap per policy

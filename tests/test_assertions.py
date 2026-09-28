@@ -1,10 +1,12 @@
 """The assertion primitive's consumer edge (2026-09-19): assert with a bond
 at a stated confidence, the consumer told to hold; certify by timeout; a
-dispute at the odds the confidence sets, the adjudicator's ruling slashing
-the loser; escalation when no ruling comes; retraction keeps the fee. F1
+dispute at the odds the confidence sets, the adjudicator's ruling charging
+the loser the ruling fee and the winner taking the rest; the asserter's
+concession; escalation when no ruling comes; retraction keeps the fee. F1
 (2026-09-28): the window is the asserter's within the deployment's bounds;
 the escalation value is per assertion, `UNRESOLVED` keeping the consumer's
-hold until a ruling. Skips without the `evm` extra (py-solc-x, eth-tester,
+hold until a ruling; the ruling window is per assertion, never shorter than
+the deployment's (F4). Skips without the `evm` extra (py-solc-x, eth-tester,
 web3)."""
 
 import importlib.util
@@ -18,9 +20,9 @@ _HAVE_EVM = all(importlib.util.find_spec(m) for m in ("solcx", "eth_tester", "we
 pytestmark = pytest.mark.skipif(not _HAVE_EVM, reason="needs the evm extra: pip install 'factbond[evm]'")
 
 HERE = os.path.dirname(__file__)
-FEE, FLOOR, CHALLENGE, RULING, WINNER_BPS, ESCALATION_BPS = 10 ** 15, 10 ** 16, 100, 100, 7500, 5000
-MIN_CHALLENGE, MAX_CHALLENGE, DAY = 10, 60 * 86400, 86400
-DEFAULT = (0, ESCALATION_BPS)             # an assertion that names neither window nor escalation value
+FEE, FLOOR, CHALLENGE, RULING, RULING_FEE, ESCALATION_BPS = 10 ** 15, 10 ** 16, 100, 100, 4 * 10 ** 15, 5000
+MIN_CHALLENGE, MAX_CHALLENGE, MAX_RULING, DAY = 10, 60 * 86400, 90 * 86400, 86400
+DEFAULT = (0, ESCALATION_BPS, 0)          # an assertion that names no window, escalation value or ruling window
 
 CONSUMER_SRC = """
 // SPDX-License-Identifier: MIT
@@ -60,8 +62,8 @@ def chain(compiled):
     adjudicator, treasury = acc[1], acc[9]
     receipt = w3.eth.wait_for_transaction_receipt(
         w3.eth.contract(abi=art["abi"], bytecode=art["bin"]).constructor(
-            adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING,
-            WINNER_BPS, ESCALATION_BPS).transact())
+            adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, MAX_RULING,
+            RULING_FEE, ESCALATION_BPS).transact())
     assertions = w3.eth.contract(address=receipt["contractAddress"], abi=art["abi"])
     receipt = w3.eth.wait_for_transaction_receipt(
         w3.eth.contract(abi=c_art["abi"], bytecode=c_art["bin"]).constructor().transact())
@@ -130,7 +132,7 @@ def test_a_consumer_that_refuses_the_hold_refuses_the_assertion(chain):
     assert not consumer.functions.held(subject).call()
 
 
-def test_a_dispute_is_ruled_and_the_loser_is_slashed(chain):
+def test_a_dispute_is_ruled_and_the_loser_pays(chain):
     w3, a, consumer, adjudicator, treasury = chain
     asserter, challenger = w3.eth.accounts[2], w3.eth.accounts[3]
     bond = 10 ** 18
@@ -148,9 +150,10 @@ def test_a_dispute_is_ruled_and_the_loser_is_slashed(chain):
         t_before = w3.eth.get_balance(treasury)
         winner, loser, lost = (asserter, challenger, stake) if upheld else (challenger, asserter, bond)
         w_before = w3.eth.get_balance(winner)
-        a.functions.rule(id_, upheld).transact({"from": adjudicator})
-        assert w3.eth.get_balance(winner) - w_before == (bond if upheld else stake) + lost * WINNER_BPS // 10000
-        assert w3.eth.get_balance(treasury) - t_before == lost - lost * WINNER_BPS // 10000
+        got = _balance_delta(w3, adjudicator, a.functions.rule(id_, upheld))
+        assert w3.eth.get_balance(winner) - w_before == (bond if upheld else stake) + lost - RULING_FEE
+        assert got == RULING_FEE                                            # the cost, and nothing more
+        assert w3.eth.get_balance(treasury) == t_before                     # no slice to anyone else
         assert consumer.functions.outcome(subject).call() == (5 if upheld else 0)
         assert a.functions.assertions(id_).call()[10] == (3 if upheld else 4)
 
@@ -179,11 +182,11 @@ def test_the_window_is_the_asserters_within_the_bounds(chain, compiled):
     asserter, challenger = w3.eth.accounts[2], w3.eth.accounts[3]
     for window in (MIN_CHALLENGE - 1, MAX_CHALLENGE + 1):
         assert "window out of bounds" in _reverts(
-            a.functions.assert_(b"\x77" * 32, consumer.address, 1, 990, window, ESCALATION_BPS), asserter, FEE + FLOOR)
+            a.functions.assert_(b"\x77" * 32, consumer.address, 1, 990, window, ESCALATION_BPS, 0), asserter, FEE + FLOOR)
     ids = []
     for subject in (b"\x78" * 32, b"\x79" * 32):
         receipt = w3.eth.wait_for_transaction_receipt(a.functions.assert_(
-            subject, consumer.address, 1, 990, 30 * DAY, ESCALATION_BPS).transact({"from": asserter, "value": FEE + FLOOR}))
+            subject, consumer.address, 1, 990, 30 * DAY, ESCALATION_BPS, 0).transact({"from": asserter, "value": FEE + FLOOR}))
         ev = a.events.Asserted().process_receipt(receipt)[0]["args"]
         assert ev["challengeUntil"] == w3.eth.get_block(receipt["blockNumber"])["timestamp"] + 30 * DAY
         ids.append(ev["id"])
@@ -204,7 +207,8 @@ def test_the_window_is_the_asserters_within_the_bounds(chain, compiled):
     for lo, default, hi in ((0, CHALLENGE, MAX_CHALLENGE), (CHALLENGE + 1, CHALLENGE, MAX_CHALLENGE),
                             (MIN_CHALLENGE, CHALLENGE, CHALLENGE - 1)):
         assert "window bounds" in _reverts(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
-            adjudicator, treasury, FEE, FLOOR, default, lo, hi, RULING, WINNER_BPS, ESCALATION_BPS), w3.eth.accounts[0])
+            adjudicator, treasury, FEE, FLOOR, default, lo, hi, RULING, MAX_RULING, RULING_FEE, ESCALATION_BPS),
+            w3.eth.accounts[0])
 
 
 def test_an_unresolved_escalation_keeps_the_hold_until_a_ruling(chain):
@@ -216,9 +220,9 @@ def test_an_unresolved_escalation_keeps_the_hold_until_a_ruling(chain):
     asserter, challenger = w3.eth.accounts[2], w3.eth.accounts[3]
     assert a.functions.UNRESOLVED().call() == UNRESOLVED
     assert "escalation above" in _reverts(a.functions.assert_(
-        b"\x88" * 32, consumer.address, 1, 990, 0, ESCALATION_BPS + 1), asserter, FEE + FLOOR)
+        b"\x88" * 32, consumer.address, 1, 990, 0, ESCALATION_BPS + 1, 0), asserter, FEE + FLOOR)
     subject = b"\x89" * 32
-    a.functions.assert_(subject, consumer.address, 1, 990, 0, UNRESOLVED).transact({"from": asserter, "value": FEE + FLOOR})
+    a.functions.assert_(subject, consumer.address, 1, 990, 0, UNRESOLVED, 0).transact({"from": asserter, "value": FEE + FLOOR})
     id_ = a.functions.count().call()
     stake = a.functions.stakeFor(FLOOR, 990).call()
     a.functions.dispute(id_).transact({"from": challenger, "value": stake})
@@ -242,12 +246,113 @@ def test_an_unresolved_escalation_keeps_the_hold_until_a_ruling(chain):
     assert "not contested" in _reverts(a.functions.rule(id_, True), adjudicator)
     # a share below the deployment's: the asserter's to lower, never to raise
     subject = b"\x8a" * 32
-    a.functions.assert_(subject, consumer.address, 1000, 990, 0, 2500).transact({"from": asserter, "value": FEE + FLOOR})
+    a.functions.assert_(subject, consumer.address, 1000, 990, 0, 2500, 0).transact({"from": asserter, "value": FEE + FLOOR})
     id_ = a.functions.count().call()
     a.functions.dispute(id_).transact({"from": challenger, "value": stake})
     _advance(w3, RULING + 1)
     a.functions.escalate(id_).transact({"from": w3.eth.accounts[4]})
     assert consumer.functions.outcome(subject).call() == 250 and a.functions.assertions(id_).call()[10] == 6
+
+
+def test_the_ruling_window_is_the_asserters_only_ever_longer(chain, compiled):
+    """F4's clock on chain: an asserter who carries the burden names a ruling
+    window long enough for its evidence period and the rung's ruling period,
+    so the adjudicator can rule on its silence before the dispute escalates;
+    a window shorter than the deployment's, or beyond its bound, is refused."""
+    w3, a, consumer, adjudicator, treasury = chain
+    asserter, challenger = w3.eth.accounts[2], w3.eth.accounts[3]
+    for ruling in (RULING - 1, MAX_RULING + 1):
+        assert "ruling window out of bounds" in _reverts(a.functions.assert_(
+            b"\x90" * 32, consumer.address, 1, 990, 0, UNRESOLVED, ruling), asserter, FEE + FLOOR)
+    subject = b"\x91" * 32
+    receipt = w3.eth.wait_for_transaction_receipt(a.functions.assert_(
+        subject, consumer.address, 1, 990, 0, UNRESOLVED, 42 * DAY).transact({"from": asserter, "value": FEE + FLOOR}))
+    id_ = a.events.Asserted().process_receipt(receipt)[0]["args"]["id"]
+    assert a.events.Asserted().process_receipt(receipt)[0]["args"]["rulingWindow"] == 42 * DAY
+    receipt = w3.eth.wait_for_transaction_receipt(a.functions.dispute(id_).transact(
+        {"from": challenger, "value": a.functions.stakeFor(FLOOR, 990).call()}))
+    disputed_at = w3.eth.get_block(receipt["blockNumber"])["timestamp"]
+    assert a.functions.assertions(id_).call()[9] == disputed_at + 42 * DAY
+    _advance(w3, 41 * DAY)
+    assert "ruling window open" in _reverts(a.functions.escalate(id_), challenger)
+    a.functions.rule(id_, False).transact({"from": adjudicator})          # on day 41 the rung can still rule
+    assert a.functions.assertions(id_).call()[10] == 4
+    assert "ruling bounds" in _reverts(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
+        adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, RULING - 1,
+        RULING_FEE, ESCALATION_BPS), w3.eth.accounts[0])
+
+
+def test_the_adjudicator_path_carries_the_procedure_to_chain(chain):
+    """F4 end to end: a self-knowable claim asserted with its policy's
+    windows; the challenger's notice lapses uncured, the dispute follows on
+    chain, the asserter produces nothing in the evidence period, and the
+    rung's ex parte ruling refutes it inside the ruling window. A label on a
+    second assertion is refused, and the asserter keeps its bond."""
+    from factbond.policy import shipped
+    from factbond.procedure import Accusation, Case, Notice, decide
+    from factbond.sim.records import Claim
+    w3, a, consumer, adjudicator, treasury = chain
+    asserter, challenger = w3.eth.accounts[5], w3.eth.accounts[6]
+    policy = shipped("credential")
+    rule = policy.rule("self-knowable")
+    now = lambda: w3.eth.get_block("latest")["timestamp"]  # noqa: E731
+    ids = []
+    for n in (1, 2):
+        claim = Claim(f"cred/{asserter}/licence-{n}", "root:register@1", "self-knowable", policy.policy_ref)
+        a.functions.assert_(bytes.fromhex(claim.claim_id), "0x" + "00" * 20, 1, 990, 30 * DAY, rule.escalation_arg(),
+                            rule.ruling_window()).transact({"from": asserter, "value": FEE + FLOOR})
+        ids.append((a.functions.count().call(), claim))
+    assert rule.windows_fit(30 * DAY, rule.ruling_window()) and not rule.windows_fit(rule.cure_period, RULING)
+    (id_, claim), (id_label, _) = ids
+    _advance(w3, DAY)
+    notice = Notice(challenger, asserter, claim.claim_id, policy.policy_ref, now(), now() + rule.cure_period)
+    _advance(w3, rule.cure_period + DAY)
+    stake = a.functions.stakeFor(FLOOR, 990).call()
+    for i in (id_, id_label):
+        a.functions.dispute(i).transact({"from": challenger, "value": stake})
+    acc = Accusation(challenger, asserter, claim.claim_id, now(), (notice.ref,))
+    case = Case(policy, acc, claim, (notice,), disputed_claim=claim.claim_id)
+    assert decide(case, now()).kind == "pending"                           # the evidence period runs
+    label = Case(policy, Accusation(challenger, asserter, "label:unlicensed quack", now()), None)
+    d_label = decide(label, now())
+    assert d_label.kind == "refused" and d_label.upheld(accuser_is_asserter=False) is True
+    a.functions.rule(id_label, d_label.upheld(accuser_is_asserter=False)).transact({"from": adjudicator})
+    assert a.functions.assertions(id_label).call()[10] == 3                # the asserter's claim stands
+    _advance(w3, rule.evidence_period + DAY)
+    d = decide(case, now())
+    assert d.kind == "ex-parte" and d.upheld(accuser_is_asserter=False) is False
+    before = w3.eth.get_balance(challenger)
+    a.functions.rule(id_, d.upheld(accuser_is_asserter=False)).transact({"from": adjudicator})
+    assert a.functions.assertions(id_).call()[10] == 4                     # Refuted, inside its ruling window
+    assert w3.eth.get_balance(challenger) - before == stake + FLOOR - RULING_FEE
+
+
+def test_the_asserter_concedes_and_nobody_rules(chain, compiled):
+    """Concession, the loser's own act: the challenger takes the whole bond
+    and its stake back, no fee is due, the correction feed fires with
+    `ruled` false, and the consumer learns nothing of the outcome. Only the
+    asserter concedes, and only a contested claim. A floor that would not
+    cover the ruling fee never deploys."""
+    w3, a, consumer, adjudicator, treasury = chain
+    asserter, challenger = w3.eth.accounts[2], w3.eth.accounts[3]
+    subject, bond = b"\x92" * 32, 10 ** 17
+    a.functions.assert_(subject, consumer.address, 24, 970, *DEFAULT).transact({"from": asserter, "value": FEE + bond})
+    id_ = a.functions.count().call()
+    assert "not contested" in _reverts(a.functions.concede(id_), asserter)
+    stake = a.functions.stakeFor(bond, 970).call()
+    a.functions.dispute(id_).transact({"from": challenger, "value": stake})
+    assert "not the asserter" in _reverts(a.functions.concede(id_), challenger)
+    before = [w3.eth.get_balance(x) for x in (challenger, adjudicator, treasury)]
+    receipt = w3.eth.wait_for_transaction_receipt(a.functions.concede(id_).transact({"from": asserter}))
+    after = [w3.eth.get_balance(x) for x in (challenger, adjudicator, treasury)]
+    assert after[0] - before[0] == stake + bond and after[1:] == before[1:]
+    assert a.events.Refuted().process_receipt(receipt)[0]["args"]["ruled"] is False
+    assert a.functions.assertions(id_).call()[10] == 4
+    assert consumer.functions.resolved(subject).call() and consumer.functions.outcome(subject).call() == 0
+    assert "not contested" in _reverts(a.functions.rule(id_, True), adjudicator)
+    assert "the floor covers the ruling fee" in _reverts(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
+        adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, MAX_RULING, FLOOR + 1,
+        ESCALATION_BPS), w3.eth.accounts[0])
 
 
 def test_retraction_returns_the_bond_and_keeps_the_fee(chain):
@@ -266,13 +371,14 @@ def test_client_and_shipped_artifact(chain):
     client = AssertionsClient("", a.address, client=w3)
     assert client.fee() == FEE and client.floor() == FLOOR and client.stake_for(10 ** 18, 900) == 10 ** 18 // 9
     assert client.window_bounds() == (MIN_CHALLENGE, CHALLENGE, MAX_CHALLENGE) and client.escalation_bps() == ESCALATION_BPS
+    assert client.ruling_bounds() == (RULING, MAX_RULING) and client.ruling_fee() == RULING_FEE
     last = client.assertion(client.count())
     assert last["status"] == "retracted" and last["confidence"] == 970 and last["consumer"] == consumer.address
-    assert last["escalation"] == ESCALATION_BPS
+    assert last["escalation"] == ESCALATION_BPS and last["ruling_window"] == RULING
     names = {e["name"] for e in abi()["abi"] if e["type"] == "function"}
-    assert {"assert_", "dispute", "certify", "rule", "escalate", "retract", "stakeFor", "UNRESOLVED",
-            "minChallengeSeconds", "maxChallengeSeconds"} <= names
+    assert {"assert_", "dispute", "certify", "rule", "escalate", "retract", "concede", "stakeFor", "UNRESOLVED",
+            "minChallengeSeconds", "maxChallengeSeconds", "maxRulingSeconds"} <= names
     shipped = next(e for e in abi()["abi"] if e.get("name") == "assert_")
-    assert [i["name"] for i in shipped["inputs"]][-2:] == ["window", "escalation"]      # the artifact is rebuilt
+    assert [i["name"] for i in shipped["inputs"]][-3:] == ["window", "escalation", "rulingWindow"]  # rebuilt
     with pytest.raises(ValueError):
         client.assert_(b"\x00" * 32, None, 1, 990)

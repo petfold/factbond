@@ -74,10 +74,19 @@ class AssertionsClient:
     def stake_for(self, bond: int, confidence: int) -> int:
         return self.contract().functions.stakeFor(bond, confidence).call()
 
+    def ruling_fee(self) -> int:
+        """What the loser of a ruling pays the adjudicator; at most the floor."""
+        return self.contract().functions.rulingFeeWei().call()
+
     def window_bounds(self) -> tuple[int, int, int]:
         """(min, default, max) challenge window in seconds."""
         f = self.contract().functions
         return f.minChallengeSeconds().call(), f.challengeSeconds().call(), f.maxChallengeSeconds().call()
+
+    def ruling_bounds(self) -> tuple[int, int]:
+        """(default and shortest, longest) ruling window in seconds."""
+        f = self.contract().functions
+        return f.rulingSeconds().call(), f.maxRulingSeconds().call()
 
     def escalation_bps(self) -> int:
         """The deployment's escalation share: the default, and the most an
@@ -87,18 +96,20 @@ class AssertionsClient:
     # ---- the lifecycle -------------------------------------------------------
 
     def assert_(self, subject: bytes, consumer: str | None, outcome: int, confidence: int,
-                bond: int | None = None, *, window: int = 0, escalation: int | None = None) -> tuple[int, dict]:
-        """Post a claim; the bond defaults to the floor, the window (seconds)
-        to the deployment's, the escalation value to the deployment's share
-        (`UNRESOLVED` for a boolean or a hash — `factbond.policy` says which
-        a fact type takes). Returns (id, receipt)."""
+                bond: int | None = None, *, window: int = 0, escalation: int | None = None,
+                ruling_window: int = 0) -> tuple[int, dict]:
+        """Post a claim; the bond defaults to the floor, the challenge and
+        ruling windows (seconds) to the deployment's, the escalation value to
+        the deployment's share. `factbond.policy` says what a fact type takes:
+        `UNRESOLVED` for a boolean or a hash, `ClassRule.ruling_window()` for
+        a claim whose asserter carries the burden. Returns (id, receipt)."""
         if confidence not in BUCKETS:
             raise ValueError(f"confidence is one of {BUCKETS} per mille")
         c = self.contract()
         bond = self.floor() if bond is None else bond
         escalation = self.escalation_bps() if escalation is None else escalation
         receipt = self._send(c.functions.assert_(subject, consumer or "0x" + "00" * 20, outcome, confidence,
-                                                 window, escalation),
+                                                 window, escalation, ruling_window),
                              value=self.fee() + bond)
         return c.events.Asserted().process_receipt(receipt)[0]["args"]["id"], receipt
 
@@ -109,6 +120,10 @@ class AssertionsClient:
 
     def certify(self, id_: int) -> dict:
         return self._send(self.contract().functions.certify(id_))
+
+    def concede(self, id_: int) -> dict:
+        """The asserter concedes a contested claim: the whole bond to the challenger, no fee."""
+        return self._send(self.contract().functions.concede(id_))
 
     def rule(self, id_: int, upheld: bool) -> dict:
         return self._send(self.contract().functions.rule(id_, upheld))
@@ -125,7 +140,7 @@ class AssertionsClient:
         r = self.contract().functions.assertions(id_).call()
         return {"asserter": r[0], "challenger": r[1], "consumer": r[2], "subject": r[3], "outcome": r[4],
                 "confidence": r[5], "bond": r[6], "stake": r[7], "challenge_until": r[8],
-                "ruling_until": r[9], "status": STATUS[r[10]], "escalation": r[11]}
+                "ruling_until": r[9], "status": STATUS[r[10]], "escalation": r[11], "ruling_window": r[12]}
 
     def count(self) -> int:
         return self.contract().functions.count().call()

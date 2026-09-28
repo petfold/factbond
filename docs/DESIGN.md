@@ -370,9 +370,17 @@ Unasserted → Asserted → (liveness expires) → Certified → (validity expir
   escrow contest and the weeks of a cold claim share one contract.)*
 - **Confidence granularity:** coarse buckets (0.9 / 0.97 / 0.99 / 0.999) —
   false precision invites gaming of the odds ratio.
-- **Slashing split:** majority of the loser's stake to the winner, a slice
-  burned or to the adjudication treasury (makes self-dispute laundering
-  non-free).
+- **Slashing split:** ~~majority of the loser's stake to the winner, a slice
+  burned or to the adjudication treasury~~ *(replaced 2026-09-28, Peter:
+  the slice was an unmeasured prior)*. The loser pays the ruling's cost,
+  the adjudicator's fee, and the winner takes the rest; a deduction is a
+  cost, and a margin above cost is a price only competition may set,
+  never the protocol. The floor covers the fee, so the adjudicator is paid
+  the same whichever way it rules. An asserter may concede a contested
+  claim, and then nobody rules and no fee is due. Self-dispute laundering
+  stays a loss on the fees alone, because surviving a dispute is never a
+  positive signal (`plans/mechanism-design.md` §3, `plans/THREATS.md`
+  T11).
 - **Per-cluster exposure caps** in the reserve, derived from the constraint
   graph: claims sharing a source, region, or adjudicator are one cluster.
 

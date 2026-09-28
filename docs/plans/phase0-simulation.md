@@ -187,8 +187,10 @@ the adjudicator model — "tribunal independence — the incentive asset never
 holds positions in disputed outcomes; adjudicator stake soulbound";
 **premium updating from own loss experience** from a cold start (the
 trajectory matters as much as the fixed point); **the slashing split**
-(`DESIGN.md` §8: majority to the winner, a slice burned or to the
-adjudication treasury); and **auto-funded disputes** (a paid-out
+(`DESIGN.md` §8 as replaced 2026-09-28: the loser pays the rung's cost to
+the adjudicator, the winner takes the rest, and the bond floor never falls
+below the rung's cost, so the fee is paid whichever way the ruling goes);
+and **auto-funded disputes** (a paid-out
 verification bet auto-files the sibling matches-source dispute,
 `DESIGN.md` §7).
 
@@ -247,7 +249,7 @@ a stop rule, run against every grid cell:
   asserter–challenger-collusion runs that feed `mechanism-design.md`.
 - **Self-dispute laundering.** Dispute your own assertion from a second
   identity to wash stake through the winner's share; strictly negative
-  under the slash-split's burned slice (`DESIGN.md` §8).
+  on the fees (`DESIGN.md` §8 as replaced 2026-09-28).
 - **Dispute-spam griefing.** Spam disputes to freeze claims and exhaust
   auto-funding; disputer bonds must cover the delay externality.
 - **T9 basis-risk fixtures.** Ambiguous-policy scenarios (world deviates

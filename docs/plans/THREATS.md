@@ -327,7 +327,8 @@ inflate toward uselessness ("Reputation Inflation", EC'18).
 fees (U13). factbond's instantiation is the calibration ledger
 (`mechanism-design.md` §3): a certified-by-timeout track record nobody
 watched is free to manufacture, so the ledger counts only resolutions
-that carried consumption or survived a real dispute; loss experience
+that carried consumption (2026-09-28: never dispute survival, which is
+for sale at the fee price once no slice is burned); loss experience
 comes only from bonded, adjudicated events; an undisputed edge is priced
 unknown, never good — silence is uninformative. Residual: collusion among
 real people; history farmed at fee price is still history.
@@ -405,8 +406,9 @@ pool stake, a share of assertion fees as an LP, slash winnings, and the
 underwriting business — nothing else exists to farm
 (`mechanism-design.md` §3; fees land with Phase 1). Assertions cost a fee
 accruing to the pool — the spam price. The calibration ledger counts only
-resolutions that carried consumption or survived a real dispute (the U12
-shape applied to reputation), so a manufactured record buys nothing.
+resolutions that carried consumption (the U12 shape applied to
+reputation; never dispute survival, 2026-09-28), so a manufactured record
+buys nothing.
 
 **Residual.** Off-protocol subsidies re-fund the farm from outside —
 T1's residual wearing factbond's mask; a future token would add the
@@ -429,20 +431,24 @@ majority of the loser's stake; without a burn, one principal on both
 sides recycles its capital at ~zero cost while printing fake track record
 and fake loss experience — corrupting T7's feed and T8's ledger at once.
 
-**Defense (by construction).** The slash-split's burned slice
-(`../DESIGN.md` §8: majority of the loser's stake to the winner, a slice
-burned or to the adjudication treasury; decided 2026-08, lands with
-Phase 1): the launderer pays the burn on every cycle, making the loop
-strictly negative — loopmarket's wash-loop inequality, applied to
-disputes. **The burn is load-bearing**: any future split change must
-re-verify the inequality (`mechanism-design.md` §3). Dispute-market size
+**Defense (by construction).** *(Revised 2026-09-28, Peter: the burned
+slice of 2026-08 was an unmeasured prior, and a deduction beyond cost is a
+price only competition may set.)* The launderer pays the assertion fee and
+the ruling fee on every cycle, making the loop strictly negative —
+loopmarket's wash-loop inequality, applied to disputes; conceding to its
+own second key costs the fee and books a loss against itself. The fees
+are flat, so what the slice priced in proportion to stake, a large
+survived dispute, is closed instead by the ledger: **surviving a dispute
+is never a positive entry** (`mechanism-design.md` §3). That rule is now
+the load-bearing part: any future rule crediting dispute survival must
+re-verify the inequality. Dispute-market size
 caps bound the channel's throughput (§5); the ledger's consumption gate
 keeps even a paid-for history thin.
 
 **Residual.** The general asserter–challenger collusion form is open
 (`mechanism-design.md` §8, question 4); the burn size is a parameter, not
-a law — UMA's production analog burns half the loser's bond; the right
-slice here is a Phase-0 output.
+a law — UMA's production analog burns half the loser's bond; here the
+fees are costs, and the harness's launderer stays negative on them.
 
 **Tripwire & work package.** Asserter/challenger funding-cluster
 intersection on resolved disputes (the hildobby common-funder shape,
@@ -608,8 +614,8 @@ complete.)*
 **Attack & economics.** Keys are free: a giver names its own puppet as a
 leg's resolver or inspector, or a would-be adjudicator manufactures
 "unreversed rulings" with puppet cases (a puppet asserts, a puppet
-disputes, the adjudicator rules, nobody reverses) at the cost of the burn
-slice per case. Any acceptance criterion that counts volume is bought at
+disputes, the adjudicator rules, nobody reverses) at the cost of the fees
+per case. Any acceptance criterion that counts volume is bought at
 that price. This is T11's shape aimed at the judge's record rather than
 the asserter's.
 
@@ -624,6 +630,32 @@ ledger; the only positive ledger entry for an adjudicator is a ruling
 escalated at doubled stake to the final rung and upheld there, which
 costs a real review. The formality stays: never a party or the deposit's
 maker. loopmarket's U12 applied to judges.
+
+## T17 — Defamation on a permanent store (added 2026-09-28)
+
+*(Primary here: `credentials-cover-and-options.md` §4's fold-in map;
+loopmarket mirrors it.)*
+
+**Attack & economics.** Books and Swarm are public and permanent, and
+self-bonded credentials put people's keys in the record. A dispute or
+bonded negation that is a label ("K is a fraudster", "unlicensed quack")
+instead of a refutable fact costs its author a stake and buys a public
+accusation that no ruling can clear, because there is no fact to rule on.
+Against a person that is defamation, and the store makes it unerasable. A
+weaker variant is a specific accusation made public before the accused
+could cure.
+
+**Defense (by construction).** F4 (`factbond.procedure`;
+`assertion-extensions.md` §3). A contest names a claim record the pinned
+policy covers. The claim-type vocabulary has no type for character, so a
+label has no form in which it can be adjudicated, and the rung refuses it
+in the accused's favour. Rung zero (B1): the notice passes between the
+parties and reaches a public store only when a bonded act cites it after
+the cure deadline, so a cured matter leaves nothing public. The ruling
+record names the rule applied (C5), so a refused label's public trace is
+a refusal. **Residual:** the bonded act itself is public (on chain as a
+subject hash, not text, and in the challenger's own store). The refusal
+marks it; nothing erases it.
 
 ## The invariant ↔ threat coverage matrix
 
@@ -648,8 +680,9 @@ loopmarket-side by mechanism shape and U12/U13/U14, not by any F-law —
 factbond only refuses to re-fund it (F9). T7 and T8 are *priced*, not
 blocked: premiums, acceptance limits and the ledger are policy under
 invariant discipline, and their cold-start blindness is irreducible. T11
-is blocked by a parameter — the burned slice — not an invariant: a split
-change can silently break it, hence the re-verification rule. T12 is
+is blocked by the fees and by a ledger rule (no credit for dispute
+survival), not an invariant: a ledger change can silently break it, hence
+the re-verification rule. T12 is
 survived by capital, not blocked by law. And the erosion halves of T6
 (semantic drift), T9 (interpretive basis risk) and T13 (E(t) decay) are
 arms races no invariant closes: priced, instrumented, and said out loud.

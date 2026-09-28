@@ -63,10 +63,12 @@ bet on a 99% claim ($99 against $1), recovered without a market. At that
 point an assertion literally *is* a limit order: "I offer to bet at these
 odds, world" — a standing, priced, one-sided quote that the world may hit
 at any time by posting the other side. Losing side pays per `DESIGN.md`
-§8's slashing split: the majority of the loser's stake to the winner, a
-slice burned or to the adjudication treasury (UMA's production analog:
-winner takes own bond back plus half the loser's, the other half burned to
-UMA's Store).
+§8's split, *(as replaced 2026-09-28)* the ruling's cost to the
+adjudicator and the rest of its stake to the winner; a conceded claim
+pays the winner the whole bond, since nobody rules. (UMA's production
+analog burns half the loser's bond; the slice this document first
+borrowed from it was a prior nobody measured, and Peter ruled that a
+deduction beyond cost is a price only competition may set.)
 
 The stake direction is a design decision with teeth, so it is stated as
 one: **the asserter's capital at risk grows with stated confidence.**
@@ -215,16 +217,23 @@ fails loudly if a future mechanism change introduces a volume-linked path
 
 **Self-dispute laundering** — disputing your own assertion from a second
 identity to wash stake through the winner's share — is strictly negative
-under the slashing split's burned slice (`DESIGN.md` §8): the launderer
-pays the burn on every cycle. The burn is load-bearing; any future split
-change must re-verify this inequality.
+on the fees: the launderer pays the assertion fee and the ruling fee on
+every cycle. *(Revised 2026-09-28, when the burned slice was replaced by
+the ruling fee:)* fees are flat, so laundering costs the same whatever
+stake it washes, and what the slice priced in proportion to stake, a large
+survived dispute, is no longer bought by anything: **surviving a dispute
+is never a positive entry** in the ledger below. Any future rule that
+credits dispute survival must re-verify this inequality.
 
 **The calibration ledger counts what cannot be farmed.** A track record
 built from certified-by-timeout claims nobody watched is free to
 manufacture — assert trivialities at 0.999, wait out liveness, collect a
 reputation. So the ledger that gates §4's fast path counts only resolutions
-that carried consumption (insured, or clearing-pinned in the coupling)
-or survived a real dispute — the U12 shape again, applied to reputation.
+that carried consumption (insured, or clearing-pinned in the coupling) —
+the U12 shape again, applied to reputation. *(2026-09-28: "or survived a
+real dispute" removed. A dispute of one's own claim costs only the fees,
+so survival is for sale at the fee price; a lost or conceded dispute is a
+negative entry.)*
 Silence remains uninformative (`insurance-products.md` §3's cold-start
 discipline); an unwatched certification is a non-event in the ledger.
 
@@ -301,7 +310,11 @@ Constitutional clauses, binding across all rungs:
   losing side alone.
 - **Retroactive bond refunds on reversal.** When a ruling is later
   reversed (reopening, below), every party slashed under the reversed
-  ruling is made whole from the slash proceeds and the treasury slice.
+  ruling is made whole *(2026-09-28, with no treasury slice)* from the
+  reversed adjudicator's forfeited deposit, the clause below, which is
+  why that deposit must scale with the open cases the adjudicator ruled
+  on; where it falls short the shortfall is the appeal design's to close
+  (F6).
   Without this, one bad ruling teaches every future disputer the
   wearing-down lesson (§6) permanently.
 - **Rulings are reopenable on evidence that did not exist at ruling time,
@@ -325,8 +338,8 @@ Constitutional clauses, binding across all rungs:
   fee; adjudicators are paid per ruling, hold a deposit, and have an entry
   in §3's calibration ledger in which a reversal at the final rung is
   recorded and forfeits the deposit. **Ruling counts are never a signal**
-  — puppet cases manufacture them for the burn slice (loopmarket's U12
-  applied to judges); the one positive entry allowed is a ruling escalated
+  — puppet cases manufacture them at the price of the fees (loopmarket's
+  U12 applied to judges); the one positive entry allowed is a ruling escalated
   at doubled stake to the final rung and upheld there. A resolver is
   acceptable to a leg only if the requirer's acceptance admits it (by key,
   accrediting root, deposit floor or absence of reversals in a look-back
@@ -489,7 +502,7 @@ here; deliverable 5 is the empirical half):
    soulbound stake (no bribe market to coordinate through) changes the
    attainable ε.
 4. **Asserter–challenger collusion.** Self-dispute laundering is priced by
-   the burn slice (§3); the general form — colluding to manufacture a
+   the fees and made pointless by the ledger crediting no survival (§3); the general form — colluding to manufacture a
    dispute history, farm the calibration ledger, or launder through the
    dispute market — needs treatment jointly with §5's caps.
 5. **The pool-as-asserter equilibrium.** Does blanket pool assertion crowd

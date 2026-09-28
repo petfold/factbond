@@ -1,0 +1,119 @@
+"""The adjudicator's path (F4, 2026-09-28): a label is refused as a dispute;
+a bonded act without a prior lapsed notice is refused; an unnotified accused
+cannot lose by silence; a cure within the deadline ends the matter; a
+notified accused silent through the evidence period is ruled against ex
+parte; late evidence goes to the merits with B5's flag."""
+
+import pytest
+
+from factbond.policy import ClassRule, PolicyDocument, PolicyError, Rung, shipped
+from factbond.procedure import (EX_PARTE, MERITS, PENDING, REFUSED, Accusation, Case, Cure, Notice, Submission,
+                                decide)
+from factbond.sim.records import Claim
+
+DAY = 86400
+POLICY = shipped("credential")
+RULE = POLICY.rule("self-knowable")
+WANTER, DENTIST, OTHER = "0xwanter", "0xdentist", "0xother"
+T0 = 1_000_000                                                   # the notice is sent
+
+
+def _claim(claim_type="self-knowable", policy_ref=None):
+    return Claim("cred/0xdentist/licence-1", "root:register@1", claim_type, policy_ref or POLICY.policy_ref)
+
+
+CLAIM = _claim()
+NOTICE = Notice(WANTER, DENTIST, CLAIM.claim_id, POLICY.policy_ref, T0, T0 + RULE.cure_period)
+ACT = T0 + RULE.cure_period + DAY                                # the bonded act, after the cure deadline
+
+
+def _case(claim=CLAIM, notices=(NOTICE,), cures=(), submissions=(), act=ACT, refs=None, **kw):
+    acc = Accusation(WANTER, DENTIST, claim.claim_id if claim else "label:fraudster", act,
+                     tuple(n.ref for n in notices) if refs is None else refs, **kw)
+    return Case(POLICY, acc, claim, tuple(notices), tuple(cures), tuple(submissions))
+
+
+def test_a_label_is_refused_as_a_dispute():
+    for case in (_case(claim=None),                                          # names no claim record
+                 _case(claim=_claim("entity-exists")),                       # a type the policy does not cover
+                 _case(claim=_claim(policy_ref="00" * 32))):                 # under another policy
+        d = decide(case, ACT)
+        assert (d.kind, d.against, d.rule) == (REFUSED, "accuser", "specific"), d
+    # a dispute of a live assertion names the fact that assertion asserts
+    other = Case(POLICY, _case().accusation, CLAIM, (NOTICE,), disputed_claim=_claim("attribute-matches-source").claim_id)
+    assert decide(other, ACT).rule == "specific"
+    assert decide(Case(POLICY, _case().accusation, CLAIM, (NOTICE,), disputed_claim=CLAIM.claim_id), ACT).kind != REFUSED
+
+
+def test_a_bonded_act_without_a_prior_lapsed_notice_is_refused():
+    assert decide(_case(notices=()), ACT).reason == "no notice to the accused precedes the bonded act"
+    assert decide(_case(refs=()), ACT).rule == "B1"                          # a notice exists but is not cited
+    early = decide(_case(act=T0 + RULE.cure_period), T0 + RULE.cure_period)
+    assert early.kind == REFUSED and "cure deadline had not passed" in early.reason
+    expired = decide(_case(act=T0 + RULE.notice_expiry + 1), T0 + RULE.notice_expiry + 1)
+    assert (expired.kind, expired.rule) == (REFUSED, "A2")
+    for bad, words in ((Notice(OTHER, DENTIST, CLAIM.claim_id, POLICY.policy_ref, T0, T0 + RULE.cure_period),
+                        "not the accuser's"),
+                       (Notice(WANTER, OTHER, CLAIM.claim_id, POLICY.policy_ref, T0, T0 + RULE.cure_period),
+                        "another key"),
+                       (Notice(WANTER, DENTIST, "ff" * 32, POLICY.policy_ref, T0, T0 + RULE.cure_period),
+                        "another fact"),
+                       (Notice(WANTER, DENTIST, CLAIM.claim_id, POLICY.policy_ref, T0, T0 + DAY),
+                        "less than the cure period")):
+        d = decide(_case(notices=(bad,)), ACT)
+        assert d.kind == REFUSED and words in d.reason, d
+    # one valid notice among the cited ones suffices, and the decision names it
+    stray = Notice(OTHER, DENTIST, CLAIM.claim_id, POLICY.policy_ref, T0, T0 + RULE.cure_period)
+    assert decide(_case(notices=(stray, NOTICE)), ACT).notice_ref == NOTICE.ref
+
+
+def test_an_unnotified_accused_cannot_lose_by_silence():
+    long_after = ACT + 365 * DAY
+    d = decide(_case(notices=()), long_after)                                # silent for a year, never notified
+    assert d.kind == REFUSED and d.upheld(accuser_is_asserter=True) is False
+    # and no policy can give a burden-shifting class a way round rung zero
+    rec = POLICY.to_record()
+    rec["classes"]["self-knowable"].update(cure_period=0)
+    rec["classes"]["self-knowable"].pop("notice_expiry")
+    with pytest.raises(PolicyError, match="rung zero"):
+        PolicyDocument.from_record(rec)
+
+
+def test_a_cure_within_the_deadline_ends_the_matter():
+    cure = Cure(NOTICE.ref, DENTIST, T0 + DAY, "tx:refund")
+    d = decide(_case(cures=(cure,)), ACT)
+    assert d.kind == REFUSED and "cured within the deadline" in d.reason
+    late = Cure(NOTICE.ref, DENTIST, NOTICE.cure_deadline + 1)
+    assert decide(_case(cures=(late,)), ACT).kind != REFUSED                 # past the deadline it is no cure
+    impostor = Cure(NOTICE.ref, OTHER, T0 + DAY)
+    assert decide(_case(cures=(impostor,)), ACT).kind != REFUSED             # only the accused cures
+    contested = decide(_case(cures=(cure,), contests_cure=True), ACT)
+    assert contested.kind in (PENDING, MERITS, EX_PARTE)                     # whether it cured is now the question
+
+
+def test_silence_after_notice_is_ruled_against_ex_parte():
+    due = ACT + RULE.evidence_period
+    running = decide(_case(), due)
+    assert (running.kind, running.against, running.rule) == (PENDING, None, "A5")
+    lapsed = decide(_case(), due + 1)
+    assert (lapsed.kind, lapsed.against, lapsed.rule) == (EX_PARTE, "accused", "A5")
+    assert lapsed.notice_ref == NOTICE.ref
+    # the two shapes on chain: a claim's accuser asserted it; a dispute's accuser is the challenger
+    assert lapsed.upheld(accuser_is_asserter=True) is True
+    assert lapsed.upheld(accuser_is_asserter=False) is False
+    in_time = decide(_case(submissions=(Submission(DENTIST, due, "hash:licence-confirmation"),)), due + 1)
+    assert (in_time.kind, in_time.late_evidence) == (MERITS, False) and in_time.upheld(True) is None
+    late = decide(_case(submissions=(Submission(DENTIST, due + 1, "hash:licence-confirmation"),)), due + 2)
+    assert (late.kind, late.late_evidence) == (MERITS, True)                 # weighed; B5 returns E
+    # the accuser's own submissions are not the accused's evidence
+    assert decide(_case(submissions=(Submission(WANTER, ACT, "hash:complaint"),)), due + 1).kind == EX_PARTE
+
+
+def test_a_class_without_rung_zero_goes_straight_to_the_merits():
+    rung = Rung("arbitrator", "key", 28 * DAY, id="0x" + "22" * 20, deposit=1)
+    hunters = PolicyDocument("osm.opening_hours", "eip155:100/slip44:700",
+                             (ClassRule("attribute-matches-world", (rung,), 0, 30 * DAY, 5000, 5000),))
+    claim = Claim("poi/42/opening_hours", "root:osm@1", "attribute-matches-world", hunters.policy_ref)
+    case = Case(hunters, Accusation(WANTER, DENTIST, claim.claim_id, ACT), claim)
+    d = decide(case, ACT)
+    assert (d.kind, d.against, d.notice_ref) == (MERITS, None, "")

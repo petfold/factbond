@@ -67,10 +67,10 @@ For facts the asserter can prove and a challenger may be unable to disprove
   statement is **suspended** (it meets nothing at any gate, the bond stays
   locked) until evidence arrives or the relying reservations' claim periods
   end; only a ruling moves money;
-- evidence accepted ⇒ the winner's share of the loser's stake as today
-  (`winnerBps`; the remainder burns, and the burn is load-bearing against
-  self-dispute laundering, THREATS T11 — whole-bond transfers would reopen
-  it); the evidence's hash is recorded, and a repeat challenge must bring new
+- evidence accepted ⇒ the loser's stake to the winner less the ruling fee
+  *(2026-09-28: the burned remainder of `winnerBps` is replaced by the
+  adjudicator's fee, a cost; T11 now rests on the fees and on the ledger
+  crediting no dispute survival)*; the evidence's hash is recorded, and a repeat challenge must bring new
   evidence (no griefing), reconciled with `mechanism-design.md` §6's
   reopenability on evidence that did not exist at ruling time;
 - which fact types shift the burden is **evidence policy as data**
@@ -108,8 +108,8 @@ judge, all policy data by fact type unless stated:
   with a deposit; a reversal at the final rung forfeits the deposit and is
   recorded; the policy names the adjudicator class per category (holders
   of the same credential under the same root, or the register itself).
-  **Ruling counts are never a signal**: puppet cases manufacture them for
-  the burn slice. The one positive entry allowed is a ruling escalated at
+  **Ruling counts are never a signal**: puppet cases manufacture them at
+  the price of the fees. The one positive entry allowed is a ruling escalated at
   double stake to the final rung and upheld there (C3);
 - **the ruling record** carries the referred fact, the notice timestamps,
   both submissions' hashes or the lapse, the resolver's key, the category
@@ -228,9 +228,37 @@ value of D10, and awaiting its redeploy; F3's policy shapes built in
 `factbond.policy`, the placeholder `credential` policy shipped. The
 behaviour F3's gate names (the evidence fee and cap charged, re-challenge
 at double the stake, E returned on late evidence) waits for the dispute
-path of F4 and F6.)*
+path of F4 and F6.)* *(2026-09-28, later: F4 built as `factbond.procedure`,
+the adjudicator's checks before the merits (specificity, rung zero with
+the notice's expiry, ex parte after a notified silence), carried to chain
+by `Decision.upheld`; the contract gained a per-assertion ruling window,
+never shorter than the deployment's, so that a self-knowable claim can be
+ruled ex parte before it escalates. §8 records what F4 surfaced.)*
 
 ## 8. Open
+
+- **Rung zero on information claims** (found building F4, 2026-09-28;
+  Peter's to decide). A cure ends the matter without a ruling, so no bond
+  is slashed and no bounty is paid. Where the notifier is the harmed party
+  and the cure compensates it (a leg, a relied-on credential), that is the
+  point of B1. Where the challenger is a hunter on an information claim (a
+  POI fact the pool asserted), the asserter answers every correct notice
+  by retracting and loses only the fee, and the hunter's verification goes
+  unpaid. The bond then stops deterring (`mechanism-design.md` §1: capital
+  at risk grows with confidence), and the bounty per adjudicated
+  correction (`domain-choice.md`) stops recruiting. The policy carries
+  the choice per class: `cure_period` 0 means no rung zero. That is built,
+  and refused for `self-knowable`, whose silence rule needs a notice.
+  Open: whether information classes go without rung zero, or a cure owes
+  the notifier the bounty it would have won.
+- **The windows an assertion must name** (found building F4). Rung zero
+  and the evidence period only work if the assertion leaves room for them:
+  a challenge window longer than the cure period, and a ruling window of
+  the evidence period plus the rung's ruling period (the contract's
+  `rulingWindow`, added for this; `ClassRule.windows_fit`). An asserter
+  who carries the burden has every reason to name short ones. A gate reads
+  an assertion whose windows do not fit as meeting nothing; a consumer
+  can refuse it at `hold`.
 
 - The evidence period's length per fact type (policy data).
 - Who may see sealed evidence. *(corrected 2026-09-25)* Sealed evidence

@@ -107,7 +107,7 @@ class Griefer(Adversary):
         p = e.p
         wrong = [f for f in e.world.facts if not f.correct][: self.count]
         for f in wrong:
-            bond = p.bond_floor * 10
+            bond = e.floor() * 10
             if e.ledger.balances[self.name] < bond + p.fee:
                 break
             a = Assertion(f.claim_id, self.name, 999, bond, p.liveness, e.now)
@@ -125,7 +125,9 @@ class Griefer(Adversary):
 @dataclass
 class Launderer(Adversary):
     """T11: dispute your own assertion from a second identity to wash stake
-    through the winner's share; strictly negative under the burned slice."""
+    through the winner's side; strictly negative on the fees alone (the
+    assertion fee and the ruling fee each cycle, 2026-09-28), and it buys
+    nothing while surviving a dispute is never a positive signal."""
     name: str = "launder"
     count: int = 10
 
@@ -135,7 +137,7 @@ class Launderer(Adversary):
         p = e.p
         targets = [f for f in e.world.facts if f.correct][: self.count]
         for f in targets:
-            bond = p.bond_floor
+            bond = e.floor()
             a = Assertion(f.claim_id, self.name, 900, bond, p.liveness, e.now)
             e.fold.add(a); f.assertion_ref = a.ref
             e.ledger.move(self.name, "treasury", p.fee); e.ledger.move(self.name, "escrow", bond)
@@ -144,7 +146,7 @@ class Launderer(Adversary):
             e.ledger.move(self.name, "escrow", stake); self.spent += stake
             d = Dispute(a.ref, self.name + "/2", stake, e.now)
             e.fold.add(d)
-            e.disputes_by[d.ref] = (f, self.name)          # ruled next settle; one side wins, a slice burns
+            e.disputes_by[d.ref] = (f, self.name)          # ruled next settle; one side wins, the loser pays the fee
             e.stats["assertions"] += 1; e.stats["disputes"] += 1
         self.done = True
 

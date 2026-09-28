@@ -117,11 +117,19 @@ class Engine:
         for hook in self.consumers_hook:
             hook(self)
 
+    def floor(self) -> float:
+        """The bond floor, never below the rung's cost: a losing asserter's
+        bond then pays the ruling fee in full, as a losing challenger's stake
+        does, so the adjudicator is paid the same whichever way it rules. A
+        fee only one side could pay would pay the judge to rule against that
+        side (the contract's rule that the floor covers the fee, 2026-09-28)."""
+        return max(self.p.bond_floor, self.p.rung_cost)
+
     def bond_for(self, f: Fact) -> float:
         """mechanism-design §2 clause 1: bond = max(adjudication-cost floor,
         k × the reliance riding on the claim) — a hub claim is expensive to
         assert casually and lucrative to challenge; a cold one stays cheap."""
-        return max(self.p.bond_floor, self.p.k_reliance * f.reliance)
+        return max(self.floor(), self.p.k_reliance * f.reliance)
 
     def assert_all(self) -> None:
         """The pool as asserter (§4): every fact without a live assertion gets
@@ -214,7 +222,7 @@ class Engine:
                 seen.add(f.id)
                 a = self.fold.assertions[f.assertion_ref]
                 stake = self.stake_for(a.bond, a.confidence)
-                win = p.winner_share * a.bond
+                win = a.bond - p.rung_cost                          # the bond, less the ruling fee it pays
                 cost = w.types[f.type].verify_cost
                 # the challenger's belief that this fact is wrong: the pool's realized loss
                 # frequency for the type once it has data, else the type's base rate
@@ -301,13 +309,18 @@ class Engine:
                 self.pay_out("escrow", a.author, a.bond, d.stake)   # the pool's stake, lost to itself as asserter
                 self.stats["upheld"] += 1
             if challenger in self.challengers:
-                self.challengers[challenger][0] += (p.winner_share * a.bond if refuted else -d.stake)
+                self.challengers[challenger][0] += (a.bond - p.rung_cost if refuted else -d.stake)
             del self.disputes_by[ref]
 
     def pay_out(self, escrow: str, winner: str, own: float, lost: float) -> None:
-        to_winner = lost * self.p.winner_share
-        self.ledger.move(escrow, winner, own + to_winner)
-        self.ledger.move(escrow, TREASURY, lost - to_winner)
+        """The loser's stake pays the ruling fee (the rung's cost) to the
+        adjudicator and the rest to the winner. Both floors cover the fee, so
+        a stake below it is a bug, never a discount."""
+        fee = self.p.rung_cost
+        if lost < fee - 1e-9:
+            raise ValueError(f"a lost stake of {lost} below the ruling fee {fee}: the floor must cover it")
+        self.ledger.move(escrow, winner, own + lost - fee)
+        self.ledger.move(escrow, self.adjudicator.name, fee)
 
     # ---- observations -----------------------------------------------------------
 

@@ -877,6 +877,11 @@ Ordered by what unblocks what; nothing blocks current development.
    to any key, `settle(split)`, `extendClaim`, per-leg claim seconds, the
    periods from the term, the accepted-resolver check, a held reservation
    released only by ruling (D3, D7, D10). Small; unblocks cover.
+   *(amended 2026-09-29)* The contract half is built (loopmarket E1,
+   2026-09-28), with the claim read inside `hold` and a retraction
+   reopening (loopmarket THREATS T18). The rest reads v6 fields and moves
+   after step 3's R1; the escrow's one redeploy follows factbond's, which
+   first isolates consumer reverts (this repository's ROADMAP).
 3. **loopmarket v6 and the gate** (D7, D8 door scale, D4's `legs`): R1–R4
    as rewritten, with `cred/`, `notice/` with cure deadlines, the `register`
    role, `register_roots` in the proposal, the loop record and `Beat`,

@@ -20,7 +20,7 @@ with researched numbers, by-construction defense naming invariant and
 owning document, residual, tripwire that pages a human, owning work
 package and phase — condensed pairwise for length. **Content-sync rule** *(revised 2026-09-28, one full copy
 per entry)*: T4–T6, T9–T13 and T17 are primary *here* and written in full
-only here; T1–T3, T7, T8 and T14–T16 are primary in loopmarket's register
+only here; T1–T3, T7, T8, T14–T16 and T18 are primary in loopmarket's register
 and appear here as short stubs — the attack in a sentence, factbond's own
 part of the defense and work package, a link to the full entry.
 loopmarket's register does the same for the entries primary here. Edits
@@ -525,6 +525,19 @@ record names the rule applied (C5), so a refused label's public trace is
 a refusal. **Residual:** the bonded act itself is public (on chain as a
 subject hash, not text, and in the challenger's own store). The refusal
 marks it; nothing erases it.
+
+## T18 — Claim hijack at the escrow's consumer edge — primary: `loopmarket/docs/plans/THREATS.md` (added 2026-09-29)
+
+A stranger asserts and retracts a claim on a reservation held by
+loopmarket's escrow, and the retraction's outcome 0 refunded the giver;
+a claim above the reservation could never certify. **Here:** nothing is
+factbond's to change for the hijack itself: `assert_` stays open to
+anyone and a consumer refuses at `hold` what it does not accept (the
+escrow now reads the claim and opens only the wanter's, naming the
+giver). **Residual here:** `Assertions` calls the consumer without
+isolating a revert, so a consumer that reverts in `resolve` strands a
+case and both stakes, and one that reverts only on 0 makes its claims
+unrefutable. Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## The invariant ↔ threat coverage matrix
 

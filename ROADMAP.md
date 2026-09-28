@@ -41,9 +41,20 @@ procedure, the policy and the ledger views around them, and a consumer
 - [x] The calibration ledger's views from events (F5, F6) —
       `factbond.ledger`: the loss view, the adjudicator view, claims about
       a key.
+- [ ] **Isolate consumer reverts** (added 2026-09-29, before the
+      redeploy): `Assertions` calls the consumer's `hold` and `resolve`
+      without isolating a revert, so a consumer that reverts in `resolve`
+      strands the case and both stakes, and one that reverts only on 0
+      makes its claims unrefutable (THREATS T18's residual, found building
+      loopmarket's E1). `hold` may keep reverting (that is the consumer's
+      refusal, and the assertion never opens); every close must complete
+      whatever the consumer does, the consumer's failure recorded in an
+      event. loopmarket's escrow no longer reverts on a claim it opened, so
+      the gate is a hostile consumer in the tests.
 - [ ] **Redeploy on Gnosis** with an arbiter, then the adjudicator's
       deposit; loopmarket's single escrow redeploy (its E3) names the new
-      address.
+      address. The order across the two repositories is kept in
+      loopmarket's `ROADMAP.md` (P3b, "order of work", 2026-09-29).
 - [ ] The evidence fee and the challenger's cap charged on a real dispute;
       B5's return of the fee · [assertion-extensions §2](docs/plans/assertion-extensions.md).
 - [ ] The ladder beyond two rungs: the automated evidence rung, the staked

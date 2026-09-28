@@ -2,8 +2,9 @@
 
 Status: design, entered factbond's plan corpus 2026-09-25. This is the
 cross-repository plan agreed in the assurance drafts (consolidated
-2026-09-25); loopmarket carries the same text under its own header, and
-the hansa repository will. factbond's side is D1, D2, D9 and D10 with
+2026-09-25). **This is the one full copy** (since 2026-09-28): loopmarket's
+`docs/plans/credentials-cover-and-options.md` is an index pointing here,
+so amendments are made once; the hansa repository will point here too. factbond's side is D1, D2, D9 and D10 with
 the amendments A–G under them; its detailed design is
 `assertion-extensions.md`; loopmarket's are `options-and-cover.md`,
 `items-and-ownership.md` and `counterparty-gate.md` there. It resolves the

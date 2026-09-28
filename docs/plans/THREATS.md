@@ -24,7 +24,11 @@ T1–T3, T7 and T8 are primary in loopmarket's copy and carried below in
 full but condensed; T10–T13 are factbond-native, primary here, entering
 the mirror on its next dated edit. Edits land primary-first; secondary
 copies carry the full columns plus a cross-reference; divergence beyond
-primary/secondary marking blocks both registers' phase gates (G4). The
+primary/secondary marking blocks both registers' phase gates (G4).
+*(Revised 2026-09-28:)* loopmarket's register now carries the entries
+primary here (T4–T6, T9–T13, T17) as short stubs — the attack, its own
+part of the defense, tripwire and work package, a link here — so the full
+text of those entries exists only in this file. The
 adversary playbooks exercising every factbond-owned entry are
 `phase0-simulation.md` §7.
 
@@ -711,9 +715,10 @@ arms races no invariant closes: priced, instrumented, and said out loud.
   from signed speech-act records, anchor readings, pinned roots and the
   cleared fee-paid ledger alone (F1; U12) — a tripwire fed by pollutable
   statistics is itself a T2/T10 target.
-- **G4 — mirror sync.** Diff against loopmarket's register empty modulo
-  primary/secondary marking, checked at every phase gate; edits land
-  primary-first; T10–T13 propagate to the mirror on its next dated edit.
+- **G4 — mirror sync.** For the entries primary in loopmarket, this
+  register's copies agree with loopmarket's in substance; for the entries
+  primary here, loopmarket's stubs link here and state nothing this file
+  contradicts. Checked at every phase gate; edits land primary-first.
 - **G5 — re-ranking cadence.** The damage ordering is reviewed at every
   phase gate and after any tripwire page; re-rankings are dated edits
   that re-sort presentation without renumbering.

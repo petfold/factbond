@@ -5,6 +5,23 @@ trusted publishing).
 
 ## [Unreleased]
 
+### Documentation
+
+- **A User Guide and a Roadmap of factbond's own** (2026-09-28), since
+  factbond has uses beyond loopmarket: `docs/USER-GUIDE.md` (the life of
+  a claim and its money, deploying, the client, writing a consumer,
+  claims about a key, evidence policy, the adjudicator's procedure, the
+  ledger's views, the harness; its examples run end to end on a local
+  EVM) and `ROADMAP.md`. loopmarket's documents stop duplicating factbond
+  and point here: the cross-repository plan's full text is now only
+  `docs/plans/credentials-cover-and-options.md` (loopmarket keeps an
+  index), loopmarket's register carries the entries primary here as
+  stubs (THREATS G4 and the content-sync rule revised), the oracle
+  roster's rulings are stated only in `evidence-policy.md` §3 (the roster
+  sync gate revised), and the coupling's sequencing only in
+  `loopmarket-coupling.md` §5. The client no longer warns when an
+  assertion's receipt carries `Named`.
+
 ### Changed
 
 - **Only a ruling moves money; claims name the key they concern**

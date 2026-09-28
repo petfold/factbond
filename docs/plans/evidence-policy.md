@@ -325,8 +325,10 @@ code release and without rebinding history.
   identified and capped; at least one prior ruling traverses the reopening
   path.
 - **Roster sync (continuous).** loopmarket's `P3-guarantee-coupling.md`
-  mirror of the roster carries full columns and names this document as
-  primary owner; divergence between the copies blocks release of either.
+  §4 carries the roster's table as it consumes it (oracle, what it
+  attests, trust root) and its own enforcement order, and links here for
+  the rulings; *(since 2026-09-28)* the rulings are stated only here. A
+  table that disagrees with this document blocks release of either.
 
 ## Open problems
 

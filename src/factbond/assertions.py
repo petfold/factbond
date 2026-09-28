@@ -107,7 +107,8 @@ class AssertionsClient:
         receipt = self._send(c.functions.assert_(subject, consumer or "0x" + "00" * 20, outcome, confidence,
                                                  window, ruling_window, about or "0x" + "00" * 20),
                              value=self.fee() + bond)
-        return c.events.Asserted().process_receipt(receipt)[0]["args"]["id"], receipt
+        from web3.logs import DISCARD              # the receipt also carries `Named` when `about` is set
+        return c.events.Asserted().process_receipt(receipt, errors=DISCARD)[0]["args"]["id"], receipt
 
     def dispute(self, id_: int, stake: int | None = None) -> dict:
         a = self.assertion(id_)

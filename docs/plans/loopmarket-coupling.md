@@ -345,9 +345,9 @@ it is a list of forbidden assumptions:
 
 ## 5. Sequencing: two gates, jointly necessary
 
-Mirrored, verbatim in substance, with the mirror's §8: **the coupling
-ships only after factbond Phase-0 is green AND loopmarket's P2 record
-formats are frozen.** Neither alone suffices:
+Stated here only (since 2026-09-28 loopmarket's `P3-guarantee-coupling.md`
+§8 points here): **the coupling ships only after factbond Phase-0 is green
+AND loopmarket's P2 record formats are frozen.** Neither alone suffices:
 
 - **Phase-0 green without the P2 freeze** wires a working mechanism to
   moving subjects. The reliance proof consumes P2's inclusion artifacts —

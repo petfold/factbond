@@ -67,6 +67,12 @@ fact, without anyone betting on most of them.
 
 ## Documentation
 
+- **[docs/USER-GUIDE.md](docs/USER-GUIDE.md)** — how to use what is
+  built: the life of a claim and its money, deploying, the client, writing
+  a consumer, evidence policy, the adjudicator's procedure, the ledger's
+  views, the simulation harness.
+- **[ROADMAP.md](ROADMAP.md)** — what is built, what is next, and what
+  waits on a decision.
 - **[docs/DESIGN.md](docs/DESIGN.md)** — the design: why markets fail at
   this scale, the bonded-assertion primitive, odds-weighted bonds, the
   insurance coupling, the five-layer architecture, the claim lifecycle,

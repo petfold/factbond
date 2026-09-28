@@ -21,7 +21,9 @@ trusted publishing).
   only if it named it (the bonded-negation rule). First rulings are held
   for appeal where an arbiter is named (A4, Peter). Constructor of
   eleven arguments, `assert_(subject, consumer, outcome, confidence,
-  window, rulingWindow, about)`.
+  window, rulingWindow, about)`. The asserter may `concede` a moved-up
+  case too, before the arbiter rules: the whole bond to the challenger,
+  no fee.
 - **`Assertions.sol`: the challenge window and the escalation value are
   per assertion** (2026-09-28; development sequence F1 and F-esc,
   `credentials-cover-and-options.md` D10). `assert_` takes `window` (0 for

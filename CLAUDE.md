@@ -22,9 +22,9 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   undisputed; `rule` by the adjudicator on a contested claim (the loser
   pays the adjudicator's `rulingFeeWei`, at most the floor, and the winner
   takes the rest; since 2026-09-28 there is no slice to the treasury);
-  `concede` by the asserter of a contested claim (the challenger takes the
-  whole bond and its stake, nobody rules, no fee; `Refuted` with `ruled`
-  false); `escalate` when the first rung lets its window lapse, which
+  `concede` by the asserter of a contested claim, before the first rung or
+  after the case moved up (the challenger takes the whole bond and its
+  stake, nobody rules, no fee; `Refuted` with `ruled` false); `escalate` when the first rung lets its window lapse, which
   moves the case up to the arbiter with the stakes held (Peter,
   2026-09-28: **only a ruling moves money**, since parties handed their
   stakes back can simply disappear; the arbiter may rule however late, and

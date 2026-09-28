@@ -32,9 +32,11 @@ pragma solidity ^0.8.20;
 ///   stake covers it and the adjudicator is paid the same whichever way it
 ///   rules. Laundering stays a loss on the fees alone, as long as surviving a
 ///   dispute is never a positive signal (THREATS T11);
-/// - the asserter may `concede` a contested claim: the challenger takes the
-///   whole bond and its own stake back, no adjudicator is needed and no fee
-///   is due. Concession is the loser's own signed act, never silence;
+/// - the asserter may `concede` a contested claim, before the first rung or
+///   after the case has moved up: the challenger takes the whole bond and
+///   its own stake back, no adjudicator is needed and no fee is due.
+///   Concession is the loser's own signed act, as certain as a ruling and
+///   never silence;
 /// - **only a ruling moves money** (Peter, 2026-09-28): a dispute with no
 ///   ruling in its window never returns the stakes, since parties who get
 ///   theirs back can simply disappear and nothing more can be done. With an
@@ -268,13 +270,14 @@ contract Assertions {
         emit Disputed(id, msg.sender, msg.value);
     }
 
-    /// The asserter's concession of a contested claim: the challenger takes
-    /// its stake back and the whole bond, and no fee is due since nobody
-    /// rules. The consumer learns nothing of the asserted outcome.
+    /// The asserter's concession of a contested claim, before the first rung
+    /// or after the case moved up to the arbiter: the challenger takes its
+    /// stake back and the whole bond, and no fee is due since nobody rules.
+    /// The consumer learns nothing of the asserted outcome.
     function concede(uint256 id) external {
         Assertion storage a = assertions[id];
         require(msg.sender == a.asserter, "not the asserter");
-        require(a.status == Status.Contested, "not contested");
+        require(a.status == Status.Contested || a.status == Status.Escalated, "not contested");
         a.status = Status.Refuted;
         _pay(payable(a.challenger), a.stake + a.bond);
         if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, 0);

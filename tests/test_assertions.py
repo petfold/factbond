@@ -444,7 +444,8 @@ def test_a_lapsed_first_rung_moves_the_case_up_with_the_stakes_held(chain, ladde
     """A3 with nothing returned: the first rung lets its window lapse, anyone
     moves the case up (`Escalated`, the lapsing rung paid nothing), the
     first rung may no longer rule, and the arbiter rules however late, its
-    fee out of the two stakes whoever wins, the consumer told only then."""
+    fee out of the two stakes whoever wins, the consumer told only then;
+    until it rules, the asserter may still concede."""
     w3, a, consumer, adjudicator, treasury = chain
     L, arbiter = ladder
     asserter, challenger, anyone = w3.eth.accounts[2], w3.eth.accounts[3], w3.eth.accounts[4]
@@ -463,6 +464,18 @@ def test_a_lapsed_first_rung_moves_the_case_up_with_the_stakes_held(chain, ladde
     assert _balance_delta(w3, arbiter, L.functions.ruleAppeal(id_, False)) == ARBITER_FEE
     assert w3.eth.get_balance(challenger) - before[1] == FLOOR + stake - ARBITER_FEE
     assert consumer.functions.resolved(subject).call() and L.functions.assertions(id_).call()[10] == 4
+    # the asserter may still concede once the case has moved up: the whole bond, no fee to anyone
+    subject = b"\xa9" * 32
+    id2, stake2 = _contest(w3, L, consumer, subject, asserter, challenger)
+    _advance(w3, RULING + 1)
+    L.functions.escalate(id2).transact({"from": anyone})
+    before = [w3.eth.get_balance(x) for x in (challenger, arbiter, adjudicator)]
+    receipt = w3.eth.wait_for_transaction_receipt(L.functions.concede(id2).transact({"from": asserter}))
+    after = [w3.eth.get_balance(x) for x in (challenger, arbiter, adjudicator)]
+    assert after[0] - before[0] == FLOOR + stake2 and after[1:] == before[1:]
+    assert L.events.Refuted().process_receipt(receipt)[0]["args"]["ruled"] is False
+    assert consumer.functions.outcome(subject).call() == 0 and L.functions.assertions(id2).call()[10] == 4
+    assert "not before the arbiter" in _reverts(L.functions.ruleAppeal(id2, True), arbiter)
 
 
 def test_the_adjudicator_view_reads_the_ladders_events(chain, ladder):
@@ -475,7 +488,7 @@ def test_the_adjudicator_view_reads_the_ladders_events(chain, ladder):
     view = adjudicator_view_from_chain(AssertionsClient("", L.address, client=w3))
     mine = view[adjudicator]
     assert [e["forfeited"] for e in mine["reversals"]] == [DEPOSIT] and len(mine["confirmed_on_appeal"]) == 1
-    assert len(mine["lapses"]) == 1 and set(mine) == {"reversals", "confirmed_on_appeal", "lapses"}
+    assert len(mine["lapses"]) == 2 and set(mine) == {"reversals", "confirmed_on_appeal", "lapses"}
     now = w3.eth.get_block("latest")["timestamp"]
     assert adjudicator_view_from_chain(AssertionsClient("", L.address, client=w3), now=now + 10 ** 6, max_age=1) == \
         {adjudicator: {"reversals": [], "confirmed_on_appeal": [], "lapses": []}}

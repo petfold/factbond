@@ -11,34 +11,42 @@ decision to chain with `rule`.
   assertion asserts. A label ("fraudster") is not a claim record, so it is
   refused: it cannot be adjudicated, and it would be defamation on a
   permanent public store (THREATS T17).
-- **Rung zero: notice and cure** (B1, A2). Where the class has rung zero,
-  the bonded act cites a prior notice from the accuser to the accused about
-  the same fact. The notice's cure deadline must have lapsed, the act must
-  come before the notice expires, and the accused must not have cured in
-  time, unless the accuser contests the cure. The notice and the cure pass
-  between the parties (loopmarket's `notice/` sidecar); they reach a public
-  store only as part of a bonded act's case file. A cure within the
-  deadline makes every act citing that notice inadmissible, so a cured
-  matter leaves nothing public through this path.
+- **Notice and cure, for a claim on a reservation** (B1, A2; scoped by
+  Peter, 2026-09-28). The claimant relied on the giver and lost, and a cure
+  (delivery, a refund, a correction) can make it whole, so the claim cites
+  a prior notice from the claimant to the giver about the same fact. The
+  notice's cure deadline must have passed, the claim must come before the
+  notice expires, and the giver must not have cured in time, unless the
+  claimant contests the cure. The notice and the cure pass between the
+  parties (loopmarket's `notice/` sidecar) and reach a public store only as
+  part of a claim's case file, so a cured matter leaves nothing public
+  through this path. A dispute of a live assertion takes no notice: the
+  challenger is usually a hunter with no loss to cure, a cure would let the
+  asserter keep its bond and leave her unpaid, and the dispute on chain is
+  itself the notice to an asserter that posted a bonded public claim. Its
+  cheap ending is the asserter's `concede`.
 - **Silence counts only after notice, and only through a ruling** (D2,
   A5). For a class that shifts the burden, the accused delivers evidence
   within the evidence period from the bonded act. If none has arrived when
   the period lapses, the rung rules against the accused, ex parte, on the
-  record. The policy gives every such class rung zero, so an accused who
-  was never notified cannot reach that ruling. Evidence that arrives late
-  is still weighed, and the case goes to the merits with `late_evidence`
-  set: B5 then returns E to the challenger even if the claim holds.
+  record. The accused was notified either way: by the notice before a claim
+  on its reservation, or as a party to the contest on chain. Evidence that
+  arrives late is still weighed, and the case goes to the merits with
+  `late_evidence` set: B5 then returns E to the challenger even if the
+  claim holds.
 
 Whatever is left goes to the merits: the rung weighs the evidence, which
 is outside this module. The decision names the rule it applied, and F6's
 ruling record takes it as its `reason`.
 
-The contest's two shapes (D2): a **dispute** of a live assertion, where
-the accuser is the on-chain challenger and the accused the asserter; and a
+The contest's shapes (D2): a **dispute** of a live assertion, where the
+accuser is the on-chain challenger and the accused the asserter; a
 **claim** against the accused's reservation (loopmarket's escrow, D1),
 where the accuser is the on-chain asserter and the accused, the giver,
-disputes it. `Decision.upheld` maps a decision to `rule`'s argument for
-either shape."""
+disputes it; and a **bonded negation** about a key that asserted nothing,
+an ordinary assertion the accused disputes. Only the claim names a
+`reservation`, so only it takes the notice step. `Decision.upheld` maps a
+decision to `rule`'s argument for each shape."""
 
 from __future__ import annotations
 
@@ -120,7 +128,9 @@ class Case:
     """The case file. `claim` is the referred fact's claim record (the
     records-and-anchoring §1 shape, `factbond.sim.records.Claim`), or None
     when the accusation names no claim record. `disputed_claim` is set for a
-    dispute of a live assertion: the claim that assertion asserts."""
+    dispute of a live assertion: the claim that assertion asserts.
+    `reservation` names the reservation a claim is routed from (the escrow's
+    key), and only a claim that names one takes the notice step."""
     policy: PolicyDocument
     accusation: Accusation
     claim: object = None
@@ -128,6 +138,7 @@ class Case:
     cures: tuple = ()
     submissions: tuple = ()
     disputed_claim: str | None = None
+    reservation: str | None = None
 
 
 @dataclass(frozen=True)
@@ -197,10 +208,10 @@ def decide(case: Case, now: int) -> Decision:
     acc = case.accusation
     rule = case.policy.rule(case.claim.claim_type)
     notice = None
-    if rule.cure_period:
+    if case.reservation is not None:                       # a claim on a reservation: the notice step
         cited = [n for n in case.notices if n.ref in acc.notice_refs]
         if not cited:
-            return _refused("B1", "no notice to the accused precedes the bonded act")
+            return _refused("B1", "no notice to the giver precedes the claim on its reservation")
         faults = {n.ref: _notice_faults(case, n, rule) for n in cited}
         notice = next((n for n in cited if not faults[n.ref]), None)
         if notice is None:
@@ -209,7 +220,7 @@ def decide(case: Case, now: int) -> Decision:
             return _refused("A2" if only_expiry else "B1", "; ".join(listed))
     ref = notice.ref if notice else ""
     if rule.burden_shifts:
-        # reached only through a valid notice: the policy gives every burden-shifting class rung zero
+        # the accused was notified: by the notice before a claim, or as a party to the contest on chain
         due = acc.time + rule.evidence_period
         evidence = [s for s in case.submissions if s.author == acc.accused]
         if not evidence:

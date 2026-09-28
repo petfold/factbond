@@ -1,8 +1,10 @@
 """The adjudicator's path (F4, 2026-09-28): a label is refused as a dispute;
-a bonded act without a prior lapsed notice is refused; an unnotified accused
-cannot lose by silence; a cure within the deadline ends the matter; a
-notified accused silent through the evidence period is ruled against ex
-parte; late evidence goes to the merits with B5's flag."""
+a claim on a reservation without a prior lapsed notice is refused; an
+unnotified accused cannot lose by silence; a cure within the deadline ends
+the matter; a notified accused silent through the evidence period is ruled
+against ex parte; late evidence goes to the merits with B5's flag. A
+dispute of a live assertion takes no notice (Peter, 2026-09-28): the
+dispute is the notice, and concession its cheap ending."""
 
 import pytest
 
@@ -28,9 +30,10 @@ ACT = T0 + RULE.cure_period + DAY                                # the bonded ac
 
 
 def _case(claim=CLAIM, notices=(NOTICE,), cures=(), submissions=(), act=ACT, refs=None, **kw):
+    """The wanter's claim on the reservation the dentist's statement backed."""
     acc = Accusation(WANTER, DENTIST, claim.claim_id if claim else "label:fraudster", act,
                      tuple(n.ref for n in notices) if refs is None else refs, **kw)
-    return Case(POLICY, acc, claim, tuple(notices), tuple(cures), tuple(submissions))
+    return Case(POLICY, acc, claim, tuple(notices), tuple(cures), tuple(submissions), reservation="escrow:leg-1")
 
 
 def test_a_label_is_refused_as_a_dispute():
@@ -45,8 +48,8 @@ def test_a_label_is_refused_as_a_dispute():
     assert decide(Case(POLICY, _case().accusation, CLAIM, (NOTICE,), disputed_claim=CLAIM.claim_id), ACT).kind != REFUSED
 
 
-def test_a_bonded_act_without_a_prior_lapsed_notice_is_refused():
-    assert decide(_case(notices=()), ACT).reason == "no notice to the accused precedes the bonded act"
+def test_a_claim_on_a_reservation_without_a_prior_lapsed_notice_is_refused():
+    assert decide(_case(notices=()), ACT).reason == "no notice to the giver precedes the claim on its reservation"
     assert decide(_case(refs=()), ACT).rule == "B1"                          # a notice exists but is not cited
     early = decide(_case(act=T0 + RULE.cure_period), T0 + RULE.cure_period)
     assert early.kind == REFUSED and "cure deadline had not passed" in early.reason
@@ -71,11 +74,10 @@ def test_an_unnotified_accused_cannot_lose_by_silence():
     long_after = ACT + 365 * DAY
     d = decide(_case(notices=()), long_after)                                # silent for a year, never notified
     assert d.kind == REFUSED and d.upheld(accuser_is_asserter=True) is False
-    # and no policy can give a burden-shifting class a way round rung zero
+    # and no class can drop the notice step a claim on a reservation takes
     rec = POLICY.to_record()
     rec["classes"]["self-knowable"].update(cure_period=0)
-    rec["classes"]["self-knowable"].pop("notice_expiry")
-    with pytest.raises(PolicyError, match="rung zero"):
+    with pytest.raises(PolicyError, match="cure period"):
         PolicyDocument.from_record(rec)
 
 
@@ -109,11 +111,23 @@ def test_silence_after_notice_is_ruled_against_ex_parte():
     assert decide(_case(submissions=(Submission(WANTER, ACT, "hash:complaint"),)), due + 1).kind == EX_PARTE
 
 
-def test_a_class_without_rung_zero_goes_straight_to_the_merits():
+def test_a_dispute_of_a_live_assertion_takes_no_notice():
+    """A hunter disputes the pool's locker hours at once, with no notice the
+    pool could cure by retracting; the asserter of a self-knowable claim,
+    disputed, is ruled against on its silence after the evidence period."""
     rung = Rung("arbitrator", "key", 28 * DAY, id="0x" + "22" * 20, deposit=1)
-    hunters = PolicyDocument("osm.opening_hours", "eip155:100/slip44:700",
-                             (ClassRule("attribute-matches-world", (rung,), 0, 30 * DAY, 5000, 5000),))
-    claim = Claim("poi/42/opening_hours", "root:osm@1", "attribute-matches-world", hunters.policy_ref)
-    case = Case(hunters, Accusation(WANTER, DENTIST, claim.claim_id, ACT), claim)
-    d = decide(case, ACT)
+    lockers = PolicyDocument("osm.lockers", "eip155:100/slip44:700",
+                             (ClassRule("attribute-matches-world", (rung,), DAY, 30 * DAY, 5000, 5000,
+                                        notice_expiry=30 * DAY),))
+    hours = Claim("locker/mall-x/opening_hours", "root:osm@1", "attribute-matches-world", lockers.policy_ref)
+    hunter = Case(lockers, Accusation("0xvolunteer", "0xpool", hours.claim_id, ACT), hours,
+                  disputed_claim=hours.claim_id)
+    d = decide(hunter, ACT)
     assert (d.kind, d.against, d.notice_ref) == (MERITS, None, "")
+    silent = Case(POLICY, Accusation(WANTER, DENTIST, CLAIM.claim_id, ACT), CLAIM, disputed_claim=CLAIM.claim_id)
+    assert decide(silent, ACT + RULE.evidence_period).kind == PENDING
+    d = decide(silent, ACT + RULE.evidence_period + 1)
+    assert (d.kind, d.against) == (EX_PARTE, "accused") and d.upheld(accuser_is_asserter=False) is False
+    # the same accusation routed from a reservation needs the notice it does not cite
+    routed = Case(POLICY, silent.accusation, CLAIM, reservation="escrow:leg-1")
+    assert decide(routed, ACT + RULE.evidence_period + 1).rule == "B1"

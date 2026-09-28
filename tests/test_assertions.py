@@ -284,12 +284,13 @@ def test_the_ruling_window_is_the_asserters_only_ever_longer(chain, compiled):
 
 def test_the_adjudicator_path_carries_the_procedure_to_chain(chain):
     """F4 end to end: a self-knowable claim asserted with its policy's
-    windows; the challenger's notice lapses uncured, the dispute follows on
-    chain, the asserter produces nothing in the evidence period, and the
-    rung's ex parte ruling refutes it inside the ruling window. A label on a
-    second assertion is refused, and the asserter keeps its bond."""
+    ruling window; the challenger disputes on chain at once (a dispute of a
+    live assertion takes no notice: it is the notice), the asserter produces
+    nothing in the evidence period, and the rung's ex parte ruling refutes it
+    inside the ruling window. A label on a second assertion is refused, and
+    the asserter keeps its bond."""
     from factbond.policy import shipped
-    from factbond.procedure import Accusation, Case, Notice, decide
+    from factbond.procedure import Accusation, Case, decide
     from factbond.sim.records import Claim
     w3, a, consumer, adjudicator, treasury = chain
     asserter, challenger = w3.eth.accounts[5], w3.eth.accounts[6]
@@ -302,16 +303,14 @@ def test_the_adjudicator_path_carries_the_procedure_to_chain(chain):
         a.functions.assert_(bytes.fromhex(claim.claim_id), "0x" + "00" * 20, 1, 990, 30 * DAY, rule.escalation_arg(),
                             rule.ruling_window()).transact({"from": asserter, "value": FEE + FLOOR})
         ids.append((a.functions.count().call(), claim))
-    assert rule.windows_fit(30 * DAY, rule.ruling_window()) and not rule.windows_fit(rule.cure_period, RULING)
+    assert rule.ruling_window_fits(rule.ruling_window()) and not rule.ruling_window_fits(RULING)
     (id_, claim), (id_label, _) = ids
     _advance(w3, DAY)
-    notice = Notice(challenger, asserter, claim.claim_id, policy.policy_ref, now(), now() + rule.cure_period)
-    _advance(w3, rule.cure_period + DAY)
     stake = a.functions.stakeFor(FLOOR, 990).call()
     for i in (id_, id_label):
         a.functions.dispute(i).transact({"from": challenger, "value": stake})
-    acc = Accusation(challenger, asserter, claim.claim_id, now(), (notice.ref,))
-    case = Case(policy, acc, claim, (notice,), disputed_claim=claim.claim_id)
+    acc = Accusation(challenger, asserter, claim.claim_id, now())
+    case = Case(policy, acc, claim, disputed_claim=claim.claim_id)
     assert decide(case, now()).kind == "pending"                           # the evidence period runs
     label = Case(policy, Accusation(challenger, asserter, "label:unlicensed quack", now()), None)
     d_label = decide(label, now())

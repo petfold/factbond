@@ -87,11 +87,10 @@ def test_the_plans_rules_are_refused_at_load():
     _refused(sk(lambda c: c.pop("evidence_period")), "evidence period (A5)")
     _refused(src(lambda c: c.update(evidence_period=DAY)), "only a self-knowable class")
     _refused(sk(lambda c: c["rungs"][0].update(ruling_period=0)), "ruling period (A3)")
-    _refused(sk(lambda c: c.update(cure_period=0)), "so it has rung zero")          # never lose by silence unnotified
-    _refused(sk(lambda c: c.update(cure_period=-1)), "cure period (B1)")
+    for cure in (0, -1):
+        _refused(sk(lambda c: c.update(cure_period=cure)), "cure period (B1)")   # every class has the notice step
     _refused(sk(lambda c: c.pop("notice_expiry")), "notice's expiry (A2)")
     _refused(sk(lambda c: c.update(notice_expiry=c["cure_period"])), "expires after its cure period")
-    _refused(src(lambda c: c.update(cure_period=0)), "no notice to expire")
     for cap in (0, 10000, 0.5):
         _refused(sk(lambda c: c.update(cap_bps=cap)), "k < 1")
     for esc in (10001, -1, True, "half"):
@@ -109,7 +108,7 @@ def test_the_plans_rules_are_refused_at_load():
 
 def test_a_rule_built_in_code_checks_like_a_loaded_one():
     rung = Rung("arbitrator", "key", 28 * DAY, id="0x" + "22" * 20, deposit=1)
-    rule = ClassRule("attribute-matches-world", (rung,), 0, 30 * DAY, 5000, 5000)   # no rung zero: hunters
+    rule = ClassRule("attribute-matches-world", (rung,), DAY, 30 * DAY, 5000, 5000, notice_expiry=30 * DAY)
     PolicyDocument("osm.opening_hours", "eip155:100/slip44:700", (rule,)).check()
     assert rule.escalation_arg() == 5000 and not rule.burden_shifts and rule.ruling_window() == 28 * DAY
     with pytest.raises(PolicyError, match="one rule per class"):

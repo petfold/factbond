@@ -63,11 +63,11 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   spelling; a `ClassRule` per claim type (`CLAIM_TYPES`, now with
   `self-knowable`) carrying the rungs, each with its adjudicator class,
   ruling period, fee, deposit and admitted evidence weights, plus the cure
-  period (0: no rung zero, never for `self-knowable`) and the notice's
-  expiry, the evidence period and fee, challenger cap, finality window and
-  escalation value (`escalation_arg()` and `ruling_window()` are what
-  `assert_` takes; `windows_fit()` says whether an assertion's windows let
-  the procedure run). It
+  period and the notice's expiry (the notice step of a claim on a
+  reservation), the evidence period and fee, challenger cap, finality
+  window and escalation value (`escalation_arg()` and `ruling_window()`
+  are what `assert_` takes; `ruling_window_fits()` says whether an
+  assertion's ruling window lets the procedure run). It
   refuses at load a class with no named, bonded final rung, a token vote,
   a structural class not settled by certificate alone (F8), an evidence
   period outside `self-knowable`, and the other fixed rules. `Suspension`
@@ -82,9 +82,12 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   now)` over a case file (`Accusation`, the claim record, `Notice`, `Cure`,
   `Submission`, the policy) applies the rules that come before the merits.
   A contest that names no claim record the policy covers is refused as a
-  label (THREATS T17); rung zero needs a cited notice from the accuser to
-  the accused about the same fact, its cure deadline passed, not expired,
-  not cured in time unless the cure is contested; under a burden shift,
+  label (THREATS T17); a claim on a reservation (`Case.reservation`) needs
+  a cited notice from the claimant to the giver about the same fact, its
+  cure deadline passed, not expired, not cured in time unless the cure is
+  contested, while a dispute of a live assertion takes none (Peter,
+  2026-09-28: the dispute is the notice, `concede` its cheap ending, and a
+  cure would let the asserter keep its bond); under a burden shift,
   the accused silent through the evidence period is ruled against ex
   parte (`pending` before), and late evidence goes to the merits flagged
   for B5. `Decision.upheld(accuser_is_asserter)` is `rule`'s argument for
@@ -239,10 +242,9 @@ Decided 2026-09-25 with the assurance drafts
 the order is `../assurance-drafts/development-sequence-2026-09-25.md`,
 Track F). Built 2026-09-28: F1 and F-esc (above, in the source, not yet
 redeployed), F3's shapes (`factbond.policy`) and F4 (`factbond.procedure`,
-with the per-assertion ruling window). Open from F4, Peter's to decide
-(`assertion-extensions.md` §8): whether information claims take rung
-zero at all, since a cure lets the asserter keep its bond and leaves the
-hunter unpaid. Not built: the evidence fee and cap charged on a real
+with the per-assertion ruling window; the notice step scoped to claims
+on a reservation). Open from F4 (`assertion-extensions.md` §8): a bonded
+negation about a key that watches nothing certifies unseen. Not built: the evidence fee and cap charged on a real
 dispute, and B5's return of E; adjudicators paid per ruling and in the
 calibration ledger, and the ruling record's fields (F6); the
 asserter-indexed loss view with a look-back (F5: from `Asserted ⋈

@@ -649,9 +649,11 @@ could cure.
 `assertion-extensions.md` §3). A contest names a claim record the pinned
 policy covers. The claim-type vocabulary has no type for character, so a
 label has no form in which it can be adjudicated, and the rung refuses it
-in the accused's favour. Rung zero (B1): the notice passes between the
-parties and reaches a public store only when a bonded act cites it after
-the cure deadline, so a cured matter leaves nothing public. The ruling
+in the accused's favour. For a claim on a reservation, the notice (B1)
+passes between the parties and reaches a public store only when the claim
+cites it after the cure deadline, so a cured matter leaves nothing
+public. A dispute of a live assertion is public at once, but it is a
+specific fact about a claim its asserter chose to publish. The ruling
 record names the rule applied (C5), so a refused label's public trace is
 a refusal. **Residual:** the bonded act itself is public (on chain as a
 subject hash, not text, and in the challenger's own store). The refusal

@@ -18,11 +18,13 @@ A document that breaks a rule the plans fixed does not load:
   period** (A5);
 - every rung has a **ruling period** (A3); every class has a **finality
   window** (A4) and a **challenger cap** k < 1 of the reserved slice (B3);
-- a class with rung zero names the **notice's cure period** (B1) and its
-  **expiry**, the time within which the bonded act must follow the notice
-  (A2's third clock). A cure period of 0 means no rung zero, which a
-  `self-knowable` class may not have, since its accused could then lose by
-  silence without having been notified (F4; `factbond.procedure`);
+- every class names the **notice's cure period** (B1) and its **expiry**,
+  the time within which the claim must follow the notice (A2's third
+  clock). That notice step belongs to a claim on a reservation, whose
+  claimant relied and lost and whom a cure makes whole; a dispute of a live
+  assertion takes none, since the dispute is itself the notice and the
+  asserter's concession is its cheap ending (Peter, 2026-09-28;
+  `factbond.procedure`);
 - the **escalation value** is a share of the outcome in bps or
   `"unresolved"` (D10), which is what `Assertions.assert_` takes as
   `escalation` (`ClassRule.escalation_arg`).
@@ -139,13 +141,13 @@ class ClassRule:
     amounts in the document's `unit`."""
     claim_type: str
     rungs: tuple                # of Rung, cheap to expensive; the last is the final rung
-    cure_period: int            # B1: the notice's cure deadline, before any bonded act; 0: no rung zero
+    cure_period: int            # B1: the notice's cure deadline, before a claim on a reservation
     finality_window: int        # A4: reopen on new evidence, or at double the stake, until it ends
     cap_bps: int                # B3: stake plus evidence fee at most this share of the reserved slice
     escalation: int | str       # D10: bps of the outcome resolved when no ruling comes, or "unresolved"
     evidence_period: int | None = None  # A5: the asserter's time to produce evidence (self-knowable only)
     evidence_fee: int = 0       # E: the challenger's, beside its stake; to the asserter if the claim holds
-    notice_expiry: int | None = None    # A2: a notice supports a bonded act until this long after it was sent
+    notice_expiry: int | None = None    # A2: a notice supports a claim until this long after it was sent
 
     @property
     def burden_shifts(self) -> bool:
@@ -163,14 +165,12 @@ class ClassRule:
         staked = [r for r in self.rungs if r.adjudicator != "certificate"] or list(self.rungs)
         return (self.evidence_period or 0) + staked[0].ruling_period
 
-    def windows_fit(self, challenge_window: int, ruling_window: int) -> bool:
-        """Whether an assertion's two windows let this class's procedure run:
-        a challenge window longer than the cure period, so a dispute can
-        follow a lapsed notice, and a ruling window of at least
-        `ruling_window()`. An assertion whose windows do not fit could
-        certify, or escalate, before any admissible dispute were ruled, so a
-        gate reads it as meeting nothing."""
-        return challenge_window > self.cure_period and ruling_window >= self.ruling_window()
+    def ruling_window_fits(self, ruling_window: int) -> bool:
+        """Whether an assertion's ruling window lets this class's procedure
+        run: at least `ruling_window()`. An assertion whose window is shorter
+        could escalate before a burden-shifting dispute were ruled, so a gate
+        reads it as meeting nothing and a consumer may refuse it at `hold`."""
+        return ruling_window >= self.ruling_window()
 
     def escalation_arg(self) -> int:
         """The value `Assertions.assert_` takes as `escalation`."""
@@ -202,18 +202,12 @@ class ClassRule:
             raise PolicyError(f"{where} names no rungs, so no final rung (D2's C2)")
         for r in self.rungs:
             r.check()
-        _count(self.cure_period, f"{where}: the cure period (B1)")
-        if self.burden_shifts and not self.cure_period:
-            raise PolicyError(f"{where} shifts the burden, so it has rung zero: an accused who was never "
-                              "notified cannot lose by silence (B1, F4)")
-        if self.cure_period:
-            if self.notice_expiry is None:
-                raise PolicyError(f"{where} has rung zero, so it names the notice's expiry (A2)")
-            if type(self.notice_expiry) is not int or self.notice_expiry <= self.cure_period:
-                raise PolicyError(f"{where}: a notice expires after its cure period (A2), "
-                                  f"not at {self.notice_expiry!r}")
-        elif self.notice_expiry is not None:
-            raise PolicyError(f"{where}: without rung zero there is no notice to expire")
+        _count(self.cure_period, f"{where}: the cure period (B1)", positive=True)
+        if self.notice_expiry is None:
+            raise PolicyError(f"{where} names the notice's expiry (A2)")
+        if type(self.notice_expiry) is not int or self.notice_expiry <= self.cure_period:
+            raise PolicyError(f"{where}: a notice expires after its cure period (A2), "
+                              f"not at {self.notice_expiry!r}")
         _count(self.finality_window, f"{where}: the finality window (A4)")
         if type(self.cap_bps) is not int or not 0 < self.cap_bps < 10000:
             raise PolicyError(f"{where}: the challenger cap is a share k < 1 of the reserved slice, "

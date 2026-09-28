@@ -60,13 +60,13 @@ trusted publishing).
   `Suspension` (`suspended/<statement>`) with `suspended()` deriving it.
   The placeholder `policies/credential.json` is shipped. `CLAIM_TYPES`
   gains `self-knowable` and the harness reads the one vocabulary. With F4:
-  the notice's `notice_expiry` (A2), `cure_period` 0 for a class without
-  rung zero (refused for `self-knowable`), `ruling_window()` and
-  `windows_fit()`.
+  the notice's `notice_expiry` (A2), `ruling_window()` and
+  `ruling_window_fits()`.
 - **The adjudicator's path, `factbond.procedure`** (2026-09-28; F4). The
   rules before the merits, as pure functions of the case file and the
-  clock: labels refused, rung zero (a cited notice, lapsed, unexpired,
-  uncured), ex parte against a notified, silent accused under a burden
+  clock: labels refused, the notice step for a claim on a reservation (a
+  cited notice, lapsed, unexpired, uncured; `Case.reservation`) and none
+  for a dispute of a live assertion (Peter, 2026-09-28), ex parte against a notified, silent accused under a burden
   shift, late evidence to the merits with B5's flag. `Decision.upheld`
   gives `rule`'s argument for a dispute or a claim. THREATS T17
   (defamation on a permanent store) added, mirrored in loopmarket.

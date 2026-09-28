@@ -95,7 +95,9 @@ judge, all policy data by fact type unless stated:
   fraud or a contradicting primary source (A4, realigning with
   `mechanism-design.md` §6's own window);
 - **rung zero**: a free `notice/` with a cure deadline precedes every
-  bonded dispute; nothing is public before it lapses (B1);
+  claim on a reservation; nothing is public before it lapses (B1).
+  *(Scoped 2026-09-28: a dispute of a live assertion takes no notice; see
+  §8.)*
 - **the challenger's outlay is capped** at a fraction of the reservation a
   claim is routed from, and E returns on any ruling in her favour,
   including a partial one; E also returns when the asserter produces
@@ -229,36 +231,44 @@ value of D10, and awaiting its redeploy; F3's policy shapes built in
 behaviour F3's gate names (the evidence fee and cap charged, re-challenge
 at double the stake, E returned on late evidence) waits for the dispute
 path of F4 and F6.)* *(2026-09-28, later: F4 built as `factbond.procedure`,
-the adjudicator's checks before the merits (specificity, rung zero with
-the notice's expiry, ex parte after a notified silence), carried to chain
+the adjudicator's checks before the merits (specificity, the notice step
+with its expiry for a claim on a reservation, ex parte after a notified
+silence), carried to chain
 by `Decision.upheld`; the contract gained a per-assertion ruling window,
 never shorter than the deployment's, so that a self-knowable claim can be
 ruled ex parte before it escalates. §8 records what F4 surfaced.)*
 
 ## 8. Open
 
-- **Rung zero on information claims** (found building F4, 2026-09-28;
-  Peter's to decide). A cure ends the matter without a ruling, so no bond
-  is slashed and no bounty is paid. Where the notifier is the harmed party
-  and the cure compensates it (a leg, a relied-on credential), that is the
-  point of B1. Where the challenger is a hunter on an information claim (a
-  POI fact the pool asserted), the asserter answers every correct notice
-  by retracting and loses only the fee, and the hunter's verification goes
-  unpaid. The bond then stops deterring (`mechanism-design.md` §1: capital
-  at risk grows with confidence), and the bounty per adjudicated
-  correction (`domain-choice.md`) stops recruiting. The policy carries
-  the choice per class: `cure_period` 0 means no rung zero. That is built,
-  and refused for `self-knowable`, whose silence rule needs a notice.
-  Open: whether information classes go without rung zero, or a cure owes
-  the notifier the bounty it would have won.
-- **The windows an assertion must name** (found building F4). Rung zero
-  and the evidence period only work if the assertion leaves room for them:
-  a challenge window longer than the cure period, and a ruling window of
-  the evidence period plus the rung's ruling period (the contract's
-  `rulingWindow`, added for this; `ClassRule.windows_fit`). An asserter
-  who carries the burden has every reason to name short ones. A gate reads
-  an assertion whose windows do not fit as meeting nothing; a consumer
-  can refuse it at `hold`.
+- ~~**Rung zero on information claims**~~ *(found building F4 and decided
+  by Peter the same day, 2026-09-28)*. A cure ends the matter without a
+  ruling, so no bond is slashed and no bounty is paid. Where the notifier
+  relied and lost and the cure compensates it (a leg, a relied-on
+  credential), that is the point of B1. Where the challenger is a hunter
+  (a volunteer checking a locker's hours, a journalist checking a
+  licence), the asserter would answer every correct notice by retracting,
+  lose only the fee, and leave the hunter unpaid; the bond would stop
+  deterring and the stated confidence would mean nothing. **Decided:** the
+  line runs by the shape of the contest, not the claim type. A claim on a
+  reservation takes the notice step; a dispute of a live assertion takes
+  none, since the dispute is itself the notice, and its cheap ending is
+  the asserter's `concede`, which pays the hunter the bond without a
+  ruling. Every class names the cure period and the notice's expiry, used
+  by its claims on reservations.
+- **The ruling window an assertion must name** (found building F4). The
+  evidence period only works if the assertion leaves room for it: a ruling
+  window of the evidence period plus the rung's ruling period (the
+  contract's `rulingWindow`, added for this;
+  `ClassRule.ruling_window_fits`). An asserter who carries the burden has
+  every reason to name a short one. A gate reads an assertion whose window
+  does not fit as meeting nothing; a consumer can refuse it at `hold`.
+- **A bonded negation about a key that watches nothing** (open). "K does
+  not hold licence L", asserted against a key that asserted nothing,
+  routes from no reservation, so it takes no notice; if K never sees it,
+  it certifies by timeout. It moves nobody's money and the gate does not
+  read it, but it stands as a record about K. Whether such a negation
+  must name its subject's key so K's watcher is told, as a consumer is
+  told at `hold`, is open.
 
 - The evidence period's length per fact type (policy data).
 - Who may see sealed evidence. *(corrected 2026-09-25)* Sealed evidence

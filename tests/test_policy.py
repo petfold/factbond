@@ -7,7 +7,6 @@ import json
 
 import pytest
 
-from factbond.assertions import UNRESOLVED
 from factbond.policy import (CLAIM_TYPES, ClassRule, PolicyDocument, PolicyError, Rung, Suspension, evidence_due,
                              load, shipped, suspended)
 
@@ -35,7 +34,6 @@ def test_the_shipped_placeholder_loads():
     rule = doc.rule("self-knowable")
     assert rule.burden_shifts and rule.evidence_period == 14 * DAY
     assert rule.final_rung.adjudicator == "panel" and rule.final_rung.deposit > 0
-    assert rule.escalation_arg() == UNRESOLVED                        # what Assertions.assert_ takes (D10)
     assert rule.ruling_window() == (14 + 28) * DAY                    # the evidence period, then the rung's own
     assert rule.notice_expiry == 30 * DAY and rule.cure_period == 7 * DAY
     assert not doc.rule("attribute-matches-source").burden_shifts
@@ -93,8 +91,7 @@ def test_the_plans_rules_are_refused_at_load():
     _refused(sk(lambda c: c.update(notice_expiry=c["cure_period"])), "expires after its cure period")
     for cap in (0, 10000, 0.5):
         _refused(sk(lambda c: c.update(cap_bps=cap)), "k < 1")
-    for esc in (10001, -1, True, "half"):
-        _refused(sk(lambda c: c.update(escalation=esc)), "(D10)")
+    _refused(sk(lambda c: c.update(escalation="unresolved")), "unknown fields")   # nothing resolves without a ruling
     _refused(sk(lambda c: c.update(evidence_fee=1.5)), "evidence fee")
     _refused(sk(lambda c: c["rungs"][0]["admits"].update(photo="proof")), "weights are")
     _refused(_with(lambda r: r["classes"].update({"opinion": r["classes"]["self-knowable"]})), "claim type")
@@ -108,9 +105,9 @@ def test_the_plans_rules_are_refused_at_load():
 
 def test_a_rule_built_in_code_checks_like_a_loaded_one():
     rung = Rung("arbitrator", "key", 28 * DAY, id="0x" + "22" * 20, deposit=1)
-    rule = ClassRule("attribute-matches-world", (rung,), DAY, 30 * DAY, 5000, 5000, notice_expiry=30 * DAY)
+    rule = ClassRule("attribute-matches-world", (rung,), DAY, 30 * DAY, 5000, notice_expiry=30 * DAY)
     PolicyDocument("osm.opening_hours", "eip155:100/slip44:700", (rule,)).check()
-    assert rule.escalation_arg() == 5000 and not rule.burden_shifts and rule.ruling_window() == 28 * DAY
+    assert not rule.burden_shifts and rule.ruling_window() == 28 * DAY
     with pytest.raises(PolicyError, match="one rule per class"):
         PolicyDocument("d", "u", (rule, rule)).check()
 

@@ -92,7 +92,9 @@ final rung. `policies/credential.json` is the placeholder that loopmarket's
 gate and hansa's adapter code against. Each class also names the
 **escalation value** a dispute with no ruling resolves at, a share of the
 outcome or `unresolved` (D10), which is the value an assertion passes to
-`Assertions.assert_`. F4 added the notice's **expiry** (A2's third clock),
+`Assertions.assert_`. *(Withdrawn the same day: only a ruling moves money,
+a lapsed rung's case moving up, so there is no escalation value to name.)*
+F4 added the notice's **expiry** (A2's third clock),
 scoped the notice step to a claim on a reservation (Peter, 2026-09-28: a
 dispute of a live assertion is its own notice, and the asserter's
 concession its cheap ending), and gave each class the ruling window an

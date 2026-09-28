@@ -117,7 +117,7 @@ def test_a_dispute_of_a_live_assertion_takes_no_notice():
     disputed, is ruled against on its silence after the evidence period."""
     rung = Rung("arbitrator", "key", 28 * DAY, id="0x" + "22" * 20, deposit=1)
     lockers = PolicyDocument("osm.lockers", "eip155:100/slip44:700",
-                             (ClassRule("attribute-matches-world", (rung,), DAY, 30 * DAY, 5000, 5000,
+                             (ClassRule("attribute-matches-world", (rung,), DAY, 30 * DAY, 5000,
                                         notice_expiry=30 * DAY),))
     hours = Claim("locker/mall-x/opening_hours", "root:osm@1", "attribute-matches-world", lockers.policy_ref)
     hunter = Case(lockers, Accusation("0xvolunteer", "0xpool", hours.claim_id, ACT), hours,

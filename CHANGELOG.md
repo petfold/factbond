@@ -7,6 +7,21 @@ trusted publishing).
 
 ### Changed
 
+- **Only a ruling moves money; claims name the key they concern**
+  (2026-09-28, Peter). A first rung that lets its window lapse no longer
+  returns the stakes: `escalate` moves the case up to the arbiter with
+  them held (`Escalated`, the lapse in the adjudicator view), the arbiter
+  may rule however late and takes its fee from the two stakes whoever
+  wins; without an arbiter the adjudicator's ruling is awaited however
+  late. The per-assertion escalation value below is withdrawn with it
+  (`escalationBps`, `UNRESOLVED`, the `Unresolved` status and the
+  policy's `escalation` field): nothing resolves at a share any more.
+  `assert_` takes `about`, the key a claim concerns, told through
+  `Named`; `factbond.ledger.claims_about` counts a claim against a key
+  only if it named it (the bonded-negation rule). First rulings are held
+  for appeal where an arbiter is named (A4, Peter). Constructor of
+  eleven arguments, `assert_(subject, consumer, outcome, confidence,
+  window, rulingWindow, about)`.
 - **`Assertions.sol`: the challenge window and the escalation value are
   per assertion** (2026-09-28; development sequence F1 and F-esc,
   `credentials-cover-and-options.md` D10). `assert_` takes `window` (0 for

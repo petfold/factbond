@@ -63,7 +63,9 @@ For facts the asserter can prove and a challenger may be unable to disprove
   the asserter's bond to the challenger". That reverses a recorded decision
   (`Assertions.sol` header, 2026-09-19: a dispute with no ruling escalates
   and returns both stakes, "never a default that rewards an absent
-  adjudicator or a claimant"). Plan D2 replaces it: no evidence ⇒ the
+  adjudicator or a claimant"; *since 2026-09-28* no stakes return at all:
+  a lapsed rung's case moves up, since parties handed their stakes back can
+  disappear). Plan D2 replaces it: no evidence ⇒ the
   statement is **suspended** (it meets nothing at any gate, the bond stays
   locked) until evidence arrives or the relying reservations' claim periods
   end; only a ruling moves money;
@@ -256,8 +258,11 @@ ruled ex parte before it escalates. §8 records what F4 surfaced.)*
 as the final rung, appeal at double the stake plus its fee, each rung paid
 either way, the first rung's deposit forfeited to the appellant on a
 reversal, the payout held through the appeal window; off chain,
-`RulingRecord` and the adjudicator view of the calibration ledger. A
-lapse at the first rung still escalates rather than moving up.)*
+`RulingRecord` and the adjudicator view of the calibration ledger.
+Later the same day, Peter: first rulings are held for appeal, and a lapse
+at the first rung moves the case up to the arbiter with the stakes held,
+never returning them, since parties handed their stakes back can
+disappear.)*
 
 ## 8. Open
 
@@ -283,13 +288,15 @@ lapse at the first rung still escalates rather than moving up.)*
   `ClassRule.ruling_window_fits`). An asserter who carries the burden has
   every reason to name a short one. A gate reads an assertion whose window
   does not fit as meeting nothing; a consumer can refuse it at `hold`.
-- **A bonded negation about a key that watches nothing** (open). "K does
-  not hold licence L", asserted against a key that asserted nothing,
-  routes from no reservation, so it takes no notice; if K never sees it,
-  it certifies by timeout. It moves nobody's money and the gate does not
-  read it, but it stands as a record about K. Whether such a negation
-  must name its subject's key so K's watcher is told, as a consumer is
-  told at `hold`, is open.
+- **A bonded negation about a key that watches nothing** *(found building
+  F4, decided by Peter 2026-09-28)*. "K does not hold licence L", asserted
+  against a key that asserted nothing, routes from no reservation, so it
+  takes no notice; if K never sees it, it certifies by timeout. **Decided
+  and built:** an assertion names `about`, the key it concerns, announced
+  in `Named` so K's watcher is told, as a consumer is told at `hold`; a
+  reader counts a claim against a key only if it named that key
+  (`factbond.ledger.claims_about`), so a negation certified unseen meets
+  nothing.
 
 - The evidence period's length per fact type (policy data).
 - Who may see sealed evidence. *(corrected 2026-09-25)* Sealed evidence

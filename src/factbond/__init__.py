@@ -5,6 +5,6 @@ the design lives in `docs/`."""
 
 __version__ = "0.1.0"
 
-from .assertions import AssertionsClient, BUCKETS, NO_LADDER, UNRESOLVED, abi  # noqa: E402,F401
+from .assertions import AssertionsClient, BUCKETS, NO_LADDER, abi  # noqa: E402,F401
 
-__all__ = ["AssertionsClient", "BUCKETS", "NO_LADDER", "UNRESOLVED", "abi", "__version__"]
+__all__ = ["AssertionsClient", "BUCKETS", "NO_LADDER", "abi", "__version__"]

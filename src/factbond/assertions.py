@@ -2,9 +2,9 @@
 claim about a subject with a bond and a stated confidence; dispute at the
 odds the confidence sets; certify by timeout; the adjudicator rules only on
 a contested claim; a consumer contract, if named, is told `hold` and
-`resolve`. Each assertion names its challenge window within the
-deployment's bounds and its escalation value (a share of the outcome, or
-`UNRESOLVED`: the consumer's hold persists until a ruling).
+`resolve`. Each assertion names its challenge and ruling windows within
+the deployment's bounds, and the key it concerns if any; only a ruling
+moves money, a lapsed rung's case moving up to the arbiter.
 `AssertionsClient` sends and reads; web3 loads lazily behind the `chain`
 extra. The contract's own docstring is the design record for what v0 fixes
 and what waits for the plans."""
@@ -16,15 +16,11 @@ import json
 #: the four confidence buckets, per mille (mechanism-design.md §1)
 BUCKETS = (900, 970, 990, 999)
 
-STATUS = ("none", "asserted", "contested", "certified", "refuted", "retracted", "escalated", "unresolved",
-          "ruled", "appealed")
+STATUS = ("none", "asserted", "contested", "certified", "refuted", "retracted", "escalated", "ruled", "appealed")
 
 #: no arbiter: one rung, the first ruling pays at once and is final
 NO_LADDER = ("0x" + "00" * 20, 0, 0, 0)
 
-#: the escalation value that resolves nothing (the contract's `UNRESOLVED`):
-#: for a boolean or a hash, where a share of the outcome means nothing
-UNRESOLVED = 0xFFFF
 
 
 def abi() -> dict:
@@ -92,28 +88,24 @@ class AssertionsClient:
         f = self.contract().functions
         return f.rulingSeconds().call(), f.maxRulingSeconds().call()
 
-    def escalation_bps(self) -> int:
-        """The deployment's escalation share: the default, and the most an
-        assertion may name."""
-        return self.contract().functions.escalationBps().call()
 
     # ---- the lifecycle -------------------------------------------------------
 
     def assert_(self, subject: bytes, consumer: str | None, outcome: int, confidence: int,
-                bond: int | None = None, *, window: int = 0, escalation: int | None = None,
-                ruling_window: int = 0) -> tuple[int, dict]:
+                bond: int | None = None, *, window: int = 0, ruling_window: int = 0,
+                about: str | None = None) -> tuple[int, dict]:
         """Post a claim; the bond defaults to the floor, the challenge and
-        ruling windows (seconds) to the deployment's, the escalation value to
-        the deployment's share. `factbond.policy` says what a fact type takes:
-        `UNRESOLVED` for a boolean or a hash, `ClassRule.ruling_window()` for
-        a claim whose asserter carries the burden. Returns (id, receipt)."""
+        ruling windows (seconds) to the deployment's; `about` is the key the
+        claim concerns, told through `Named` (a claim against a key counts
+        only if it named it). `ClassRule.ruling_window()` gives the ruling
+        window a claim whose asserter carries the burden needs. Returns
+        (id, receipt)."""
         if confidence not in BUCKETS:
             raise ValueError(f"confidence is one of {BUCKETS} per mille")
         c = self.contract()
         bond = self.floor() if bond is None else bond
-        escalation = self.escalation_bps() if escalation is None else escalation
         receipt = self._send(c.functions.assert_(subject, consumer or "0x" + "00" * 20, outcome, confidence,
-                                                 window, escalation, ruling_window),
+                                                 window, ruling_window, about or "0x" + "00" * 20),
                              value=self.fee() + bond)
         return c.events.Asserted().process_receipt(receipt)[0]["args"]["id"], receipt
 
@@ -147,6 +139,10 @@ class AssertionsClient:
             value = 2 * own + self.contract().functions.arbiterFeeWei().call()
         return self._send(self.contract().functions.appeal(id_), value=value)
 
+    def escalate(self, id_: int) -> dict:
+        """Move a case whose first rung let its window lapse up to the arbiter."""
+        return self._send(self.contract().functions.escalate(id_))
+
     def rule_appeal(self, id_: int, upheld: bool) -> dict:
         return self._send(self.contract().functions.ruleAppeal(id_, upheld))
 
@@ -163,9 +159,6 @@ class AssertionsClient:
         r = self.contract().functions.appeals(id_).call()
         return {"upheld": r[0], "appeal_until": r[1], "ruled_by": r[2], "appeal_stake": r[3]}
 
-    def escalate(self, id_: int) -> dict:
-        return self._send(self.contract().functions.escalate(id_))
-
     def retract(self, id_: int) -> dict:
         return self._send(self.contract().functions.retract(id_))
 
@@ -175,7 +168,7 @@ class AssertionsClient:
         r = self.contract().functions.assertions(id_).call()
         return {"asserter": r[0], "challenger": r[1], "consumer": r[2], "subject": r[3], "outcome": r[4],
                 "confidence": r[5], "bond": r[6], "stake": r[7], "challenge_until": r[8],
-                "ruling_until": r[9], "status": STATUS[r[10]], "escalation": r[11], "ruling_window": r[12]}
+                "ruling_until": r[9], "status": STATUS[r[10]], "ruling_window": r[11], "about": r[12]}
 
     def count(self) -> int:
         return self.contract().functions.count().call()

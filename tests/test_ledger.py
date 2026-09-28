@@ -12,12 +12,15 @@ def test_an_adjudicators_entries_are_its_reversals_and_its_confirmations_never_a
     confirmed = [{"id": 2, "adjudicator": ADJ, "time": 25}]
     reversed_ = [{"id": 3, "adjudicator": ADJ, "forfeited": 30, "time": 35},
                  {"id": 4, "adjudicator": ADJ, "forfeited": 30, "time": 300}]
-    view = adjudicator_view(ruled, confirmed, reversed_)
+    escalated = [{"id": 7, "lapsed": OTHER, "time": 60}]
+    view = adjudicator_view(ruled, confirmed, reversed_, escalated)
     assert view[ADJ] == {"reversals": [{"id": 3, "forfeited": 30, "time": 35}, {"id": 4, "forfeited": 30, "time": 300}],
-                         "confirmed_on_appeal": [{"id": 2, "time": 25}]}
-    assert view[OTHER] == {"reversals": [], "confirmed_on_appeal": []}     # five rulings or one: nothing to count
-    recent = adjudicator_view(ruled, confirmed, reversed_, now=310, max_age=100)
-    assert recent[ADJ] == {"reversals": [{"id": 4, "forfeited": 30, "time": 300}], "confirmed_on_appeal": []}
+                         "confirmed_on_appeal": [{"id": 2, "time": 25}], "lapses": []}
+    assert view[OTHER] == {"reversals": [], "confirmed_on_appeal": [], "lapses": [{"id": 7, "time": 60}]}
+    recent = adjudicator_view(ruled, confirmed, reversed_, escalated, now=310, max_age=100)
+    assert recent[ADJ] == {"reversals": [{"id": 4, "forfeited": 30, "time": 300}], "confirmed_on_appeal": [],
+                           "lapses": []}
+    assert recent[OTHER]["lapses"] == []                                   # older than the look-back
 
 
 def _asserted(id_, asserter, bond=10, time=0):
@@ -49,3 +52,11 @@ def test_the_loss_view_joins_refuted_to_asserted_and_keeps_only_negatives():
     assert kinds == ["silent", "conceded", "refuted"]
     assert loss_view(asserted, refuted, rulings={1: SimpleNamespace(reason="B1: no notice")})["0xa"]["losses"][0][
         "kind"] == "procedural"
+
+
+def test_a_claim_counts_against_a_key_only_if_it_named_it():
+    """The bonded-negation rule: readers count against K only the claims
+    whose `Named` event told K."""
+    from factbond.ledger import claims_about
+    named = [{"id": 3, "about": "0xk"}, {"id": 5, "about": "0xother"}, {"id": 8, "about": "0xk"}]
+    assert claims_about("0xk", named) == [3, 8] and claims_about("0xnobody", named) == []

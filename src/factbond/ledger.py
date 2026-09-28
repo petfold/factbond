@@ -13,9 +13,15 @@ derivation over it, never a stored score. Two rules hold throughout:
   and drops what is older, while the events stay.
 
 `adjudicator_view` is F6's: an adjudicator's reversals by the arbiter, each
-with the deposit it forfeited, and the one positive entry C3 allows — a
-ruling appealed at the doubled stake to the final rung and confirmed there,
-which cost the appellant a real review.
+with the deposit it forfeited, its lapses (a window it let pass, the case
+moved up, A3), and the one positive entry C3 allows — a ruling appealed at
+the doubled stake to the final rung and confirmed there, which cost the
+appellant a real review.
+
+`claims_about` is the bonded-negation rule (2026-09-28): a claim counts
+against a key only if it named that key (`Named`), so the key's watcher was
+told; "K does not hold licence L" asserted without naming K certifies
+unseen and meets nothing.
 
 `loss_view` is F5's, the asserter-indexed negative half: `Refuted` joined
 to `Asserted` on `id` (the refutation carries no asserter or bond; the
@@ -36,24 +42,31 @@ def _recent(time: int, now: int | None, max_age: int | None) -> bool:
     return now is None or max_age is None or time >= now - max_age
 
 
-def adjudicator_view(ruled: list, confirmed: list, reversed_: list, *, now: int | None = None,
-                     max_age: int | None = None) -> dict:
-    """Per first-rung adjudicator, from the `Ruled`, `Confirmed` and
-    `Reversed` events (dicts with `id`, `adjudicator`, `time`, and for a
-    reversal `forfeited`): its `reversals` and its `confirmed_on_appeal`,
-    each a list of entries within the look-back. Its rulings are read only
-    to name who ruled; how many it made is never returned."""
+def adjudicator_view(ruled: list, confirmed: list, reversed_: list, escalated: list = (), *,
+                     now: int | None = None, max_age: int | None = None) -> dict:
+    """Per first-rung adjudicator, from the `Ruled`, `Confirmed`,
+    `Reversed` and `Escalated` events (dicts with `id`, `time`, the
+    adjudicator as `adjudicator` or, for a lapse, `lapsed`, and for a
+    reversal `forfeited`): its `reversals`, its `lapses` and its
+    `confirmed_on_appeal`, each a list of entries within the look-back. Its
+    rulings are read only to name who ruled; how many it made is never
+    returned."""
     out: dict = {}
+
+    def row(who):
+        return out.setdefault(who, {"reversals": [], "confirmed_on_appeal": [], "lapses": []})
+
     for e in ruled:
-        out.setdefault(e["adjudicator"], {"reversals": [], "confirmed_on_appeal": []})
+        row(e["adjudicator"])
     for e in reversed_:
         if _recent(e["time"], now, max_age):
-            out.setdefault(e["adjudicator"], {"reversals": [], "confirmed_on_appeal": []})["reversals"].append(
-                {"id": e["id"], "forfeited": e["forfeited"], "time": e["time"]})
+            row(e["adjudicator"])["reversals"].append({"id": e["id"], "forfeited": e["forfeited"], "time": e["time"]})
     for e in confirmed:
         if _recent(e["time"], now, max_age):
-            out.setdefault(e["adjudicator"], {"reversals": [], "confirmed_on_appeal": []})[
-                "confirmed_on_appeal"].append({"id": e["id"], "time": e["time"]})
+            row(e["adjudicator"])["confirmed_on_appeal"].append({"id": e["id"], "time": e["time"]})
+    for e in escalated:
+        if _recent(e["time"], now, max_age):
+            row(e["lapsed"])["lapses"].append({"id": e["id"], "time": e["time"]})
     return out
 
 
@@ -61,7 +74,19 @@ def adjudicator_view_from_chain(client, *, from_block: int = 0, now: int | None 
                                 max_age: int | None = None) -> dict:
     """`adjudicator_view` over an `AssertionsClient`'s events."""
     return adjudicator_view(client.events("Ruled", from_block), client.events("Confirmed", from_block),
-                            client.events("Reversed", from_block), now=now, max_age=max_age)
+                            client.events("Reversed", from_block), client.events("Escalated", from_block),
+                            now=now, max_age=max_age)
+
+
+def claims_about(key: str, named: list) -> list:
+    """The assertion ids that named `key`, from the `Named` events: the only
+    claims a reader counts against it."""
+    return sorted({e["id"] for e in named if e["about"] == key})
+
+
+def claims_about_from_chain(client, key: str, *, from_block: int = 0) -> list:
+    """`claims_about` over an `AssertionsClient`'s events."""
+    return claims_about(key, client.events("Named", from_block))
 
 
 def corrections(asserted: list, refuted: list) -> list:

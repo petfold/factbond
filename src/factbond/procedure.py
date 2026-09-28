@@ -2,8 +2,8 @@
 `assertion-extensions.md` §3, `credentials-cover-and-options.md` D2 with
 A2, A5 and B1). These are the rules a rung applies before it weighs any
 evidence, as pure functions of the case file and the clock. `Assertions.sol`
-knows none of them (D2: the contract gains the windows and the escalation
-value, nothing else); the adjudicator's key applies them and carries the
+knows none of them (D2: the contract gains the windows and the ladder,
+nothing else); the adjudicator's key applies them and carries the
 decision to chain with `rule`.
 
 - **Specific and refutable.** A contest names a claim record the pinned

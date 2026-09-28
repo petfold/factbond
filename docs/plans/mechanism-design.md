@@ -337,10 +337,14 @@ Constitutional clauses, binding across all rungs:
   arbiter's fee, each rung paid either way; a reversal forfeits the first
   rung's deposit to the appellant. With an arbiter the first ruling's
   payout is held through the appeal window, so a reversal claws nothing
-  back; without one it pays at once and is final. Which a deployment
-  does is a parameter, and whether "the first ruling pays" means paying
-  at once or after a short appeal window is Peter's to set. A lapse at the
-  first rung still escalates (v0's stand-in) instead of moving up.
+  back; without one it pays at once and is final. *(Decided by Peter the
+  same day:)* where there is an arbiter, "the first ruling pays" means it
+  pays after the appeal window, and the live deployment should name one.
+  And **only a ruling moves money**: a first rung that lets its window
+  lapse sends the case up to the arbiter with the stakes held (A3's
+  move-up), the arbiter may rule however late, and without an arbiter the
+  adjudicator's ruling is awaited. Stakes are never handed back for want
+  of a ruling, since parties who get theirs back can disappear.
 - **Every rung has a clock, and the judge is paid and ledgered** (decided
   2026-09-25). Each rung rules within its class's ruling period or the
   claim moves up automatically and the lapsing adjudicator forfeits its

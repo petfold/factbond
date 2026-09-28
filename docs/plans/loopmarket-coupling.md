@@ -284,7 +284,8 @@ resolver interface sees them): a reservation the resolver has **held is
 released only by a ruling** or by a two-signature `settle(split)` between
 wanter and giver — never by the quiet path, so a silent asserter cannot
 exit with the bond; "unresolved" (the boolean escalation value) means the
-hold persists; cover reservations are `claimOnly` (never countersigned);
+hold persists *(since 2026-09-28 every lapse does: a lapsed rung's case
+moves up with the stakes held, and nothing resolves without a ruling)*; cover reservations are `claimOnly` (never countersigned);
 `assign` redirects a claim to any key, and for cover the resolver requires
 assignment of the insured's claim on the giver's reservation before it
 pays, netting what that paid; `extendClaim` lets a giver lengthen its own

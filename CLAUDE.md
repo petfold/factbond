@@ -24,9 +24,11 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   takes the rest; since 2026-09-28 there is no slice to the treasury);
   `concede` by the asserter of a contested claim (the challenger takes the
   whole bond and its stake, nobody rules, no fee; `Refuted` with `ruled`
-  false); `escalate` when no
-  ruling arrives in the window (v0's stand-in for the next rung: both
-  stakes back, the subject resolved at the assertion's escalation value);
+  false); `escalate` when the first rung lets its window lapse, which
+  moves the case up to the arbiter with the stakes held (Peter,
+  2026-09-28: **only a ruling moves money**, since parties handed their
+  stakes back can simply disappear; the arbiter may rule however late, and
+  without an arbiter the adjudicator's ruling is awaited however late);
   `retract` returns the bond, never the fee. `treasury` receives only the
   assertion fees (the pool's address once it exists; today the deployer's
   key). A consumer is told exactly
@@ -34,20 +36,20 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   registration, the consumer's acceptance ties a subject to this resolver)
   and `resolve(subject, outcome)` when it closes. `Refuted` is the
   correction feed's event. **Per assertion since 2026-09-28** (development
-  sequence F1 and F-esc; plan D10): `assert_` also takes the challenge
-  `window` in seconds (0 for the deployment's default, otherwise within
-  [`minChallengeSeconds`, `maxChallengeSeconds`]) and the `escalation`
-  value — bps of the outcome at most the deployment's `escalationBps` (a
-  lower share only costs the asserter), or `UNRESOLVED` for a boolean or a
-  hash: at escalation both stakes return, the consumer is not told, its
-  hold persists (status `Unresolved`), and the adjudicator's later `rule`
-  resolves it with no clock, moving only the record and the consumer. Both
-  are written before `hold`, so a consumer may read `assertions(count())`
-  there and refuse. The **ruling window** is per assertion too (F4):
-  `rulingWindow`, 0 for the deployment's `rulingSeconds`, otherwise up to
-  `maxRulingSeconds`. It is never shorter than the default, since a short
-  one would let an asserter who expects to lose force the escalation that
-  returns its bond. **The second rung** (F6, 2026-09-28): a `Ladder` at
+  sequence F1): `assert_(subject, consumer, outcome, confidence, window,
+  rulingWindow, about)` takes the challenge `window` in seconds (0 for the
+  deployment's default, otherwise within [`minChallengeSeconds`,
+  `maxChallengeSeconds`]) and the **ruling window** (F4), 0 for the
+  deployment's `rulingSeconds`, otherwise up to `maxRulingSeconds`, never
+  shorter, so no asserter hurries its case past the first rung; both are
+  written before `hold`, so a consumer may read `assertions(count())`
+  there and refuse. `about` names the key the claim concerns, told through
+  `Named`: readers count a claim against a key only if it named it (the
+  bonded-negation rule). The per-assertion escalation value built that
+  morning (F-esc, D10) is gone: it existed because v0 resolved a lapsed
+  dispute at a share of the outcome, and now nothing resolves without a
+  ruling, so every lapse keeps the consumer's hold, which is what D10
+  asked for booleans. **The second rung** (F6, 2026-09-28): a `Ladder` at
   construction names an `arbiter` (never the first rung), its fee, an
   `appealSeconds` window and the first rung's `depositWei`. With it, the
   first rung must hold its deposit (`postDeposit`) to rule, earns its fee
@@ -57,11 +59,13 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   is final and paid either way: confirmed, the appeal stake goes to the
   respondent (`Confirmed`); reversed, the payout goes to the appellant
   with the first rung's deposit (`Reversed`, the forfeit). An arbiter that
-  lets its window lapse leaves the ruling below standing and returns the
-  appeal stake and fee. A deposit cannot be withdrawn while any of its
+  lets an appeal lapse leaves the ruling below standing and returns the
+  appeal stake and fee; on a case moved up with no ruling below
+  (`Escalated`) it has no deadline, and its fee comes out of the two
+  stakes whoever wins. A deposit cannot be withdrawn while any of its
   rulings is open to appeal. No ladder (`NO_LADDER`): one rung, its ruling
-  pays at once, as before. Whether a deployment holds first rulings for
-  appeal or pays at once (A4's "pay now, argue later") is Peter's to set;
+  pays at once. First rulings are held for appeal (Peter, 2026-09-28,
+  settling A4 for the ladder): the live deployment should name an arbiter;
   a self-knowable claim names its evidence period plus
   the rung's ruling period (`ClassRule.ruling_window()`), or it could
   escalate before an ex parte ruling. `Asserted` carries `challengeUntil`,
@@ -70,7 +74,7 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
 - `src/factbond/assertions.py` — `AssertionsClient` (web3 lazy, the
   `chain` extra), `BUCKETS`, `abi()` reading the shipped artifact
   `src/factbond/contracts/Assertions.json` (`scripts/build.py`; solc 0.8.24,
-  via IR, optimizer 200), `UNRESOLVED`. `scripts/deploy_assertions.py`.
+  via IR, optimizer 200), `NO_LADDER`. `scripts/deploy_assertions.py`.
 - `src/factbond/policy.py` — evidence policy as data (F3, 2026-09-28;
   `evidence-policy.md` §1–§2, §6): `PolicyDocument` per domain, its
   `policy_ref` the SHA-256 of the canonical encoding (recordstore's), and
@@ -79,10 +83,9 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   `self-knowable`) carrying the rungs, each with its adjudicator class,
   ruling period, fee, deposit and admitted evidence weights, plus the cure
   period and the notice's expiry (the notice step of a claim on a
-  reservation), the evidence period and fee, challenger cap, finality
-  window and escalation value (`escalation_arg()` and `ruling_window()`
-  are what `assert_` takes; `ruling_window_fits()` says whether an
-  assertion's ruling window lets the procedure run). It
+  reservation), the evidence period and fee, challenger cap and finality
+  window (`ruling_window()` is what `assert_` takes; `ruling_window_fits()`
+  says whether an assertion's ruling window lets the procedure run). It
   refuses at load a class with no named, bonded final rung, a token vote,
   a structural class not settled by certificate alone (F8), an evidence
   period outside `self-knowable`, and the other fixed rules. `Suspension`
@@ -116,8 +119,9 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
 - `src/factbond/ledger.py` — the calibration ledger's views from events
   alone, negatives only and absolute, with a look-back (G3):
   `adjudicator_view` (F6, C3) lists each first rung's reversals by the
-  arbiter with the deposit forfeited and its rulings confirmed on appeal,
-  never a count of rulings. `loss_view` (F5, D9 G3–G4) joins `Refuted`
+  arbiter with the deposit forfeited, its lapses (cases moved up) and its
+  rulings confirmed on appeal, never a count of rulings. `claims_about`
+  returns the claims that named a key, the only ones counted against it. `loss_view` (F5, D9 G3–G4) joins `Refuted`
   to `Asserted` on `id`: each asserter's losses within `max_loss_age`,
   the bond lost as a sum, each loss `conceded`, `refuted`, `silent` or
   `procedural` given the published ruling records (`ruled` without
@@ -279,17 +283,17 @@ primitive.
 Decided 2026-09-25 with the assurance drafts
 (`docs/plans/credentials-cover-and-options.md`, `assertion-extensions.md`;
 the order is `../assurance-drafts/development-sequence-2026-09-25.md`,
-Track F). Built 2026-09-28: F1 and F-esc (above, in the source, not yet
+Track F). Built 2026-09-28: F1 (above, in the source, not yet
 redeployed), F3's shapes (`factbond.policy`), F4 (`factbond.procedure`,
 with the per-assertion ruling window; the notice step scoped to claims
 on a reservation), F6 (the arbiter, appeal and deposits in the
 contract; the ruling record; the adjudicator view) and F5 (the loss
-view). Open from F4 (`assertion-extensions.md` §8): a bonded
-negation about a key that watches nothing certifies unseen. Not built: the evidence fee and cap charged on a real
+view); then, on Peter's decisions the same day, first rulings held for
+appeal, a lapsed rung's case moved up with the stakes held (the escalation
+value withdrawn), and claims naming the key they concern. Not built: the evidence fee and cap charged on a real
 dispute, and B5's return of E; the owner-signed correction feed on
-Swarm that would carry `corrections`; the ladder beyond two rungs
-and the automatic move-up of A3 below the top (a lapse at the first rung
-still escalates, v0's stand-in); cover on loopmarket legs at the
+Swarm that would carry `corrections`; the ladder beyond two rungs;
+cover on loopmarket legs at the
 caps with the insured asserting the trigger; the mutual as the first
 pooled form on the reserve, with its rules. None of it adds a
 subject-specific field to the contract.

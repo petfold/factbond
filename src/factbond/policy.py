@@ -25,9 +25,9 @@ A document that breaks a rule the plans fixed does not load:
   assertion takes none, since the dispute is itself the notice and the
   asserter's concession is its cheap ending (Peter, 2026-09-28;
   `factbond.procedure`);
-- the **escalation value** is a share of the outcome in bps or
-  `"unresolved"` (D10), which is what `Assertions.assert_` takes as
-  `escalation` (`ClassRule.escalation_arg`).
+- no class names an escalation value: since 2026-09-28 only a ruling
+  moves money and a lapsed rung's case moves up, so nothing resolves at a
+  share of the outcome (D10's concern, subsumed).
 
 The `suspended/` register record (D2) is here too. It is the view entry an
 issuer's register (for a self-bonded statement, the giver's own book)
@@ -42,8 +42,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-
-from .assertions import UNRESOLVED
 
 #: the claim-type vocabulary (`records-and-anchoring.md` §1), with the
 #: class D2 added for facts the asserter can prove and a challenger may not
@@ -144,7 +142,6 @@ class ClassRule:
     cure_period: int            # B1: the notice's cure deadline, before a claim on a reservation
     finality_window: int        # A4: reopen on new evidence, or at double the stake, until it ends
     cap_bps: int                # B3: stake plus evidence fee at most this share of the reserved slice
-    escalation: int | str       # D10: bps of the outcome resolved when no ruling comes, or "unresolved"
     evidence_period: int | None = None  # A5: the asserter's time to produce evidence (self-knowable only)
     evidence_fee: int = 0       # E: the challenger's, beside its stake; to the asserter if the claim holds
     notice_expiry: int | None = None    # A2: a notice supports a claim until this long after it was sent
@@ -172,24 +169,20 @@ class ClassRule:
         reads it as meeting nothing and a consumer may refuse it at `hold`."""
         return ruling_window >= self.ruling_window()
 
-    def escalation_arg(self) -> int:
-        """The value `Assertions.assert_` takes as `escalation`."""
-        return UNRESOLVED if self.escalation == "unresolved" else self.escalation
-
     def to_record(self) -> dict:
         return {"rungs": [r.to_record() for r in self.rungs], "cure_period": self.cure_period,
                 "finality_window": self.finality_window, "cap_bps": self.cap_bps,
-                "escalation": self.escalation, "evidence_period": self.evidence_period,
+                "evidence_period": self.evidence_period,
                 "evidence_fee": self.evidence_fee, "notice_expiry": self.notice_expiry}
 
     @classmethod
     def from_record(cls, claim_type: str, rec: dict) -> "ClassRule":
-        _fields(rec, {"rungs", "cure_period", "finality_window", "cap_bps", "escalation"},
+        _fields(rec, {"rungs", "cure_period", "finality_window", "cap_bps"},
                 {"evidence_period", "evidence_fee", "notice_expiry"}, f"class {claim_type!r}")
         if not isinstance(rec["rungs"], list):
             raise PolicyError(f"class {claim_type!r}: rungs is a list")
         rule = cls(claim_type, tuple(Rung.from_record(r) for r in rec["rungs"]), rec["cure_period"],
-                   rec["finality_window"], rec["cap_bps"], rec["escalation"], rec.get("evidence_period"),
+                   rec["finality_window"], rec["cap_bps"], rec.get("evidence_period"),
                    rec.get("evidence_fee", 0), rec.get("notice_expiry"))
         rule.check()
         return rule
@@ -212,10 +205,6 @@ class ClassRule:
         if type(self.cap_bps) is not int or not 0 < self.cap_bps < 10000:
             raise PolicyError(f"{where}: the challenger cap is a share k < 1 of the reserved slice, "
                               f"in bps (B3), not {self.cap_bps!r}")
-        if self.escalation != "unresolved" and (type(self.escalation) is not int
-                                                 or not 0 <= self.escalation <= 10000):
-            raise PolicyError(f"{where}: the escalation value is bps of the outcome or 'unresolved' (D10), "
-                              f"not {self.escalation!r}")
         _count(self.evidence_fee, f"{where}: the evidence fee")
         if self.burden_shifts:
             if self.evidence_period is None:

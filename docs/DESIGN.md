@@ -352,15 +352,16 @@ Unasserted → Asserted → (liveness expires) → Certified → (validity expir
   `attribute-matches-source` claim when the evidence suggests the record
   (not just the day) was wrong. That coupling is what turns consumers into
   the verification workforce without them ever thinking about it.
-- **What if no ruling comes?** *(added 2026-09-28,
-  `plans/credentials-cover-and-options.md` D10; built in
-  `contracts/Assertions.sol`)* The dispute escalates: both stakes return
-  and the subject resolves at the assertion's **escalation value**, a share
-  of the outcome, or *unresolved* for a boolean or a hash, where a share
-  reads as 0. Unresolved leaves the consumer's hold in place until a
-  ruling arrives, so a silent adjudicator pays neither side. Which value a
-  fact type takes is evidence-policy data (`plans/evidence-policy.md` §1,
-  `factbond.policy`), never the contract's.
+- **What if no ruling comes?** *(decided 2026-09-28, Peter; built in
+  `contracts/Assertions.sol`)* **Only a ruling moves money.** A first rung
+  that lets its window lapse sends the case up to the arbiter with the
+  stakes still held; the arbiter may rule however late; without an arbiter
+  the adjudicator's ruling is awaited, and the owner may appoint another.
+  Stakes are never handed back for want of a ruling: parties who get
+  theirs back can simply disappear, and then nothing more can be done.
+  The consumer's hold persists until the ruling, so a boolean claim never
+  reads as 0 by default (D10's concern; the per-assertion escalation value
+  built earlier the same day for it is withdrawn).
 
 ## 8. Parameters (transcript priors, to be validated in simulation)
 

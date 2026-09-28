@@ -107,6 +107,12 @@ trusted publishing).
   a label by its hash. `factbond.ledger.adjudicator_view`: reversals with
   their forfeits and confirmations on appeal, from events alone, with a
   look-back, never a count of rulings.
+- **The loss view** (2026-09-28; F5). `factbond.ledger.loss_view`:
+  `Refuted` ⋈ `Asserted` on `id` from events alone, each asserter's
+  losses within `max_loss_age` and the bond lost as a sum, split into
+  conceded, refuted, silent and procedural where ruling records are
+  published; `Certified` never read, so a won dispute leaves no negative.
+  `corrections`, the flat join, is the correction feed's payload.
 
 - **Plans: credentials, cover and options** (2026-09-25). Two documents
   entered the plan corpus from the assurance drafts:

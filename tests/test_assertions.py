@@ -494,6 +494,42 @@ def test_the_adjudicator_view_reads_the_ladders_events(chain, ladder):
         {adjudicator: {"reversals": [], "confirmed_on_appeal": []}}
 
 
+def test_the_loss_view_reproduces_from_asserted_and_refuted_events(chain):
+    """F5's gate on chain: a fresh key's losses are its ruled refutation and
+    its concession, read from `Asserted` ⋈ `Refuted` alone; the dispute it
+    won and the claim that certified leave nothing; a look-back drops the
+    older losses while the events stay."""
+    from factbond.ledger import loss_view_from_chain
+    w3, a, consumer, adjudicator, treasury = chain
+    asserter, challenger = w3.eth.accounts[8], w3.eth.accounts[3]
+    client = AssertionsClient("", a.address, client=w3)
+    plain = "0x" + "00" * 20
+    ids = {}
+    for name, bond in (("ruled", FLOOR), ("conceded", 2 * FLOOR), ("won", FLOOR), ("certified", FLOOR)):
+        a.functions.assert_(name.encode().ljust(32, b"\0"), plain, 1, 990, *DEFAULT).transact(
+            {"from": asserter, "value": FEE + bond})
+        ids[name] = a.functions.count().call()
+    for name in ("ruled", "conceded", "won"):
+        a.functions.dispute(ids[name]).transact({"from": challenger, "value": a.functions.stakeFor(FLOOR * 2, 990).call()})
+    a.functions.rule(ids["ruled"], False).transact({"from": adjudicator})
+    a.functions.concede(ids["conceded"]).transact({"from": asserter})
+    a.functions.rule(ids["won"], True).transact({"from": adjudicator})
+    _advance(w3, CHALLENGE + 1)
+    a.functions.certify(ids["certified"]).transact({"from": asserter})
+    mine = loss_view_from_chain(client)[asserter]
+    assert [(e["id"], e["kind"]) for e in mine["losses"]] == [(ids["ruled"], "ruled"), (ids["conceded"], "conceded")]
+    assert mine["bond_lost"] == 3 * FLOOR
+    _advance(w3, 10 * DAY)
+    a.functions.assert_(b"later".ljust(32, b"\0"), plain, 1, 990, *DEFAULT).transact({"from": asserter, "value": FEE + FLOOR})
+    later = a.functions.count().call()
+    a.functions.dispute(later).transact({"from": challenger, "value": FLOOR})
+    a.functions.rule(later, False).transact({"from": adjudicator})
+    now = w3.eth.get_block("latest")["timestamp"]
+    recent = loss_view_from_chain(client, now=now, max_loss_age=5 * DAY)[asserter]
+    assert [e["id"] for e in recent["losses"]] == [later]
+    assert len(loss_view_from_chain(client)[asserter]["losses"]) == 3              # append-only underneath
+
+
 def test_retraction_returns_the_bond_and_keeps_the_fee(chain):
     w3, a, consumer, adjudicator, treasury = chain
     asserter = w3.eth.accounts[2]

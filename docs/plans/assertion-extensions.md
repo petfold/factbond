@@ -203,6 +203,21 @@ leaves no negative entry, and every published ruling names the rule and
 fact type applied, so an honest misdescription is not read as fraud (G4).
 Adjudicators have entries of their own (C3).
 
+*(Built 2026-09-28, F5 and F6: `factbond.ledger`.)* `loss_view` joins
+`Refuted` to `Asserted` on `id` from the contract's events alone, returns
+each asserter's losses within `max_loss_age` with the bond lost as an
+absolute sum, and never reads `Certified`, so a won dispute leaves
+nothing. G4's split reads as: `conceded` (the asserter's own act),
+`refuted` on the merits, `silent` (ruled against on the record after the
+evidence period: a party that did not perform in the proceeding, the
+reading given here to "did not perform on a ruling", since an on-chain
+ruling's payout cannot go unperformed) and `procedural` (a contest refused
+on its form); the last three need the published ruling record, and
+without it a ruled loss reads `ruled`. `corrections` is the flat join, the
+correction feed's payload with the asserter in it. `adjudicator_view` is
+C3's half: reversals with their forfeits, confirmations on appeal, never
+a count.
+
 ## 6. What the extensions serve
 
 | consumer | uses |

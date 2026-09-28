@@ -117,8 +117,14 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   alone, negatives only and absolute, with a look-back (G3):
   `adjudicator_view` (F6, C3) lists each first rung's reversals by the
   arbiter with the deposit forfeited and its rulings confirmed on appeal,
-  never a count of rulings. `AssertionsClient.events(name)` reads any
-  event with its block time.
+  never a count of rulings. `loss_view` (F5, D9 G3–G4) joins `Refuted`
+  to `Asserted` on `id`: each asserter's losses within `max_loss_age`,
+  the bond lost as a sum, each loss `conceded`, `refuted`, `silent` or
+  `procedural` given the published ruling records (`ruled` without
+  them); `Certified` is never read, so a won dispute leaves nothing.
+  `corrections` is the flat join, the correction feed's payload with the
+  asserter. `AssertionsClient.events(name)` reads any event with its
+  block time.
 - `tests/test_assertions.py` on a local EVM (the `evm` extra; skips per
   test without it; the adjudicator path end to end is there too),
   `tests/test_policy.py`, `tests/test_procedure.py`. The cross-repo gate lives in loopmarket:
@@ -276,12 +282,12 @@ the order is `../assurance-drafts/development-sequence-2026-09-25.md`,
 Track F). Built 2026-09-28: F1 and F-esc (above, in the source, not yet
 redeployed), F3's shapes (`factbond.policy`), F4 (`factbond.procedure`,
 with the per-assertion ruling window; the notice step scoped to claims
-on a reservation) and F6 (the arbiter, appeal and deposits in the
-contract; the ruling record; the adjudicator view). Open from F4 (`assertion-extensions.md` §8): a bonded
+on a reservation), F6 (the arbiter, appeal and deposits in the
+contract; the ruling record; the adjudicator view) and F5 (the loss
+view). Open from F4 (`assertion-extensions.md` §8): a bonded
 negation about a key that watches nothing certifies unseen. Not built: the evidence fee and cap charged on a real
-dispute, and B5's return of E; the
-asserter-indexed loss view with a look-back (F5: from `Asserted ⋈
-Refuted`, the feed to carry the asserter); the ladder beyond two rungs
+dispute, and B5's return of E; the owner-signed correction feed on
+Swarm that would carry `corrections`; the ladder beyond two rungs
 and the automatic move-up of A3 below the top (a lapse at the first rung
 still escalates, v0's stand-in); cover on loopmarket legs at the
 caps with the insured asserting the trigger; the mutual as the first

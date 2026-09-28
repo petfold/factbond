@@ -237,7 +237,10 @@ hashes, anchor reading}` per event (decided 2026-08, lands with Phase 1),
 plus *(2026-09-25)* the **asserter** and the **stake**, which the on-chain
 `Refuted(id, subject)` event does not carry: the asserter-indexed loss
 view of the calibration ledger (`assertion-extensions.md` §5) joins
-`Asserted` and `Refuted` on `id` until the feed carries them.
+`Asserted` and `Refuted` on `id` until the feed carries them. *(Built
+2026-09-28: `factbond.ledger.corrections` is that join, the payload's
+asserter, bond and confidence per refutation, and `loss_view` groups it by
+asserter; the owner-signed feed on Swarm that would carry it is not.)*
 The system's output is an **authenticated correction feed, not corrected
 databases** (`../DESIGN.md` §7); the last mile is social, and every
 consumer document must say so.
@@ -402,7 +405,10 @@ they rely; how it is set is `netting-and-reserves.md`'s business.
   separates "refuted" from "did not perform on a ruling"; a won dispute
   leaves no negative entry. The record fields that carry the split are
   the ruling's `outcome` and the consumer's `resolve` result; whether the
-  feed or the view holds the join is this work package's.
+  feed or the view holds the join is this work package's. *(2026-09-28:
+  the view holds it, from events; the split is `Refuted`'s `ruled` flag
+  for a concession and the published ruling record's rule for the rest,
+  `factbond.ledger`.)*
 - **Correction-feed payload vs `reclassify` (this work package, tracked
   upstream).** ontodag's retraction+evidence+keep-list operation is a
   discussion draft; committing the feed payload to its argument shape now

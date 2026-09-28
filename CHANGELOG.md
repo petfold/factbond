@@ -48,6 +48,17 @@ trusted publishing).
   phase0-simulation; assertion-extensions §2; the cross-repository plan's
   D2 (in both repositories).
 
+- **Plans: who guarantees a controlled fact** (2026-09-28, Peter;
+  `insurance-products.md` §5a). The harness's T5 finding (the payout cap
+  alone leaves arson at +10% while the controls-source exclusion leaks)
+  is answered structurally: a fact someone controls is guaranteed by the
+  controller's reserved deposit (a warranty, D1's shape) or by a surety
+  who knows the controller and holds recourse on it; third-party cover
+  alone is sold only on facts nobody controls or where a trade proves
+  reliance. The first product sold becomes cover on loopmarket legs and
+  on warranted facts (§8, G-I5); OP-2 narrows to classifying which fact
+  types can be controlled. THREATS T5, DESIGN §5.3 and CLAUDE.md follow.
+
 ### Added
 
 - **Evidence policy as data, `factbond.policy`** (2026-09-28; F3). A

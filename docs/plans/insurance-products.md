@@ -8,7 +8,11 @@ prior; the pseudonymous moral-hazard exclusion set with fail-closed
 aggregate caps; the payout→dispute auto-coupling including appeal funding.
 Open here: reliance measurement outside loopmarket clearing; insurable
 interest without identity; interpretive basis risk on semantic edges;
-manipulation of the published premium gap.
+manipulation of the published premium gap. *(Decided 2026-09-28, §5a:)*
+a fact someone controls is guaranteed by the controller's reserved
+deposit (the warranty) or by a surety who knows the controller; third-party
+cover alone only on facts nobody controls or where a trade proves reliance;
+the first product sold is cover on loopmarket legs (§8).
 
 This document makes `DESIGN.md` §5 — the design's center of gravity —
 concrete: the products the payout reserve sells, their pricing, and the
@@ -79,7 +83,8 @@ stakes — the pharmacy on duty, clinic hours, an emergency department's
 status, transport disruptions — a second step once the feeds are wired.
 The T5 finding from the harness stands over both: F3's proxy cap alone
 leaves arson profitable while the control exclusion leaves any residue
-(§5), so the cap and the exclusion are sized together.
+(§5), so the cap and the exclusion are sized together. *(2026-09-28: the
+answer is §5a's warranty and surety, not a better-sized cap.)*
 
 ## 2. Indemnity — F3, scoped honestly
 
@@ -235,6 +240,75 @@ named claims committee and pay from its pool, recording the decision as
 a bonded statement labelled discretionary, which may enter a `requires`
 gate only as "member of mutual M", never as a certified fact.
 
+## 5a. Who guarantees a controlled fact: the warranty and the surety
+
+*(Decided 2026-09-28, Peter, after the harness's T5 finding.)* A payout
+cap alone does not stop arson on a fact the buyer controls. Profit is
+payout − premium − the cost of breaking the fact, and breaking your own
+café's posted hours or your own locker's access costs nothing, so every
+policy that passes the controls-source exclusion pays: in the default
+2,000 × 120 cell three of twenty attempts pass a 90% exclusion, each
+paying $20 for a premium near $3, and arson returns +10%. Any cap above
+the premium keeps that true; the premium is priced on the honest loss
+rate and the arsonist's is 100%. The answer is structural, and it asks
+who can make the fact wrong:
+
+1. **The warranty.** For a fact someone controls (a shop's hours, a box
+   its operator runs, a practice's statement about its dentists) the
+   guarantee comes from the controller: a statement backed by the
+   controller's deposit, each insured use reserving a slice of it for its
+   claim period, the reserved part not withdrawable until those periods
+   end, the controller free to post the new fact before it changes it.
+   This is the credential's shape (`credentials-cover-and-options.md` D1)
+   applied to any controlled fact. A claim is paid from the reserved
+   slice, so a controller who insures its own fact and breaks it pays
+   itself and loses the fees. Total cover on a controlled fact stays
+   within the controller's reserved deposit. The bond has to be a reserved
+   deposit (the escrow's shape), never an `Assertions` bond, which its
+   asserter may retract while undisputed: buy cover, retract, break,
+   collect.
+2. **The surety.** A party confident in the controller (a mutual that
+   admitted it by survey and vouch, an insurer that inspected it) may back
+   the controller beyond its deposit, or in place of a deposit it cannot
+   afford. The surety pays the claims and has recourse on the controller's
+   deposit where there is one, the order of recourse of the mutual's rules
+   (`netting-and-reserves.md` §7, F3). The arson risk on that layer is the
+   surety's underwriting risk, taken on what it knows of the controller:
+   knowing its principal is the surety's business (hansa's product
+   layer), never a requirement of the protocol. The vocabulary term is
+   `surety-bond` (the assurance drafts' `ontodag-asks.md`).
+3. **Third-party cover without either** is sold only on facts nobody
+   controls, such as a fact the pool asserted from a crawled source, whose
+   risk is ignorance, never intent; or where a cleared trade proves the
+   buyer's reliance (§2), so the payout is at most the buyer's own loss.
+
+Two readings follow. **Whose bond matters:** a bond from someone who cannot
+change the fact (the pool's assertion) prices ignorance, and only the
+controller's bond prices intent. **What the insurer is for,** once the
+controller's deposit is the guarantee: it turns knowledge of the controller
+into capacity (rule 2); it pools, each controller posting a retention and
+the reserve covering the rest because controllers do not all fail at once;
+it pays the customer at once and pursues the controller's deposit itself
+(D3's assignment); it watches the facts it covers and gives notice; and it
+sells one policy across many facts where a buyer would otherwise claim
+against each bond.
+
+Why a controller bonds at all: demand, never obligation. Agents and gates
+prefer or require warranted facts (a `requires` names the bond, as
+loopmarket's gate accepts "self-bonded ≥ B" today), and a controlled fact
+without a warranty or a surety is not insurable. An unbonded statement
+carries no guarantee and is priced unknown, never good (THREATS T8), but
+whether to require one is the consumer's policy, not the protocol's: the
+launch's volunteers bond nothing, and their edits still serve as leads.
+
+The judgment this needs moves from the buyer to the fact type. The
+controls-source exclusion asked whether *this buyer* controls the source,
+which pseudonymity cannot know (OP-2). The rule above asks whether *anyone*
+can control a fact of this kind, a property of the fact type that the
+evidence policy can record per class (a café's hours: yes; a parcel
+locker's existence: its operator; a public building's address: hardly).
+The exclusion stays as a second line.
+
 ## 6. The payout→dispute coupling — funding the correction machinery
 
 The wiring that turns consumers into the verification workforce
@@ -320,6 +394,14 @@ channels, in order:
 Human-facing apps come last, wrapping the same machinery: a UX project,
 not a mechanism-design one, and nothing here depends on them.
 
+*(Reordered 2026-09-28, Peter, after the harness's T5 finding; §5a.)* The
+first product sold is cover where reliance is provable, on loopmarket
+legs, together with cover on warranted facts (the controller's reserved
+deposit, or a surety). The agents-first wedge on the payout-cap proxy alone
+waits: the cap does not make arson unprofitable on a controlled fact
+(G-I1), so for agents the wedge sells only on facts nobody controls, or on
+warranted ones.
+
 *(2026-09-25:)* composed cover on a leg is a third channel with the same
 machinery: a wanter's `requires.legs` names `insure(…)` and the solver
 composes an insurer's give into the loop as an argument-only operator
@@ -348,6 +430,8 @@ for the pooled form.
 - **G-I5 (clearing-attached variant).** Ships only after Phase-0 green
   *and* loopmarket P2 record-format freeze (`loopmarket-coupling.md`);
   until then the only live product is the capped agents-first wedge.
+  *(2026-09-28: reordered by §5a and §8; the clearing-attached variant and
+  warranted facts come first, the wedge on uncontrolled facts only.)*
 
 ## Open problems
 
@@ -368,7 +452,12 @@ for the pooled form.
   edit history, clearing adjacency), never known. A principled
   pseudonymous insurable-interest test — or a proof that caps are the
   best attainable — is open. Work package: `THREATS.md` T5 residuals plus
-  the Phase-2 spec here.
+  the Phase-2 spec here. *(2026-09-28, §5a:)* narrowed. For a controlled
+  fact the guarantee comes from the controller's warranty or a surety, so
+  the judgment needed is whether a fact *type* can be controlled, a
+  property of the type the evidence policy can record, instead of whether
+  a pseudonymous buyer controls one fact; what stays open is that
+  classification and its errors.
 - **OP-3 Interpretive basis risk on semantic edges (T9).** Which edge
   classes are quotable at all, and at what premium widening, is empirical
   and must be answered domain-by-domain. Work package:

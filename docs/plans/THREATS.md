@@ -217,6 +217,14 @@ aggregation variant; the fabrication-bound gate (no class backs a sold
 hedge unless its sourced fabrication-cost estimate exceeds its payout
 cap); and adverse selection priced, not screened — demand concentration
 raises the quote, tightens the cap, triggers a pre-emptive dispute.
+*(Added 2026-09-28, after the harness showed the cap alone leaves arson at
++10% while the exclusion leaks:)* **the warranty and the surety**
+(`insurance-products.md` §5a). A fact someone controls is guaranteed by
+the controller's reserved deposit, so a controller who insures and breaks
+its own fact pays itself; cover beyond that deposit comes only from a
+surety who knows the controller and holds recourse on it; third-party
+cover alone is sold only on facts nobody controls or where a trade proves
+reliance.
 
 **Residual.** Reliance inflation costs real external-asset fees (U13) and
 only cleared fee-paid loops count (U12), so the ceiling is bought at fee

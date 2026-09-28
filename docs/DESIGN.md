@@ -204,7 +204,11 @@ The honest complications, in order of severity:
    reliance for free and the bound is exact; where reliance is unprovable —
    the agents-first wedge of §5.5 — payout caps remain the proxy, and
    out-of-clearing reliance measurement is a registered open problem.
-   See `docs/plans/insurance-products.md`.)*
+   See `docs/plans/insurance-products.md`.)* *(Update 2026-09-28, Peter:
+   the cap does not stop a controller, for whom breaking the fact is free.
+   A controlled fact is guaranteed by its controller's reserved deposit, a
+   warranty, or by a surety who knows the controller;
+   `plans/insurance-products.md` §5a.)*
 4. **Adverse selection is the pool's core pricing problem — and tolerable.**
    The $1-to-win-$100 buyer disproportionately knows something. Real
    insurers price this daily; it requires actuarial loss data per

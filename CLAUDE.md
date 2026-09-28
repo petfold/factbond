@@ -190,7 +190,10 @@ adjudication-cost floors (panel 2 fails everywhere in the small grid — the
 reliance term and consumption-targeted challengers are the unmodelled
 parts that would change this); arson stays profitable (~+7 % ROI) while
 the control exclusion leaves any residue, so F3's proxy cap alone does not
-close T5 (a real finding for `insurance-products.md` §5); the 0.999
+close T5 (a real finding for `insurance-products.md` §5, answered
+2026-09-28 by §5a: a controlled fact is guaranteed by its controller's
+reserved deposit, a warranty, or by a surety who knows the controller, and
+the first product sold is cover on loopmarket legs); the 0.999
 griefer, self-dispute laundering, dispute spam and fabrication all lose;
 the capture replay reproduces with F4 off and fails with F4 on; the pool
 stays solvent. **Under the ruling fee** (2026-09-28, the default 2,000 × 120 cell

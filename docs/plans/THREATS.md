@@ -13,22 +13,19 @@ top rung's existence at F4 scale, the systemic adjudicator-failure
 loading, the fabrication-cost curve E(t), cap-griefing via farmed
 reliance, insurable interest without identity, semantic drift.
 
-This is factbond's half of the register both repos gate on; the primary
-copy and format definition is loopmarket's
-`../../../loopmarket/docs/plans/THREATS.md`. Every entry carries the same
-columns — attack, economics with researched numbers, by-construction
-defense naming invariant and owning document, residual, tripwire that
-pages a human, owning work package and phase — condensed pairwise here
-for length. **Content-sync rule:** T4–T6 and T9 are primary *here*;
-T1–T3, T7 and T8 are primary in loopmarket's copy and carried below in
-full but condensed; T10–T13 are factbond-native, primary here, entering
-the mirror on its next dated edit. Edits land primary-first; secondary
-copies carry the full columns plus a cross-reference; divergence beyond
-primary/secondary marking blocks both registers' phase gates (G4).
-*(Revised 2026-09-28:)* loopmarket's register now carries the entries
-primary here (T4–T6, T9–T13, T17) as short stubs — the attack, its own
-part of the defense, tripwire and work package, a link here — so the full
-text of those entries exists only in this file. The
+This is factbond's half of the register both repos gate on; the format
+definition is loopmarket's `../../../loopmarket/docs/plans/THREATS.md`.
+Every entry primary here carries the same columns — attack, economics
+with researched numbers, by-construction defense naming invariant and
+owning document, residual, tripwire that pages a human, owning work
+package and phase — condensed pairwise for length. **Content-sync rule** *(revised 2026-09-28, one full copy
+per entry)*: T4–T6, T9–T13 and T17 are primary *here* and written in full
+only here; T1–T3, T7, T8 and T14–T16 are primary in loopmarket's register
+and appear here as short stubs — the attack in a sentence, factbond's own
+part of the defense and work package, a link to the full entry.
+loopmarket's register does the same for the entries primary here. Edits
+land in the primary only; a stub that contradicts its primary blocks both
+registers' phase gates (G4). The
 adversary playbooks exercising every factbond-owned entry are
 `phase0-simulation.md` §7.
 
@@ -61,74 +58,27 @@ clauses gate Phase 1 entry (G-M3).
 
 ## T1 — Rebate/reward-farmed wash loops — primary: `loopmarket/docs/plans/THREATS.md`
 
-**Attack & economics.** A sybil ring posts matched ask/bid pairs, a
-ring-run solver "finds" the loop, the ring farms any volume-linked
-subsidy; the loop consumed nothing. LooksRare: a measured **1.34% daily
-return** on wash capital ($6.2M rewards vs $3.7M fees in one day); FCoin:
-insolvent in 20 months, $130M shortfall; Chainalysis found only 110
-*profitable* NFT wash traders — a real fee floor prices attackers out.
-
-**Defense & residual.** loopmarket's planned U13 — "wash-loop
-budget-balance by construction, fees external-asset only" — with U12;
-here F9 — "no volume-linked emissions anywhere" — the same law on the
-sister system, audited continuously (G-M6): the pool, custodian of solver
-bonds, never mints the subsidy that would flip U13's sign. Residual:
-off-protocol budgets (grants, airdrop scores) re-fund from outside.
-
-**Tripwire & work package.** Per funding cluster, Σ(rewards + rebates) /
-Σ(external-asset fees) > 0.8 over 7 days, or one cluster > 10% of cleared
-volume, pages (mirrored). loopmarket `P2-batch-auction.md` §9 (P2); the
-self-dealing playbook in `phase0-simulation.md` §7 (Phase 0).
+Sybil rings farm a volume-linked subsidy through wash loops that consume
+nothing. **Here:** F9, nothing is ever paid for asserting, audited
+continuously (G-M6); the pool, custodian of solver bonds, never mints the
+subsidy that would flip loopmarket's U13. Work package here: the
+self-dealing playbook, `phase0-simulation.md` §7. Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T2 — Sybil offer spam & statistics pollution — primary: `loopmarket/docs/plans/THREATS.md`
 
-**Attack & economics.** Personal tokens are free identities: flood the
-book to pollute indexes, statistics and cohorts — factbond-side, the
-witness telemetry and loss tables every bond and premium is sized from.
-Marginal wallet ≈ gas + postage; LayerZero filtered **803,093 addresses**,
-Linea ~517k of 1.3M claimants (**~40% sybils**); rented World IDs at
-~$30–80 restore sybil capacity — a rate limiter, never a trust root.
-
-**Defense & residual.** A cost curve, not detection (loopmarket
-`P1-federated-book.md` §6/§8): postage as the offer's rent, U8's
-two-layer authenticity. The Circles property bounds damage — no sybil
-enters a *cleared* loop without a real counterparty on every leg — so U12
-routes every consequential statistic through the cleared fee-paid ledger,
-the only feed factbond's centrality and calibration ledger consume.
-Residual: anything not clearing-weighted; the witness-replay sampling
-rate that bounds poisoning at acceptable cost (`loopmarket-coupling.md`).
-
-**Tripwire & work package.** Never-cleared offer share per funding
-cluster: pages when any cluster exceeds 10% of the live book or any
-`idx/` prefix (mirrored). loopmarket `P1-federated-book.md` §8 (P1); here
-the witness-sampling open problem.
+Free identities flood the book and pollute its statistics. **Here:** the
+exposure is the witness telemetry and loss tables that bonds and premiums
+are sized from, so factbond's centrality and calibration ledger read only
+the cleared fee-paid ledger (U12); open here: the witness-replay sampling
+rate (`loopmarket-coupling.md`). Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T3 — Solver collusion in batch auctions — primary: `loopmarket/docs/plans/THREATS.md`
 
-**Attack & economics.** A solver ring rotates lowball wins, shifts
-surplus between orders it controls, or games the fairness filter (the
-CIP-67 vectors). CoW's record: strategy prevented by mechanism shape, not
-punishment — its only real slashes were operational negligence cured at
-exact damages, **$166,182.97** (CIP-22) and **$76,783** (CIP-55), with a
-72-hour cure window.
-
-**Defense & residual.** loopmarket's: the deterministic baseline as
-permanent reserve bid (preconditioned on the ExchangeGraph recall gap —
-loopmarket `docs/plans/P2-loop-selection.md` §6; until that passes, the
-reserve-bid collusion argument may not be cited as a defense), sealed
-proposals, the fairness filter, U14 —
-"numeraire-free scoring". factbond's part is custody and law: solver
-registration bonds route through the bond pool — one loss ledger
-(`loopmarket-coupling.md` §3; decided 2026-08, lands with Phase 1,
-activates with loopmarket's P2 auction) — and F9 binds both customer
-classes: solver-emission farming and assertion-mining are the same FCoin,
-one pool refuses both. Residual: off-chain side payments cannot be
-designed away (impossibility results) — resistance, priced, never proof.
-
-**Tripwire & work package.** Median (winning − reserve) margin per beat
-pages when < 5% of reserve score for 100 consecutive beats (mirrored);
-win-share Herfindahl, rotation autocorrelation. loopmarket
-`P2-batch-auction.md` §8/§10 (P2); bond custody here.
+Solver rings rotate wins or shift surplus in the batch auction.
+**Here:** custody and law: solver registration bonds route through the
+bond pool, one loss ledger (`loopmarket-coupling.md` §3; lands with Phase
+1, active with loopmarket's P2 auction), and F9 binds both customer
+classes. Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T4 — Adjudication capture & dispute griefing
 
@@ -304,51 +254,20 @@ edges — the refusal signal doubling as a drift detector.
 
 ## T7 — Lemons routing — primary: `loopmarket/docs/plans/THREATS.md`
 
-**Attack & economics.** No attacker required: the solver selects the
-cheapest leg that type-checks — the lemons leg; the catalogue guarantees
-type conformance, never quality. Ripple precedent ("Mind Your Credit",
-WWW'18): **~$13M at risk** from misconfigured rippling; as few as 10
-highly connected gateway wallets could isolate much of the user base.
-loopmarket avoids the hub half structurally; the lemons half remains.
-
-**Defense & residual.** Risk-priced routing (loopmarket
-`P3-guarantee-coupling.md` §5; decided 2026-08, lands with loopmarket
-P3): solver edge weight = rate × (1 − expected-loss premium), the premium
-supplied by factbond's per-edge/per-maker loss tables — the reliability
-audit — published as the premium feed (`insurance-products.md` §3),
-consumed strictly solver-side. The pricing discipline is law here:
-silence is thin data, never safe edges; premiums start wide and narrow
-only on cleared history; never priced off asserter confidence alone.
-Residual: cold start taxes honest newcomers exactly as hard as lemons;
-the feed's inputs are T2-attackable until volume exists.
-
-**Tripwire & work package.** Realized loss/dispute rate of
-cheapest-decile legs vs the book median pages at > 3× (mirrored);
-acceptance-limit saturation on new makers. loopmarket
-`P3-guarantee-coupling.md` §5 (P3); the loss tables here (Phase 2).
+The solver picks the cheapest leg that type-checks: the lemons leg.
+**Here:** factbond supplies the premium feed from its loss tables
+(`insurance-products.md` §3), consumed solver-side; silence is thin data,
+never a safe edge; premiums start wide and narrow only on cleared
+history, never priced off an asserter's confidence alone. Work package
+here: the loss tables (Phase 2). Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T8 — Reputation gaming — primary: `loopmarket/docs/plans/THREATS.md`
 
-**Attack & economics.** Inflate delivered history via wash loops;
-suppress complaints; split identities to farm standing. eBay: **0.3%** of
-transactions rated negative while P(negative | partner rated negative)
-> **37%** — retaliation suppressed truthful feedback; cheap ratings
-inflate toward uselessness ("Reputation Inflation", EC'18).
-
-**Defense & residual.** U12 (quoted in §0) — history inflation costs real
-fees (U13). factbond's instantiation is the calibration ledger
-(`mechanism-design.md` §3): a certified-by-timeout track record nobody
-watched is free to manufacture, so the ledger counts only resolutions
-that carried consumption (2026-09-28: never dispute survival, which is
-for sale at the fee price once no slice is burned); loss experience
-comes only from bonded, adjudicated events; an undisputed edge is priced
-unknown, never good — silence is uninformative. Residual: collusion among
-real people; history farmed at fee price is still history.
-
-**Tripwire & work package.** Per-maker history growth per unit fee paid;
-standing-relevant history > 50% common-funder counterparties pages
-(mirrored); certified-by-timeout share rides with T10's. loopmarket
-`P3-guarantee-coupling.md` §5 (P3); the ledger here (Phase 1).
+Inflated history, suppressed complaints, split identities farming
+standing. **Here:** the calibration ledger counts only resolutions that
+carried consumption, never surviving a dispute; loss experience comes
+only from bonded, adjudicated events; an undisputed edge is priced
+unknown, never good (`mechanism-design.md` §3; `factbond.ledger`). Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T9 — Basis-risk disputes
 
@@ -557,91 +476,27 @@ Phase 2) + `phase0-simulation.md` §7; reopening: `mechanism-design.md` §4.
 
 ## T14 — Aggregator omission & centralization — primary: `loopmarket/docs/plans/THREATS.md`
 
-*(Mirrored 2026-08-21, added at owner direction with the loopmarket
-agenda-#5 sign-off; condensed, substance complete.)*
-
-**Attack & economics.** A loopmarket aggregator silently omits or delays
-makers/offers from its fold; its manifest is the book most solvers read,
-so omission is market exclusion. Admission-by-reference (T2's spam
-defense) *is* censorship capability — the same discretionary power — and
-with one aggregator worth reading it becomes unilateral market shaping.
-Omission is free at the margin and yields a perfectly valid `book_root`;
-running a competitor costs a full pinning Bee node, so the market
-concentrates by default. factbond exposure: the pool's loss experience,
-premium feeds and clearing-weighted reliance measures are computed
-over what the fold shows — a censoring aggregator skews the dataset
-factbond prices from.
-
-**Defense (by construction).** The fold is pure and commutative:
-same inputs ⇒ byte-identical `book_root`s, so manifest divergence is
-evidence. Omission is provable: registry-event announcements are the
-censorship-resistant ground truth, maker books are public feeds, and
-recordstore absence proofs demonstrate absence from a pinned root
-mechanically. Fold decisions are attributed in `provenance_root`; entry
-is permissionless; solvers can always fold maker feeds directly.
-
-**Residual.** Neutrality-by-auditability is only as real as the number
-of independent aggregators running. **Owner directive (2026-08-21):
-several independent aggregators are the deployment floor; a
-single-aggregator steady state is a failure condition; read-path
-decentralization is a mandated investigation before P1 completes.** The
-P1 clearing-instance chokepoint stands until P2.
-
-**Tripwire & work package.** Count of independently-operated manifests
-(pages below two); unexplained `book_root` divergence; a planted-offer
-inclusion probe across watched manifests. loopmarket
-`P1-federated-book.md` §2/§8 + `adoption-and-thickness.md` §9;
-clearing half: `P2-batch-auction.md`.
+An aggregator silently omits makers or offers from its fold. **Here:** the
+pool's loss experience, premium feeds and clearing-weighted reliance are
+computed over what the fold shows, so a censoring aggregator skews the
+data factbond prices from. Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T15 — Register liveness as denial of service on issuees — primary: `loopmarket/docs/plans/THREATS.md`
 
-*(Mirrored 2026-09-25 with loopmarket's entry; condensed, substance
-complete.)*
-
-**Attack & economics.** loopmarket's counterparty gate reads a
-credential statement's status against pinned register roots and fails
-closed; a register that goes silent past a requirer's maximum root age
-invalidates every statement it issued, for every requirer that strict.
-Free for the register itself, cheap for an outsider who can outrun its
-heartbeat; value scales with how many makers depend on one register.
-factbond exposure: a statement backed by a deposit and reserved per leg
-(`credentials-cover-and-options.md` D1) stops matching while suspended
-or unreadable, and claims routed from those reservations wait on the
-register's evidence.
-
-**Defense (by construction).** Registers are append-only transparency
-logs with a declared cadence and consistency proofs between roots;
-mirrors are pinned content-addressed snapshots, so a stopped register's
-last root stays readable; trust roots are the requirer's, so a captured
-or silent root is routed around; "two inconsistent roots signed by one
-register" is a specific, refutable fact against the register's bond,
-adjudicated on this ladder. The residual is the price of hard-fail,
-named: a requirer who sets hours bears hours.
+A register that goes silent invalidates every statement it issued for
+strict requirers. **Here:** a deposit-backed statement stops matching
+while unreadable, and claims routed from its reservations wait on the
+register's evidence; "two inconsistent roots signed by one register" is a
+specific, refutable fact adjudicated on this ladder, against the
+register's bond. Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T16 — Puppet third parties and ruling-count washing — primary: `loopmarket/docs/plans/THREATS.md`
 
-*(Mirrored 2026-09-25 with loopmarket's entry; condensed, substance
-complete.)*
-
-**Attack & economics.** Keys are free: a giver names its own puppet as a
-leg's resolver or inspector, or a would-be adjudicator manufactures
-"unreversed rulings" with puppet cases (a puppet asserts, a puppet
-disputes, the adjudicator rules, nobody reverses) at the cost of the fees
-per case. Any acceptance criterion that counts volume is bought at
-that price. This is T11's shape aimed at the judge's record rather than
-the asserter's.
-
-**Defense (by construction).** No acceptance criterion counts
-(`mechanism-design.md` §4, 2026-09-25 clauses): a resolver or inspector
-is admitted by key, by an accrediting root whose own collateral is at
-stake, by a deposit floor, or by the absence of reversals within a
-look-back window; the resolver is fixed at clearing within the
-requirer's acceptance; its deposit is what a ruling puts at risk, and a
-reversal at the final rung forfeits it and enters the calibration
-ledger; the only positive ledger entry for an adjudicator is a ruling
-escalated at doubled stake to the final rung and upheld there, which
-costs a real review. The formality stays: never a party or the deposit's
-maker. loopmarket's U12 applied to judges.
+Puppet resolvers and inspectors, or ruling counts manufactured with
+puppet cases. **Here:** no acceptance criterion counts
+(`mechanism-design.md` §4); the adjudicator view never returns a count; a
+reversal on appeal forfeits the first rung's deposit, and the one
+positive entry is a ruling confirmed on appeal (`factbond.ledger`). Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## T17 — Defamation on a permanent store (added 2026-09-28)
 
@@ -715,10 +570,9 @@ arms races no invariant closes: priced, instrumented, and said out loud.
   from signed speech-act records, anchor readings, pinned roots and the
   cleared fee-paid ledger alone (F1; U12) — a tripwire fed by pollutable
   statistics is itself a T2/T10 target.
-- **G4 — mirror sync.** For the entries primary in loopmarket, this
-  register's copies agree with loopmarket's in substance; for the entries
-  primary here, loopmarket's stubs link here and state nothing this file
-  contradicts. Checked at every phase gate; edits land primary-first.
+- **G4 — stub sync.** Every stub, here or in loopmarket's register, links
+  its primary and states nothing the primary contradicts. Checked at
+  every phase gate; edits land in the primary only.
 - **G5 — re-ranking cadence.** The damage ordering is reviewed at every
   phase gate and after any tripwire page; re-rankings are dated edits
   that re-sort presentation without renumbering.

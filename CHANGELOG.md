@@ -19,7 +19,10 @@ trusted publishing).
   stubs (THREATS G4 and the content-sync rule revised), the oracle
   roster's rulings are stated only in `evidence-policy.md` §3 (the roster
   sync gate revised), and the coupling's sequencing only in
-  `loopmarket-coupling.md` §5. The client no longer warns when an
+  `loopmarket-coupling.md` §5. The reverse too: this register carries
+  loopmarket's primaries (T1–T3, T7, T8, T14–T16) as stubs with factbond's
+  own part and a link, so every threat entry has one full copy (the
+  content-sync rule and G4, now stub sync, say so). The client no longer warns when an
   assertion's receipt carries `Named`.
 
 ### Changed

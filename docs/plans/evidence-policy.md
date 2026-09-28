@@ -150,6 +150,8 @@ normative summary, the subsections carry the why.
 | digital-proof | zkTLS / signed feeds | parametric-first where a canonical feed exists | source-site falsehood |
 | attested-photo | attested capture device | Truepic-class required; bare C2PA corroboration-only | per-model exploits until revoked |
 | location | PoL networks | slot carried, **not implemented 2026** | everything, today |
+| possession | the giver's key answering a fresh challenge at the door | loopmarket R7 (2026-09-29): spent on the first response; a door level, never a bare type | key lending (priced by bond and cover) |
+| photo-match | possession plus the attester's photo commitment, opened at the door | loopmarket R7 (2026-09-29): the counterparty confirms the face | a look-alike; a coerced holder |
 
 **Countersign — the default.** The optimistic pattern in miniature: both
 parties silent past the liveness window = confirmed; a disagreement — not a

@@ -5,6 +5,20 @@ trusted publishing).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-09-28
+
+The assertion contract grows its procedure: per-assertion windows, a
+ruling fee instead of the 25% slice, concession, an arbiter as the final
+rung with appeal, a lapsed case moving up with the stakes held (only a
+ruling moves money), and claims that name the key they concern; around
+it, evidence policy as data (`factbond.policy`), the adjudicator's
+procedure (`factbond.procedure`) and the calibration ledger's views
+(`factbond.ledger`); the harness gains the warranty rule for controlled
+facts. **Breaking:** the contract's constructor and `assert_` changed
+shape (see Changed); the Gnosis deployment of 0.1.0 is not compatible
+with this client until it is redeployed. factbond now documents itself:
+`docs/USER-GUIDE.md` and `ROADMAP.md`.
+
 ### Documentation
 
 - **A User Guide and a Roadmap of factbond's own** (2026-09-28), since

@@ -6,18 +6,36 @@ wrong") to millions of ordinary facts: opening hours, database entries,
 knowledge-graph edges.
 
 **Status: design stage, first code 2026-09-19.** The design documents are
-the substance; the first code is the assertion primitive's consumer-facing
-edge — `contracts/Assertions.sol` (assert with a bond at a stated
-confidence, dispute at the odds it sets, certify by timeout, rule only when
-contested, escalate when no ruling comes; the window and the escalation
-value chosen per assertion; a consumer contract told `hold(subject)` and
-`resolve(subject, outcome)`), `factbond.assertions`, the evidence policy
-as data (`factbond.policy`), and tests on a local EVM — built for loopmarket's escrow, whose contested
-claims it adjudicates (`docs/plans/loopmarket-coupling.md` §3b; the
-cross-repo gate is loopmarket's `tests/test_escrow.py`). The Phase-0 simulation harness (`factbond.sim`, v0) runs exploratory cells
-and refuses a scored run until the pre-registration block is filled; the
-go/no-go it computes (`docs/DESIGN.md` §10) still gates the insurance
-product. `CLAUDE.md` maps what is built to the plans. On PyPI: `pip install factbond`.
+the substance; the code is the assertion primitive's consumer-facing edge
+and the procedure around it:
+
+- `contracts/Assertions.sol`: assert with a bond at a stated confidence,
+  with a challenge window, a ruling window and, optionally, the key the
+  claim concerns; dispute at the odds the confidence sets; certify by
+  timeout; `concede`; a ruling in which the loser pays the adjudicator's fee
+  and nothing more; an arbiter as the final rung, first rulings held for
+  appeal at the doubled stake, a reversal forfeiting the first rung's
+  deposit; a lapsed rung's case moving up with the stakes held, since only
+  a ruling moves money. A consumer contract is told `hold(subject)` and
+  `resolve(subject, outcome)`. Built for loopmarket's escrow, whose
+  contested claims it adjudicates (`docs/plans/loopmarket-coupling.md`
+  §3b; the cross-repo gate is loopmarket's `tests/test_escrow.py`). The
+  Gnosis deployment is the 2026-09-19 source until the redeploy;
+- `factbond.assertions`, the client; `factbond.policy`, evidence policy
+  as data (per-domain documents, one rule per claim type, a named and
+  bonded final rung required at load); `factbond.procedure`, the
+  adjudicator's checks before the merits (labels refused, the notice step
+  for a claim on a reservation, ex parte after a notified silence) and the
+  ruling record; `factbond.ledger`, the calibration ledger's views from
+  events alone (the loss view, the adjudicator view, never a count);
+- the Phase-0 simulation harness (`factbond.sim`, v0), which runs
+  exploratory cells, models a controlled fact as covered only by its
+  controller's warranty or a surety, and refuses a scored run until the
+  pre-registration block is filled; the go/no-go it computes
+  (`docs/DESIGN.md` §10) still gates the insurance product.
+
+`CLAUDE.md` maps what is built to the plans; `CHANGELOG.md` has the
+detail. On PyPI: `pip install factbond`.
 
 Decided 2026-09-25 with loopmarket and the assurance drafts:
 `docs/plans/credentials-cover-and-options.md` (the cross-repository plan

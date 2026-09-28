@@ -47,11 +47,26 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   `rulingWindow`, 0 for the deployment's `rulingSeconds`, otherwise up to
   `maxRulingSeconds`. It is never shorter than the default, since a short
   one would let an asserter who expects to lose force the escalation that
-  returns its bond; a self-knowable claim names its evidence period plus
+  returns its bond. **The second rung** (F6, 2026-09-28): a `Ladder` at
+  construction names an `arbiter` (never the first rung), its fee, an
+  `appealSeconds` window and the first rung's `depositWei`. With it, the
+  first rung must hold its deposit (`postDeposit`) to rule, earns its fee
+  at once, and the payout waits (`Ruled`) until the window closes or the
+  loser waives (`finalize`); the loser may `appeal` at double its own
+  stake plus the arbiter's fee (`Appealed`); the arbiter's `ruleAppeal`
+  is final and paid either way: confirmed, the appeal stake goes to the
+  respondent (`Confirmed`); reversed, the payout goes to the appellant
+  with the first rung's deposit (`Reversed`, the forfeit). An arbiter that
+  lets its window lapse leaves the ruling below standing and returns the
+  appeal stake and fee. A deposit cannot be withdrawn while any of its
+  rulings is open to appeal. No ladder (`NO_LADDER`): one rung, its ruling
+  pays at once, as before. Whether a deployment holds first rulings for
+  appeal or pays at once (A4's "pay now, argue later") is Peter's to set;
+  a self-knowable claim names its evidence period plus
   the rung's ruling period (`ClassRule.ruling_window()`), or it could
   escalate before an ex parte ruling. `Asserted` carries `challengeUntil`,
   `escalation` and `rulingWindow`.
-- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver. **Live gate the same night:** assertion 1 — a claim on a real reservation (subject = the escrow's key), the escrow's `hold` fired by `assert_`, certified by timeout after its hour, `resolve` paying the wanter 0.01 xDAI through the escrow, the bond returned. **That deployment is the 2026-09-19 source**, with its 25% slice to the treasury; the per-assertion windows and escalation value, the ruling fee and `concede` (an eleven-argument constructor, the seven-argument `assert_`) await their Gnosis redeploy, which loopmarket's one escrow redeploy (its E3) then names.
+- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver. **Live gate the same night:** assertion 1 — a claim on a real reservation (subject = the escrow's key), the escrow's `hold` fired by `assert_`, certified by timeout after its hour, `resolve` paying the wanter 0.01 xDAI through the escrow, the bond returned. **That deployment is the 2026-09-19 source**, with its 25% slice to the treasury; the per-assertion windows and escalation value, the ruling fee and `concede` and the second rung (a twelve-argument constructor ending in the `Ladder`, the seven-argument `assert_`) await their Gnosis redeploy, which loopmarket's one escrow redeploy (its E3) then names.
 - `src/factbond/assertions.py` — `AssertionsClient` (web3 lazy, the
   `chain` extra), `BUCKETS`, `abi()` reading the shipped artifact
   `src/factbond/contracts/Assertions.json` (`scripts/build.py`; solc 0.8.24,
@@ -92,6 +107,18 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   parte (`pending` before), and late evidence goes to the merits flagged
   for B5. `Decision.upheld(accuser_is_asserter)` is `rule`'s argument for
   a dispute (the accuser challenged) or a claim (the accuser asserted).
+  `RulingRecord` (F6, C5) is the ruling as a record: the referred fact,
+  the cited notices with their times (required where the claim came from
+  a reservation), the submissions or their lapse, the category, policy
+  and pack versions, the rule named, `supersedes` on appeal; a record
+  missing any of these does not load. `ruling_record(case, decision, …)`
+  builds one, recording a label by its hash so the ruling never repeats it.
+- `src/factbond/ledger.py` — the calibration ledger's views from events
+  alone, negatives only and absolute, with a look-back (G3):
+  `adjudicator_view` (F6, C3) lists each first rung's reversals by the
+  arbiter with the deposit forfeited and its rulings confirmed on appeal,
+  never a count of rulings. `AssertionsClient.events(name)` reads any
+  event with its block time.
 - `tests/test_assertions.py` on a local EVM (the `evm` extra; skips per
   test without it; the adjudicator path end to end is there too),
   `tests/test_policy.py`, `tests/test_procedure.py`. The cross-repo gate lives in loopmarket:
@@ -247,14 +274,16 @@ Decided 2026-09-25 with the assurance drafts
 (`docs/plans/credentials-cover-and-options.md`, `assertion-extensions.md`;
 the order is `../assurance-drafts/development-sequence-2026-09-25.md`,
 Track F). Built 2026-09-28: F1 and F-esc (above, in the source, not yet
-redeployed), F3's shapes (`factbond.policy`) and F4 (`factbond.procedure`,
+redeployed), F3's shapes (`factbond.policy`), F4 (`factbond.procedure`,
 with the per-assertion ruling window; the notice step scoped to claims
-on a reservation). Open from F4 (`assertion-extensions.md` §8): a bonded
+on a reservation) and F6 (the arbiter, appeal and deposits in the
+contract; the ruling record; the adjudicator view). Open from F4 (`assertion-extensions.md` §8): a bonded
 negation about a key that watches nothing certifies unseen. Not built: the evidence fee and cap charged on a real
-dispute, and B5's return of E; adjudicators paid per ruling and in the
-calibration ledger, and the ruling record's fields (F6); the
+dispute, and B5's return of E; the
 asserter-indexed loss view with a look-back (F5: from `Asserted ⋈
-Refuted`, the feed to carry the asserter); cover on loopmarket legs at the
+Refuted`, the feed to carry the asserter); the ladder beyond two rungs
+and the automatic move-up of A3 below the top (a lapse at the first rung
+still escalates, v0's stand-in); cover on loopmarket legs at the
 caps with the insured asserting the trigger; the mutual as the first
 pooled form on the reserve, with its rules. None of it adds a
 subject-specific field to the contract.

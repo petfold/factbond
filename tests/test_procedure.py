@@ -131,3 +131,35 @@ def test_a_dispute_of_a_live_assertion_takes_no_notice():
     # the same accusation routed from a reservation needs the notice it does not cite
     routed = Case(POLICY, silent.accusation, CLAIM, reservation="escrow:leg-1")
     assert decide(routed, ACT + RULE.evidence_period + 1).rule == "B1"
+
+
+def test_a_ruling_record_names_its_fact_its_notices_and_its_rule():
+    """F6's gate off chain: a ruling missing the referred fact, or the notice
+    refs a claim on a reservation rests on, is not a ruling; a label is
+    recorded by its hash, never repeated; a lapse is recorded as such."""
+    from factbond.policy import PolicyError
+    from factbond.procedure import RulingRecord, ruling_record
+    case = _case()
+    d = decide(case, ACT + RULE.evidence_period + 1)
+    r = ruling_record(case, d, adjudicator="0xadj", outcome="upheld", time=ACT + RULE.evidence_period + 2,
+                      dispute_ref="assertion:7", pack_root="root:pack@1")
+    assert r.referred_fact == CLAIM.claim_id and r.notices == ((NOTICE.ref, NOTICE.sent_at, NOTICE.cure_deadline),)
+    assert r.submissions == ("lapse",) and r.reason.startswith("A5:") and r.category == "self-knowable"
+    assert RulingRecord.from_record(r.to_record()) == r and r.policy_version == POLICY.policy_ref
+    rec = r.to_record()
+    for bad, words in (({**rec, "referred_fact": ""}, "no referred fact"),
+                       ({**rec, "notices": []}, "rests on notices"),
+                       ({k: v for k, v in rec.items() if k != "notices"}, "lacks"),
+                       ({**rec, "reason": ""}, "names no rule"),
+                       ({**rec, "submissions": []}, "neither submissions nor their lapse")):
+        with pytest.raises(PolicyError, match=words):
+            RulingRecord.from_record(bad)
+    # a dispute of a live assertion took no notice step, and its record needs none
+    live = Case(POLICY, Accusation(WANTER, DENTIST, CLAIM.claim_id, ACT), CLAIM, disputed_claim=CLAIM.claim_id,
+                submissions=(Submission(DENTIST, ACT + DAY, "hash:confirmation"),))
+    r2 = ruling_record(live, decide(live, ACT + DAY), adjudicator="0xadj", outcome="upheld", time=ACT + 2 * DAY,
+                       dispute_ref="assertion:8")
+    assert r2.notices == () and r2.reservation is None and r2.submissions == ("hash:confirmation",)
+    label = Case(POLICY, Accusation(WANTER, DENTIST, "label:unlicensed quack", ACT), None)
+    r3 = ruling_record(label, decide(label, ACT), adjudicator="0xadj", outcome="upheld", time=ACT, dispute_ref="a:9")
+    assert "quack" not in str(r3.to_record()) and r3.category == "" and r3.reason.startswith("specific:")

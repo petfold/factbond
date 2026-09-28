@@ -331,7 +331,16 @@ Constitutional clauses, binding across all rungs:
   per fact type, within which a repeat challenge is also admissible at
   **double the stake** with no novelty test (reality.eth's rule replaces a
   ruling about newness); after it, only fraud or a contradicting primary
-  source reopens.
+  source reopens. *(Built 2026-09-28, F6, two rungs:)* `Assertions.sol`
+  names an arbiter as the final rung at deployment; the loser of a first
+  ruling appeals within `appealSeconds` at double its own stake plus the
+  arbiter's fee, each rung paid either way; a reversal forfeits the first
+  rung's deposit to the appellant. With an arbiter the first ruling's
+  payout is held through the appeal window, so a reversal claws nothing
+  back; without one it pays at once and is final. Which a deployment
+  does is a parameter, and whether "the first ruling pays" means paying
+  at once or after a short appeal window is Peter's to set. A lapse at the
+  first rung still escalates (v0's stand-in) instead of moving up.
 - **Every rung has a clock, and the judge is paid and ledgered** (decided
   2026-09-25). Each rung rules within its class's ruling period or the
   claim moves up automatically and the lapsing adjudicator forfeits its

@@ -237,6 +237,12 @@ silence), carried to chain
 by `Decision.upheld`; the contract gained a per-assertion ruling window,
 never shorter than the deployment's, so that a self-knowable claim can be
 ruled ex parte before it escalates. §8 records what F4 surfaced.)*
+*(2026-09-28, later: F6 built. On chain, an arbiter named at deployment
+as the final rung, appeal at double the stake plus its fee, each rung paid
+either way, the first rung's deposit forfeited to the appellant on a
+reversal, the payout held through the appeal window; off chain,
+`RulingRecord` and the adjudicator view of the calibration ledger. A
+lapse at the first rung still escalates rather than moving up.)*
 
 ## 8. Open
 

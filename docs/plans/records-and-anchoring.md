@@ -97,7 +97,11 @@ machinery" (`PROVENANCE.md` §3). The set (decided 2026-08, lands Phase 1):
   timestamps), `submissions` (both parties' evidence hashes, or the
   lapse), `policy_version`, `pack_root`, `reason` (a short text naming the
   rule applied). The first two are what make a fast ruling survive
-  challenge; the versions make it reusable as precedent.
+  challenge; the versions make it reusable as precedent. *(Built
+  2026-09-28 as `factbond.procedure.RulingRecord`, with the reservation a
+  claim came from, so a claim's notices are required and a dispute of a
+  live assertion needs none; a record missing the referred fact, its
+  notices, its submissions or lapse, or the rule is not a ruling.)*
 - **endorsement** — `PROVENANCE.md` §3 verbatim; with
   `ext.factbond.bond_ref` it becomes co-bonding — capital joining an
   existing assertion (decided 2026-08, lands with Phase 2).

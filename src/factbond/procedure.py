@@ -232,3 +232,92 @@ def decide(case: Case, now: int) -> Decision:
         late = all(s.time > due for s in evidence)
         return Decision(MERITS, None, "merits", "the accused's evidence is on the record", ref, late)
     return Decision(MERITS, None, "merits", "admissible: the burden is the accuser's", ref)
+
+
+# ---- the ruling record (F6; D2's C5; records-and-anchoring §2) ----------------
+
+OUTCOMES = ("upheld", "refuted")
+
+
+@dataclass(frozen=True)
+class RulingRecord:
+    """A ruling as a record: what makes a fast ruling survive challenge
+    (the referred fact, the notices it rests on) and what makes it reusable
+    as precedent (the category and the versions applied, the rule named).
+    `notices` carries each cited notice as (ref, sent_at, cure_deadline); it
+    is empty only for a contest that took no notice step (no
+    `reservation`). `submissions` carries both parties' evidence hashes, or
+    ("lapse",) where none came. `supersedes` names the ruling below when the
+    arbiter rules on appeal."""
+    dispute_ref: str             # the contest ruled: the assertion id on chain, or the dispute record's ref
+    adjudicator: str             # the resolver's key
+    rung: int                    # 0: the first rung; 1: the arbiter, on appeal
+    outcome: str                 # upheld | refuted, the disputed assertion's fate
+    referred_fact: str           # the claim ref ruled on
+    notices: tuple
+    reservation: str | None
+    submissions: tuple
+    category: str                # the claim type ruled under ("" where the contest named no claim)
+    policy_version: str          # the policy ref applied
+    pack_root: str               # the vocabulary pack's root the claim was read against
+    reason: str                  # the rule applied, named
+    time: int
+    supersedes: str = ""
+    v: int = 1
+    kind: str = "ruling"
+
+    @property
+    def ref(self) -> str:
+        return _ref(self)
+
+    def to_record(self) -> dict:
+        rec = asdict(self)
+        rec["notices"] = [list(n) for n in self.notices]
+        rec["submissions"] = list(self.submissions)
+        return rec
+
+    @classmethod
+    def from_record(cls, rec: dict) -> "RulingRecord":
+        """A record that is not a ruling does not load: one missing its
+        referred fact, its notices (where the contest took the notice step),
+        its submissions or the lapse, or the rule it applied."""
+        from .policy import CLAIM_TYPES, PolicyError
+        need = {"dispute_ref", "adjudicator", "rung", "outcome", "referred_fact", "notices", "reservation",
+                "submissions", "category", "policy_version", "pack_root", "reason", "time"}
+        if missing := need - rec.keys():
+            raise PolicyError(f"not a ruling: it lacks {sorted(missing)}")
+        if not rec["referred_fact"]:
+            raise PolicyError("not a ruling: it names no referred fact")
+        if rec["reservation"] and not rec["notices"]:
+            raise PolicyError("not a ruling: a claim on a reservation rests on notices it does not cite")
+        if not rec["submissions"]:
+            raise PolicyError("not a ruling: it records neither submissions nor their lapse")
+        if not rec["reason"]:
+            raise PolicyError("not a ruling: it names no rule")
+        if rec["outcome"] not in OUTCOMES or rec["rung"] not in (0, 1):
+            raise PolicyError("not a ruling: the outcome is upheld or refuted, the rung 0 or 1")
+        if rec["category"] and rec["category"] not in CLAIM_TYPES:
+            raise PolicyError(f"not a ruling: no claim type {rec['category']!r}")
+        if not rec["policy_version"] or not rec["dispute_ref"] or not rec["adjudicator"]:
+            raise PolicyError("not a ruling: it names the contest, the adjudicator and the policy applied")
+        fields = {k: rec[k] for k in need | {"supersedes", "v", "kind"} if k in rec}
+        fields["notices"] = tuple(tuple(n) for n in rec["notices"])
+        fields["submissions"] = tuple(rec["submissions"])
+        return cls(**fields)
+
+
+def ruling_record(case: Case, decision: Decision, *, adjudicator: str, outcome: str, time: int,
+                  dispute_ref: str, rung: int = 0, pack_root: str = "", supersedes: str = "") -> RulingRecord:
+    """The record of a ruling on `case`, the procedure's `decision` naming
+    the rule. A contest that named no claim record (a label) is recorded by
+    the hash of what it said, so the ruling never repeats the label."""
+    acc = case.accusation
+    referred = case.claim.claim_id if case.claim is not None else \
+        hashlib.sha256(acc.referred_fact.encode("utf-8")).hexdigest()
+    cited = [n for n in case.notices if n.ref in acc.notice_refs]
+    notices = tuple((n.ref, n.sent_at, n.cure_deadline) for n in cited)
+    submissions = tuple(s.evidence_ref for s in case.submissions) or ("lapse",)
+    category = case.claim.claim_type if case.claim is not None else ""
+    return RulingRecord.from_record(RulingRecord(
+        dispute_ref, adjudicator, rung, outcome, referred, notices, case.reservation, submissions, category,
+        case.policy.policy_ref, pack_root, f"{decision.rule}: {decision.reason}", time, supersedes).to_record())

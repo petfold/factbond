@@ -16,7 +16,11 @@ import json
 #: the four confidence buckets, per mille (mechanism-design.md §1)
 BUCKETS = (900, 970, 990, 999)
 
-STATUS = ("none", "asserted", "contested", "certified", "refuted", "retracted", "escalated", "unresolved")
+STATUS = ("none", "asserted", "contested", "certified", "refuted", "retracted", "escalated", "unresolved",
+          "ruled", "appealed")
+
+#: no arbiter: one rung, the first ruling pays at once and is final
+NO_LADDER = ("0x" + "00" * 20, 0, 0, 0)
 
 #: the escalation value that resolves nothing (the contract's `UNRESOLVED`):
 #: for a boolean or a hash, where a share of the outcome means nothing
@@ -128,6 +132,37 @@ class AssertionsClient:
     def rule(self, id_: int, upheld: bool) -> dict:
         return self._send(self.contract().functions.rule(id_, upheld))
 
+    # ---- the second rung (F6) ------------------------------------------------
+
+    def ladder(self) -> dict:
+        f = self.contract().functions
+        return {"arbiter": f.arbiter().call(), "arbiter_fee": f.arbiterFeeWei().call(),
+                "appeal_seconds": f.appealSeconds().call(), "deposit": f.depositWei().call()}
+
+    def appeal(self, id_: int, value: int | None = None) -> dict:
+        """The first ruling's loser appeals: double its own stake plus the arbiter's fee by default."""
+        if value is None:
+            a, st = self.assertion(id_), self.appeal_state(id_)
+            own = a["stake"] if st["upheld"] else a["bond"]
+            value = 2 * own + self.contract().functions.arbiterFeeWei().call()
+        return self._send(self.contract().functions.appeal(id_), value=value)
+
+    def rule_appeal(self, id_: int, upheld: bool) -> dict:
+        return self._send(self.contract().functions.ruleAppeal(id_, upheld))
+
+    def finalize(self, id_: int) -> dict:
+        return self._send(self.contract().functions.finalize(id_))
+
+    def post_deposit(self, amount: int) -> dict:
+        return self._send(self.contract().functions.postDeposit(), value=amount)
+
+    def withdraw_deposit(self, amount: int) -> dict:
+        return self._send(self.contract().functions.withdrawDeposit(amount))
+
+    def appeal_state(self, id_: int) -> dict:
+        r = self.contract().functions.appeals(id_).call()
+        return {"upheld": r[0], "appeal_until": r[1], "ruled_by": r[2], "appeal_stake": r[3]}
+
     def escalate(self, id_: int) -> dict:
         return self._send(self.contract().functions.escalate(id_))
 
@@ -144,3 +179,17 @@ class AssertionsClient:
 
     def count(self) -> int:
         return self.contract().functions.count().call()
+
+    def events(self, name: str, from_block: int = 0, to_block="latest") -> list[dict]:
+        """The contract's `name` events as dicts of their arguments plus
+        `block` and `time` (the block's timestamp): the raw material of the
+        calibration ledger's views (`factbond.ledger`), which read nothing
+        but events."""
+        w3, times = self._web3(), {}
+        out = []
+        for log in getattr(self.contract().events, name)().get_logs(from_block=from_block, to_block=to_block):
+            n = log["blockNumber"]
+            if n not in times:
+                times[n] = w3.eth.get_block(n)["timestamp"]
+            out.append({**dict(log["args"]), "block": n, "time": times[n]})
+        return out

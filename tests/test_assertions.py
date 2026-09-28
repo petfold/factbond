@@ -14,7 +14,7 @@ import os
 
 import pytest
 
-from factbond import AssertionsClient, BUCKETS, UNRESOLVED
+from factbond import AssertionsClient, BUCKETS, NO_LADDER, UNRESOLVED
 
 _HAVE_EVM = all(importlib.util.find_spec(m) for m in ("solcx", "eth_tester", "web3"))
 pytestmark = pytest.mark.skipif(not _HAVE_EVM, reason="needs the evm extra: pip install 'factbond[evm]'")
@@ -63,7 +63,7 @@ def chain(compiled):
     receipt = w3.eth.wait_for_transaction_receipt(
         w3.eth.contract(abi=art["abi"], bytecode=art["bin"]).constructor(
             adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, MAX_RULING,
-            RULING_FEE, ESCALATION_BPS).transact())
+            RULING_FEE, ESCALATION_BPS, NO_LADDER).transact())
     assertions = w3.eth.contract(address=receipt["contractAddress"], abi=art["abi"])
     receipt = w3.eth.wait_for_transaction_receipt(
         w3.eth.contract(abi=c_art["abi"], bytecode=c_art["bin"]).constructor().transact())
@@ -207,8 +207,8 @@ def test_the_window_is_the_asserters_within_the_bounds(chain, compiled):
     for lo, default, hi in ((0, CHALLENGE, MAX_CHALLENGE), (CHALLENGE + 1, CHALLENGE, MAX_CHALLENGE),
                             (MIN_CHALLENGE, CHALLENGE, CHALLENGE - 1)):
         assert "window bounds" in _reverts(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
-            adjudicator, treasury, FEE, FLOOR, default, lo, hi, RULING, MAX_RULING, RULING_FEE, ESCALATION_BPS),
-            w3.eth.accounts[0])
+            adjudicator, treasury, FEE, FLOOR, default, lo, hi, RULING, MAX_RULING, RULING_FEE, ESCALATION_BPS,
+            NO_LADDER), w3.eth.accounts[0])
 
 
 def test_an_unresolved_escalation_keeps_the_hold_until_a_ruling(chain):
@@ -279,7 +279,7 @@ def test_the_ruling_window_is_the_asserters_only_ever_longer(chain, compiled):
     assert a.functions.assertions(id_).call()[10] == 4
     assert "ruling bounds" in _reverts(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
         adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, RULING - 1,
-        RULING_FEE, ESCALATION_BPS), w3.eth.accounts[0])
+        RULING_FEE, ESCALATION_BPS, NO_LADDER), w3.eth.accounts[0])
 
 
 def test_the_adjudicator_path_carries_the_procedure_to_chain(chain):
@@ -351,7 +351,147 @@ def test_the_asserter_concedes_and_nobody_rules(chain, compiled):
     assert "not contested" in _reverts(a.functions.rule(id_, True), adjudicator)
     assert "the floor covers the ruling fee" in _reverts(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
         adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, MAX_RULING, FLOOR + 1,
-        ESCALATION_BPS), w3.eth.accounts[0])
+        ESCALATION_BPS, NO_LADDER), w3.eth.accounts[0])
+
+
+ARBITER_FEE, APPEAL, DEPOSIT = 2 * 10 ** 15, 50, 3 * 10 ** 16
+
+
+@pytest.fixture(scope="module")
+def ladder(chain, compiled):
+    """A second deployment with the final rung (F6): the arbiter, its fee,
+    the appeal window and the first rung's deposit."""
+    w3, a, consumer, adjudicator, treasury = chain
+    arbiter = w3.eth.accounts[7]
+    receipt = w3.eth.wait_for_transaction_receipt(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
+        adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, MAX_RULING, RULING_FEE,
+        ESCALATION_BPS, (arbiter, ARBITER_FEE, APPEAL, DEPOSIT)).transact())
+    return w3.eth.contract(address=receipt["contractAddress"], abi=compiled["abi"]), arbiter
+
+
+def _contest(w3, L, consumer, subject, asserter, challenger, bond=FLOOR):
+    L.functions.assert_(subject, consumer.address, 5, 990, *DEFAULT).transact({"from": asserter, "value": FEE + bond})
+    id_ = L.functions.count().call()
+    stake = L.functions.stakeFor(bond, 990).call()
+    L.functions.dispute(id_).transact({"from": challenger, "value": stake})
+    return id_, stake
+
+
+def test_a_first_ruling_is_held_through_its_appeal_window(chain, compiled, ladder):
+    """With a final rung, the first rung needs its deposit to rule, earns its
+    fee at once, and the payout waits for the appeal window (or the loser's
+    waiver); the deposit cannot leave while a ruling is open to appeal."""
+    w3, a, consumer, adjudicator, treasury = chain
+    L, arbiter = ladder
+    asserter, challenger, anyone = w3.eth.accounts[2], w3.eth.accounts[3], w3.eth.accounts[4]
+    for bad, words in (((arbiter, ARBITER_FEE, 0, DEPOSIT), "an arbiter and an appeal window, or neither"),
+                       ((adjudicator, ARBITER_FEE, APPEAL, DEPOSIT), "the final rung is not the first")):
+        assert words in _reverts(w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bin"]).constructor(
+            adjudicator, treasury, FEE, FLOOR, CHALLENGE, MIN_CHALLENGE, MAX_CHALLENGE, RULING, MAX_RULING,
+            RULING_FEE, ESCALATION_BPS, bad), w3.eth.accounts[0])
+    subject = b"\xa1" * 32
+    id_, stake = _contest(w3, L, consumer, subject, asserter, challenger)
+    assert "deposit is short" in _reverts(L.functions.rule(id_, True), adjudicator)
+    L.functions.postDeposit().transact({"from": adjudicator, "value": DEPOSIT})
+    assert _balance_delta(w3, adjudicator, L.functions.rule(id_, True)) == RULING_FEE    # the rung is paid now
+    assert L.functions.assertions(id_).call()[10] == 8 and not consumer.functions.resolved(subject).call()
+    assert "open to appeal" in _reverts(L.functions.withdrawDeposit(1), adjudicator)
+    assert "appeal window open" in _reverts(L.functions.finalize(id_), anyone)
+    _advance(w3, APPEAL + 1)
+    before = w3.eth.get_balance(asserter)
+    L.functions.finalize(id_).transact({"from": anyone})
+    assert w3.eth.get_balance(asserter) - before == FLOOR + stake - RULING_FEE
+    assert L.functions.assertions(id_).call()[10] == 3 and consumer.functions.outcome(subject).call() == 5
+    # the loser may waive its appeal and let the payout go at once
+    id2, stake2 = _contest(w3, L, consumer, b"\xa2" * 32, asserter, challenger)
+    L.functions.rule(id2, False).transact({"from": adjudicator})
+    before = w3.eth.get_balance(challenger)
+    L.functions.finalize(id2).transact({"from": asserter})
+    assert w3.eth.get_balance(challenger) - before == FLOOR + stake2 - RULING_FEE
+    assert L.functions.openRulings(adjudicator).call() == 0
+    assert _balance_delta(w3, adjudicator, L.functions.withdrawDeposit(DEPOSIT)) == DEPOSIT
+
+
+def test_an_appeal_confirmed_pays_the_respondent_and_one_reversed_forfeits_the_deposit(chain, ladder):
+    """F6's gate on chain: the arbiter earns its fee either way; confirmed,
+    the appellant's doubled stake goes to the respondent; reversed, the
+    payout goes the other way and the first rung's deposit is forfeited to
+    the appellant, recorded as `Reversed`, and the rung cannot rule again
+    until it posts a new one."""
+    w3, a, consumer, adjudicator, treasury = chain
+    L, arbiter = ladder
+    asserter, challenger = w3.eth.accounts[2], w3.eth.accounts[3]
+    L.functions.postDeposit().transact({"from": adjudicator, "value": DEPOSIT})
+    id_, stake = _contest(w3, L, consumer, b"\xa3" * 32, asserter, challenger)
+    L.functions.rule(id_, True).transact({"from": adjudicator})              # the challenger lost
+    need = 2 * stake + ARBITER_FEE
+    assert "not the loser" in _reverts(L.functions.appeal(id_), asserter, need)
+    assert "double the stake" in _reverts(L.functions.appeal(id_), challenger, need - 1)
+    L.functions.appeal(id_).transact({"from": challenger, "value": need})
+    assert L.functions.assertions(id_).call()[10] == 9
+    assert "not the arbiter" in _reverts(L.functions.ruleAppeal(id_, True), adjudicator)
+    before = w3.eth.get_balance(asserter)
+    got = _balance_delta(w3, arbiter, L.functions.ruleAppeal(id_, True))
+    assert got == ARBITER_FEE
+    assert w3.eth.get_balance(asserter) - before == FLOOR + stake - RULING_FEE + 2 * stake   # the appeal stake too
+    assert L.functions.deposits(adjudicator).call() == DEPOSIT and L.functions.assertions(id_).call()[10] == 3
+    # reversed: the payout goes to the appellant, with the first rung's deposit
+    subject = b"\xa4" * 32
+    id2, stake2 = _contest(w3, L, consumer, subject, asserter, challenger)
+    L.functions.rule(id2, True).transact({"from": adjudicator})
+    L.functions.appeal(id2).transact({"from": challenger, "value": 2 * stake2 + ARBITER_FEE})
+    before = w3.eth.get_balance(challenger)
+    receipt = w3.eth.wait_for_transaction_receipt(L.functions.ruleAppeal(id2, False).transact({"from": arbiter}))
+    assert w3.eth.get_balance(challenger) - before == FLOOR + stake2 - RULING_FEE + 2 * stake2 + DEPOSIT
+    from web3.logs import DISCARD
+    ev = L.events.Reversed().process_receipt(receipt, errors=DISCARD)[0]["args"]
+    assert (ev["adjudicator"], ev["forfeited"]) == (adjudicator, DEPOSIT)
+    assert L.functions.deposits(adjudicator).call() == 0 and L.functions.assertions(id2).call()[10] == 4
+    assert consumer.functions.resolved(subject).call() and consumer.functions.outcome(subject).call() == 0
+    id3, _ = _contest(w3, L, consumer, b"\xa5" * 32, asserter, challenger)
+    assert "deposit is short" in _reverts(L.functions.rule(id3, True), adjudicator)
+
+
+def test_an_appeal_the_arbiter_lets_lapse_leaves_the_ruling_below(chain, ladder):
+    """A3 at the final rung: no ruling in the arbiter's window, the first
+    ruling stands and pays, and the appellant's stake and the arbiter's fee
+    return; an appeal after its window is refused."""
+    w3, a, consumer, adjudicator, treasury = chain
+    L, arbiter = ladder
+    asserter, challenger, anyone = w3.eth.accounts[2], w3.eth.accounts[3], w3.eth.accounts[4]
+    L.functions.postDeposit().transact({"from": adjudicator, "value": DEPOSIT})
+    id_, stake = _contest(w3, L, consumer, b"\xa6" * 32, asserter, challenger)
+    L.functions.rule(id_, False).transact({"from": adjudicator})             # the asserter lost
+    appeal = 2 * FLOOR + ARBITER_FEE
+    L.functions.appeal(id_).transact({"from": asserter, "value": appeal})
+    assert "the arbiter's window is open" in _reverts(L.functions.finalize(id_), anyone)
+    _advance(w3, RULING + 1)
+    assert "ruling window closed" in _reverts(L.functions.ruleAppeal(id_, True), arbiter)
+    a_before, c_before = w3.eth.get_balance(asserter), w3.eth.get_balance(challenger)
+    L.functions.finalize(id_).transact({"from": anyone})
+    assert w3.eth.get_balance(challenger) - c_before == FLOOR + stake - RULING_FEE
+    assert w3.eth.get_balance(asserter) - a_before == appeal
+    assert L.functions.assertions(id_).call()[10] == 4
+    id2, _ = _contest(w3, L, consumer, b"\xa7" * 32, asserter, challenger)
+    L.functions.rule(id2, False).transact({"from": adjudicator})
+    _advance(w3, APPEAL + 1)
+    assert "appeal window closed" in _reverts(L.functions.appeal(id2), asserter, appeal)
+
+
+def test_the_adjudicator_view_reads_the_ladders_events(chain, ladder):
+    """C3 from events alone: the first rung's reversal by the arbiter, with
+    the deposit it forfeited, and its confirmation on appeal; how many
+    times it ruled is never an entry."""
+    from factbond.ledger import adjudicator_view_from_chain
+    w3, a, consumer, adjudicator, treasury = chain
+    L, arbiter = ladder
+    view = adjudicator_view_from_chain(AssertionsClient("", L.address, client=w3))
+    mine = view[adjudicator]
+    assert [e["forfeited"] for e in mine["reversals"]] == [DEPOSIT] and len(mine["confirmed_on_appeal"]) == 1
+    assert set(mine) == {"reversals", "confirmed_on_appeal"}
+    now = w3.eth.get_block("latest")["timestamp"]
+    assert adjudicator_view_from_chain(AssertionsClient("", L.address, client=w3), now=now + 10 ** 6, max_age=1) == \
+        {adjudicator: {"reversals": [], "confirmed_on_appeal": []}}
 
 
 def test_retraction_returns_the_bond_and_keeps_the_fee(chain):
@@ -376,7 +516,8 @@ def test_client_and_shipped_artifact(chain):
     assert last["escalation"] == ESCALATION_BPS and last["ruling_window"] == RULING
     names = {e["name"] for e in abi()["abi"] if e["type"] == "function"}
     assert {"assert_", "dispute", "certify", "rule", "escalate", "retract", "concede", "stakeFor", "UNRESOLVED",
-            "minChallengeSeconds", "maxChallengeSeconds", "maxRulingSeconds"} <= names
+            "minChallengeSeconds", "maxChallengeSeconds", "maxRulingSeconds", "appeal", "ruleAppeal", "finalize",
+            "postDeposit", "withdrawDeposit"} <= names
     shipped = next(e for e in abi()["abi"] if e.get("name") == "assert_")
     assert [i["name"] for i in shipped["inputs"]][-3:] == ["window", "escalation", "rulingWindow"]  # rebuilt
     with pytest.raises(ValueError):

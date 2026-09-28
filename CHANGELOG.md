@@ -66,6 +66,18 @@ trusted publishing).
   `warranty_paid`. Default cell: arson −33% (panel 3 passes), 4 errors
   corrected by the coupling against 12 under the cap.
 
+- **The second rung, on chain** (2026-09-28; F6). The constructor ends
+  in a `Ladder` (arbiter, arbiter's fee, appeal window, the first rung's
+  deposit); `NO_LADDER` keeps one rung. With an arbiter: the first rung
+  posts a deposit to rule and is paid at once; the payout waits through
+  the appeal window (`Ruled`, `finalize`, the loser's waiver); the loser
+  appeals at double its stake plus the arbiter's fee (`Appealed`); the
+  arbiter's final ruling earns its fee either way, and a reversal pays
+  the appellant the first rung's deposit (`Confirmed`, `Reversed`); a
+  lapsed appeal leaves the ruling below. Client: `appeal`, `rule_appeal`,
+  `finalize`, `post_deposit`, `withdraw_deposit`, `appeal_state`,
+  `ladder`, `events`. Deploy script: four optional ladder arguments.
+
 ### Added
 
 - **Evidence policy as data, `factbond.policy`** (2026-09-28; F3). A
@@ -88,6 +100,13 @@ trusted publishing).
   shift, late evidence to the merits with B5's flag. `Decision.upheld`
   gives `rule`'s argument for a dispute or a claim. THREATS T17
   (defamation on a permanent store) added, mirrored in loopmarket.
+- **The ruling record and the adjudicator view** (2026-09-28; F6).
+  `factbond.procedure.RulingRecord` (C5's fields; a record missing the
+  referred fact, the notices a claim rests on, the submissions or their
+  lapse, or the rule is not a ruling) and `ruling_record`, which records
+  a label by its hash. `factbond.ledger.adjudicator_view`: reversals with
+  their forfeits and confirmations on appeal, from events alone, with a
+  look-back, never a count of rulings.
 
 - **Plans: credentials, cover and options** (2026-09-25). Two documents
   entered the plan corpus from the assurance drafts:

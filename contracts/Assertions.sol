@@ -68,6 +68,21 @@ pragma solidity ^0.8.20;
 ///   `hold` is called, so a consumer with bounds of its own (a longest
 ///   window, `UNRESOLVED` for cover claims) reads `assertions(count())`
 ///   inside `hold` and refuses;
+/// - the ladder has a second rung (F6, 2026-09-28; credentials-cover-and-
+///   options.md D2's A4 and C2–C3): an `arbiter` named at deployment, the
+///   final rung. With it, a first ruling is held through `appealSeconds`
+///   (the payout waits, so a reversal never has to claw anything back) and
+///   its loser may appeal at double its own stake plus the arbiter's fee;
+///   each rung earns its fee whichever way it rules. Confirmed, the
+///   appellant's appeal stake goes to the respondent; reversed, the payout
+///   goes the other way and the first rung forfeits its deposit to the
+///   appellant, so the rung that ruled wrongly pays what its ruling cost.
+///   The first rung must hold that deposit to rule while an appeal is
+///   possible, and cannot withdraw it while any of its rulings is open to
+///   one. An arbiter that lets an appeal lapse leaves the ruling below
+///   standing and returns the appellant's appeal stake and the fee (A3).
+///   Without an arbiter (the default) the first ruling pays at once and is
+///   final, as A4's "pay now, argue later" reads;
 /// - `Certified` is a process fact, not truth (F7): nobody found it worth
 ///   disputing, at these stakes, under this procedure.
 interface IConsumer {
@@ -76,7 +91,26 @@ interface IConsumer {
 }
 
 contract Assertions {
-    enum Status { None, Asserted, Contested, Certified, Refuted, Retracted, Escalated, Unresolved }
+    enum Status { None, Asserted, Contested, Certified, Refuted, Retracted, Escalated, Unresolved, Ruled, Appealed }
+
+    /// The final rung (F6): who it is, what its ruling costs, how long a
+    /// first ruling is open to appeal, and the deposit the first rung must
+    /// hold, forfeited on a reversal. A zero arbiter: one rung, rulings final.
+    struct Ladder {
+        address arbiter;
+        uint256 arbiterFeeWei;
+        uint64 appealSeconds;
+        uint256 depositWei;
+    }
+
+    /// A first ruling held for appeal: its outcome, until when, by whom, and
+    /// the appellant's stake once appealed.
+    struct Appeal {
+        bool upheld;
+        uint64 appealUntil;
+        address ruledBy;
+        uint256 appealStake;
+    }
 
     /// The escalation value that resolves nothing: the consumer's hold
     /// persists until a ruling.
@@ -110,8 +144,15 @@ contract Assertions {
     uint64 public maxRulingSeconds;
     uint256 public rulingFeeWei;  // the loser pays it to the adjudicator that ruled; at most the floor
     uint16 public escalationBps;  // the most of the outcome an assertion may resolve at when no ruling arrives
+    address public arbiter;       // the final rung; address(0): the first ruling is final
+    uint256 public arbiterFeeWei; // prepaid by an appellant, the arbiter's whichever way it rules
+    uint64 public appealSeconds;  // how long a first ruling is open to appeal, its payout held
+    uint256 public depositWei;    // what the first rung holds to rule while an appeal is possible
     uint256 public count;
     mapping(uint256 => Assertion) public assertions;
+    mapping(uint256 => Appeal) public appeals;
+    mapping(address => uint256) public deposits;      // an adjudicator's deposit, forfeited on a reversal
+    mapping(address => uint256) public openRulings;   // its rulings still open to appeal
 
     event Asserted(uint256 indexed id, bytes32 indexed subject, address indexed asserter, address consumer,
                    uint256 outcome, uint16 confidence, uint256 bond, uint64 challengeUntil, uint16 escalation,
@@ -123,15 +164,24 @@ contract Assertions {
     event Retracted(uint256 indexed id);
     event Escalated(uint256 indexed id, bytes32 indexed subject, uint256 outcome);
     event Unresolved(uint256 indexed id, bytes32 indexed subject);  // escalated, the consumer's hold kept
+    event Ruled(uint256 indexed id, address indexed adjudicator, bool upheld, uint64 appealUntil);
+    event Appealed(uint256 indexed id, address indexed appellant, uint256 appealStake);
+    event Confirmed(uint256 indexed id, address indexed adjudicator);   // the arbiter upheld the ruling below
+    event Reversed(uint256 indexed id, address indexed adjudicator, uint256 forfeited);
+    event Deposited(address indexed adjudicator, uint256 amount);
 
     constructor(address adjudicator_, address treasury_, uint256 feeWei_, uint256 floorWei_,
                 uint64 challengeSeconds_, uint64 minChallengeSeconds_, uint64 maxChallengeSeconds_,
-                uint64 rulingSeconds_, uint64 maxRulingSeconds_, uint256 rulingFeeWei_, uint16 escalationBps_) {
+                uint64 rulingSeconds_, uint64 maxRulingSeconds_, uint256 rulingFeeWei_, uint16 escalationBps_,
+                Ladder memory ladder_) {
         require(escalationBps_ <= 10000, "bps");
         require(rulingFeeWei_ <= floorWei_, "the floor covers the ruling fee");
         require(0 < minChallengeSeconds_ && minChallengeSeconds_ <= challengeSeconds_
                 && challengeSeconds_ <= maxChallengeSeconds_, "window bounds");
         require(0 < rulingSeconds_ && rulingSeconds_ <= maxRulingSeconds_, "ruling bounds");
+        require((ladder_.arbiter == address(0)) == (ladder_.appealSeconds == 0),
+                "a ladder names an arbiter and an appeal window, or neither");
+        require(ladder_.arbiter == address(0) || ladder_.arbiter != adjudicator_, "the final rung is not the first");
         owner = msg.sender;
         adjudicator = adjudicator_; treasury = treasury_;
         feeWei = feeWei_; floorWei = floorWei_;
@@ -139,11 +189,29 @@ contract Assertions {
         minChallengeSeconds = minChallengeSeconds_; maxChallengeSeconds = maxChallengeSeconds_;
         maxRulingSeconds = maxRulingSeconds_;
         rulingFeeWei = rulingFeeWei_; escalationBps = escalationBps_;
+        arbiter = ladder_.arbiter; arbiterFeeWei = ladder_.arbiterFeeWei;
+        appealSeconds = ladder_.appealSeconds; depositWei = ladder_.depositWei;
     }
 
     function setAdjudicator(address adjudicator_) external {
         require(msg.sender == owner, "not the owner");
+        require(arbiter == address(0) || adjudicator_ != arbiter, "the final rung is not the first");
         adjudicator = adjudicator_;
+    }
+
+    /// An adjudicator's deposit (C3): what a reversal of its ruling by the
+    /// arbiter forfeits to the appellant.
+    function postDeposit() external payable {
+        deposits[msg.sender] += msg.value;
+        emit Deposited(msg.sender, msg.value);
+    }
+
+    /// Withdrawable only while none of its rulings is open to appeal.
+    function withdrawDeposit(uint256 amount) external {
+        require(openRulings[msg.sender] == 0, "a ruling is open to appeal");
+        require(amount <= deposits[msg.sender], "more than deposited");
+        deposits[msg.sender] -= amount;
+        _pay(payable(msg.sender), amount);
     }
 
     function isBucket(uint16 c) public pure returns (bool) {
@@ -253,15 +321,96 @@ contract Assertions {
         } else {
             require(a.status == Status.Contested, "not contested");
             require(block.timestamp <= a.rulingUntil, "ruling window closed");
+            if (arbiter != address(0)) {
+                // held for appeal: the rung is paid now, the parties when the window closes
+                require(deposits[msg.sender] >= depositWei, "the rung's deposit is short");
+                a.status = Status.Ruled;
+                Appeal storage ap = appeals[id];
+                ap.upheld = upheld; ap.appealUntil = uint64(block.timestamp) + appealSeconds; ap.ruledBy = msg.sender;
+                openRulings[msg.sender] += 1;
+                if (rulingFeeWei > 0) _pay(payable(msg.sender), rulingFeeWei);
+                emit Ruled(id, msg.sender, upheld, ap.appealUntil);
+                return;
+            }
             address payable winner = payable(upheld ? a.asserter : a.challenger);
-            uint256 own = upheld ? a.bond : a.stake;
-            uint256 lost = upheld ? a.stake : a.bond;
             a.status = upheld ? Status.Certified : Status.Refuted;
-            _pay(winner, own + lost - rulingFeeWei);
+            _pay(winner, a.bond + a.stake - rulingFeeWei);
             if (rulingFeeWei > 0) _pay(payable(msg.sender), rulingFeeWei);
         }
         if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, upheld ? a.outcome : 0);
         if (upheld) emit Certified(id, a.subject, a.outcome, true);
+        else emit Refuted(id, a.subject, true);
+    }
+
+    /// The loser of a first ruling appeals to the arbiter within the window,
+    /// at double its own stake plus the arbiter's fee (A4's doubled stake;
+    /// D2's named final rung). The arbiter then has the assertion's ruling
+    /// window.
+    function appeal(uint256 id) external payable {
+        Assertion storage a = assertions[id];
+        Appeal storage ap = appeals[id];
+        require(a.status == Status.Ruled, "no ruling to appeal");
+        require(block.timestamp <= ap.appealUntil, "appeal window closed");
+        require(msg.sender == (ap.upheld ? a.challenger : a.asserter), "not the loser");
+        uint256 own = ap.upheld ? a.stake : a.bond;
+        require(msg.value >= 2 * own + arbiterFeeWei, "double the stake plus the arbiter's fee");
+        ap.appealStake = msg.value - arbiterFeeWei;
+        a.status = Status.Appealed;
+        a.rulingUntil = uint64(block.timestamp) + a.rulingWindow;
+        emit Appealed(id, msg.sender, ap.appealStake);
+    }
+
+    /// The arbiter's ruling, final, its fee earned either way. Confirmed, the
+    /// appellant's appeal stake goes to the respondent with the payout below;
+    /// reversed, the payout goes to the appellant, and the first rung's
+    /// deposit with it: the rung that ruled wrongly pays what its ruling cost
+    /// the appellant (C3; mechanism-design §4's refunds on reversal).
+    function ruleAppeal(uint256 id, bool upheld) external {
+        require(msg.sender == arbiter, "not the arbiter");
+        Assertion storage a = assertions[id];
+        Appeal storage ap = appeals[id];
+        require(a.status == Status.Appealed, "not under appeal");
+        require(block.timestamp <= a.rulingUntil, "ruling window closed");
+        a.status = upheld ? Status.Certified : Status.Refuted;
+        openRulings[ap.ruledBy] -= 1;
+        uint256 forfeited;
+        if (upheld != ap.upheld) {
+            forfeited = deposits[ap.ruledBy] < depositWei ? deposits[ap.ruledBy] : depositWei;
+            deposits[ap.ruledBy] -= forfeited;
+            emit Reversed(id, ap.ruledBy, forfeited);
+        } else {
+            emit Confirmed(id, ap.ruledBy);
+        }
+        if (arbiterFeeWei > 0) _pay(payable(msg.sender), arbiterFeeWei);
+        _pay(payable(upheld ? a.asserter : a.challenger), a.bond + a.stake - rulingFeeWei + ap.appealStake + forfeited);
+        if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, upheld ? a.outcome : 0);
+        if (upheld) emit Certified(id, a.subject, a.outcome, true);
+        else emit Refuted(id, a.subject, true);
+    }
+
+    /// A held first ruling pays: when its appeal window has closed, at once
+    /// when its loser waives the appeal, or when an appeal lapses without the
+    /// arbiter's ruling — then the ruling below stands and the appellant's
+    /// appeal stake and the arbiter's fee return (the lapsing rung forfeits
+    /// its fee, A3).
+    function finalize(uint256 id) external {
+        Assertion storage a = assertions[id];
+        Appeal storage ap = appeals[id];
+        address loser = ap.upheld ? a.challenger : a.asserter;
+        uint256 refund;
+        if (a.status == Status.Ruled) {
+            require(block.timestamp > ap.appealUntil || msg.sender == loser, "appeal window open");
+        } else {
+            require(a.status == Status.Appealed, "nothing to finalize");
+            require(block.timestamp > a.rulingUntil, "the arbiter's window is open");
+            refund = ap.appealStake + arbiterFeeWei;
+        }
+        a.status = ap.upheld ? Status.Certified : Status.Refuted;
+        openRulings[ap.ruledBy] -= 1;
+        _pay(payable(ap.upheld ? a.asserter : a.challenger), a.bond + a.stake - rulingFeeWei);
+        if (refund > 0) _pay(payable(loser), refund);
+        if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, ap.upheld ? a.outcome : 0);
+        if (ap.upheld) emit Certified(id, a.subject, a.outcome, true);
         else emit Refuted(id, a.subject, true);
     }
 

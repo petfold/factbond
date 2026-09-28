@@ -85,6 +85,14 @@ party or of the deposit's maker. All of it is policy data, none of it
 contract. The door witness types loopmarket's gate needs — `possession`
 (challenge–response), `photo-match`, `registry-transfer` — enter the
 roster below under this document's rules, as cumulative door levels.
+*(Built 2026-09-28, the shapes only: `factbond.policy` carries the policy
+document, one class rule per claim type with its rungs, and the
+`suspended/` record, and refuses at load a class without a named, bonded
+final rung. `policies/credential.json` is the placeholder that loopmarket's
+gate and hansa's adapter code against. Each class also names the
+**escalation value** a dispute with no ruling resolves at, a share of the
+outcome or `unresolved` (D10), which is the value an assertion passes to
+`Assertions.assert_`.)*
 
 ## 2. The policy hash is the contract
 

@@ -9,9 +9,10 @@ knowledge-graph edges.
 the substance; the first code is the assertion primitive's consumer-facing
 edge — `contracts/Assertions.sol` (assert with a bond at a stated
 confidence, dispute at the odds it sets, certify by timeout, rule only when
-contested, escalate when no ruling comes; a consumer contract told
-`hold(subject)` and `resolve(subject, outcome)`), `factbond.assertions`,
-and tests on a local EVM — built for loopmarket's escrow, whose contested
+contested, escalate when no ruling comes; the window and the escalation
+value chosen per assertion; a consumer contract told `hold(subject)` and
+`resolve(subject, outcome)`), `factbond.assertions`, the evidence policy
+as data (`factbond.policy`), and tests on a local EVM — built for loopmarket's escrow, whose contested
 claims it adjudicates (`docs/plans/loopmarket-coupling.md` §3b; the
 cross-repo gate is loopmarket's `tests/test_escrow.py`). The Phase-0 simulation harness (`factbond.sim`, v0) runs exploratory cells
 and refuses a scored run until the pre-registration block is filled; the

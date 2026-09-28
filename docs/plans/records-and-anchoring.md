@@ -43,7 +43,7 @@ content-addressed (decided 2026-08, lands with Phase 1):
 | `v` | schema version; readers ignore unknown fields |
 | `subject` | canonical name / name pair, adversary-computable (`PROVENANCE.md` §3) |
 | `basis_root` | the pinned knowledge root the subject is read against |
-| `claim_type` | controlled vocabulary: `attribute-matches-source` \| `attribute-matches-world` \| `entity-exists` (`../DESIGN.md` §6.1) |
+| `claim_type` | controlled vocabulary: `attribute-matches-source` \| `attribute-matches-world` \| `entity-exists` (`../DESIGN.md` §6.1) \| `self-knowable` (added 2026-09-25, `evidence-policy.md` §1; `factbond.policy.CLAIM_TYPES`) |
 | `policy_ref` | hash pin of the resolution-procedure document (`evidence-policy.md`) |
 | `ext` | namespaced extensions map, empty in v1 |
 

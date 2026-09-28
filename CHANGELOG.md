@@ -5,7 +5,36 @@ trusted publishing).
 
 ## [Unreleased]
 
+### Changed
+
+- **`Assertions.sol`: the challenge window and the escalation value are
+  per assertion** (2026-09-28; development sequence F1 and F-esc,
+  `credentials-cover-and-options.md` D10). `assert_` takes `window` (0 for
+  the deployment's `challengeSeconds`, otherwise within the constructor's
+  new `minChallengeSeconds`/`maxChallengeSeconds`) and `escalation` (bps
+  of the outcome at most the deployment's `escalationBps`, or
+  `UNRESOLVED`). An unresolved escalation returns both stakes, leaves the
+  consumer's hold in place (status `Unresolved`, event `Unresolved`) and
+  is resolved by a later `rule` with no clock. `Asserted` carries
+  `challengeUntil` and `escalation`. Breaking for callers: the constructor
+  has ten arguments and `assert_` six (`scripts/deploy_assertions.py`, the
+  client, loopmarket's cross-repo test follow). The deployed
+  `0xfa6f…bF99` is the old source until the redeploy.
+  `AssertionsClient.assert_(…, window=, escalation=)` defaults both to
+  the deployment's; `window_bounds()`, `escalation_bps()`, `UNRESOLVED`.
+
 ### Added
+
+- **Evidence policy as data, `factbond.policy`** (2026-09-28; F3). A
+  per-domain `PolicyDocument`, content-addressed (`policy_ref`, pinned
+  loads in canonical encoding only), with a `ClassRule` per claim type:
+  rungs with adjudicator class, ruling period, fee, deposit and evidence
+  weights; cure period, evidence period and fee, challenger cap, finality
+  window, escalation value. It refuses at load a class without a named,
+  bonded final rung and the other rules fixed in D2, D10 and F8.
+  `Suspension` (`suspended/<statement>`) with `suspended()` deriving it.
+  The placeholder `policies/credential.json` is shipped. `CLAIM_TYPES`
+  gains `self-knowable` and the harness reads the one vocabulary.
 
 - **Plans: credentials, cover and options** (2026-09-25). Two documents
   entered the plan corpus from the assurance drafts:

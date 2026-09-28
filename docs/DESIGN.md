@@ -348,6 +348,15 @@ Unasserted → Asserted → (liveness expires) → Certified → (validity expir
   `attribute-matches-source` claim when the evidence suggests the record
   (not just the day) was wrong. That coupling is what turns consumers into
   the verification workforce without them ever thinking about it.
+- **What if no ruling comes?** *(added 2026-09-28,
+  `plans/credentials-cover-and-options.md` D10; built in
+  `contracts/Assertions.sol`)* The dispute escalates: both stakes return
+  and the subject resolves at the assertion's **escalation value**, a share
+  of the outcome, or *unresolved* for a boolean or a hash, where a share
+  reads as 0. Unresolved leaves the consumer's hold in place until a
+  ruling arrives, so a silent adjudicator pays neither side. Which value a
+  fact type takes is evidence-policy data (`plans/evidence-policy.md` §1,
+  `factbond.policy`), never the contract's.
 
 ## 8. Parameters (transcript priors, to be validated in simulation)
 
@@ -356,7 +365,9 @@ Unasserted → Asserted → (liveness expires) → Certified → (validity expir
 - **Liveness window:** long for cold claims (days–weeks; nobody is
   watching, give the world time). The insurance coupling shortens
   *effective* discovery time to "next consumption event," which is the real
-  safety mechanism.
+  safety mechanism. *(Built 2026-09-28, F1: the asserter names the window
+  per assertion within the deployment's bounds, so the 1 h window of a live
+  escrow contest and the weeks of a cold claim share one contract.)*
 - **Confidence granularity:** coarse buckets (0.9 / 0.97 / 0.99 / 0.999) —
   false precision invites gaming of the odds ratio.
 - **Slashing split:** majority of the loser's stake to the winner, a slice

@@ -2,9 +2,12 @@
 claim about a subject with a bond and a stated confidence; dispute at the
 odds the confidence sets; certify by timeout; the adjudicator rules only on
 a contested claim; a consumer contract, if named, is told `hold` and
-`resolve`. `AssertionsClient` sends and reads; web3 loads lazily behind the
-`chain` extra. The contract's own docstring is the design record for what
-v0 fixes and what waits for the plans."""
+`resolve`. Each assertion names its challenge window within the
+deployment's bounds and its escalation value (a share of the outcome, or
+`UNRESOLVED`: the consumer's hold persists until a ruling).
+`AssertionsClient` sends and reads; web3 loads lazily behind the `chain`
+extra. The contract's own docstring is the design record for what v0 fixes
+and what waits for the plans."""
 
 from __future__ import annotations
 
@@ -13,7 +16,11 @@ import json
 #: the four confidence buckets, per mille (mechanism-design.md §1)
 BUCKETS = (900, 970, 990, 999)
 
-STATUS = ("none", "asserted", "contested", "certified", "refuted", "retracted", "escalated")
+STATUS = ("none", "asserted", "contested", "certified", "refuted", "retracted", "escalated", "unresolved")
+
+#: the escalation value that resolves nothing (the contract's `UNRESOLVED`):
+#: for a boolean or a hash, where a share of the outcome means nothing
+UNRESOLVED = 0xFFFF
 
 
 def abi() -> dict:
@@ -67,16 +74,31 @@ class AssertionsClient:
     def stake_for(self, bond: int, confidence: int) -> int:
         return self.contract().functions.stakeFor(bond, confidence).call()
 
+    def window_bounds(self) -> tuple[int, int, int]:
+        """(min, default, max) challenge window in seconds."""
+        f = self.contract().functions
+        return f.minChallengeSeconds().call(), f.challengeSeconds().call(), f.maxChallengeSeconds().call()
+
+    def escalation_bps(self) -> int:
+        """The deployment's escalation share: the default, and the most an
+        assertion may name."""
+        return self.contract().functions.escalationBps().call()
+
     # ---- the lifecycle -------------------------------------------------------
 
     def assert_(self, subject: bytes, consumer: str | None, outcome: int, confidence: int,
-                bond: int | None = None) -> tuple[int, dict]:
-        """Post a claim; the bond defaults to the floor. Returns (id, receipt)."""
+                bond: int | None = None, *, window: int = 0, escalation: int | None = None) -> tuple[int, dict]:
+        """Post a claim; the bond defaults to the floor, the window (seconds)
+        to the deployment's, the escalation value to the deployment's share
+        (`UNRESOLVED` for a boolean or a hash — `factbond.policy` says which
+        a fact type takes). Returns (id, receipt)."""
         if confidence not in BUCKETS:
             raise ValueError(f"confidence is one of {BUCKETS} per mille")
         c = self.contract()
         bond = self.floor() if bond is None else bond
-        receipt = self._send(c.functions.assert_(subject, consumer or "0x" + "00" * 20, outcome, confidence),
+        escalation = self.escalation_bps() if escalation is None else escalation
+        receipt = self._send(c.functions.assert_(subject, consumer or "0x" + "00" * 20, outcome, confidence,
+                                                 window, escalation),
                              value=self.fee() + bond)
         return c.events.Asserted().process_receipt(receipt)[0]["args"]["id"], receipt
 
@@ -103,7 +125,7 @@ class AssertionsClient:
         r = self.contract().functions.assertions(id_).call()
         return {"asserter": r[0], "challenger": r[1], "consumer": r[2], "subject": r[3], "outcome": r[4],
                 "confidence": r[5], "bond": r[6], "stake": r[7], "challenge_until": r[8],
-                "ruling_until": r[9], "status": STATUS[r[10]]}
+                "ruling_until": r[9], "status": STATUS[r[10]], "escalation": r[11]}
 
     def count(self) -> int:
         return self.contract().functions.count().call()

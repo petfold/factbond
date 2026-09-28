@@ -22,19 +22,47 @@ product so far (`DESIGN.md`, `INTEGRATION.md`, the work packages under
   undisputed; `rule` by the adjudicator on a contested claim (the loser's
   stake mostly to the winner, the rest to the treasury); `escalate` when no
   ruling arrives in the window (v0's stand-in for the next rung: both
-  stakes back, the subject resolved at `escalationBps` of the outcome);
+  stakes back, the subject resolved at the assertion's escalation value);
   `retract` returns the bond, never the fee. A consumer is told exactly
   twice — `hold(subject)` when the claim opens (and may refuse: no
   registration, the consumer's acceptance ties a subject to this resolver)
   and `resolve(subject, outcome)` when it closes. `Refuted` is the
-  correction feed's event.
-- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver. **Live gate the same night:** assertion 1 — a claim on a real reservation (subject = the escrow's key), the escrow's `hold` fired by `assert_`, certified by timeout after its hour, `resolve` paying the wanter 0.01 xDAI through the escrow, the bond returned.
+  correction feed's event. **Per assertion since 2026-09-28** (development
+  sequence F1 and F-esc; plan D10): `assert_` also takes the challenge
+  `window` in seconds (0 for the deployment's default, otherwise within
+  [`minChallengeSeconds`, `maxChallengeSeconds`]) and the `escalation`
+  value — bps of the outcome at most the deployment's `escalationBps` (a
+  lower share only costs the asserter), or `UNRESOLVED` for a boolean or a
+  hash: at escalation both stakes return, the consumer is not told, its
+  hold persists (status `Unresolved`), and the adjudicator's later `rule`
+  resolves it with no clock, moving only the record and the consumer. Both
+  are written before `hold`, so a consumer may read `assertions(count())`
+  there and refuse. `Asserted` carries `challengeUntil` and `escalation`.
+- **Deployed 2026-09-19 on Gnosis at `0xfa6f9367A283A8c53AA876C1416D4B49027bBF99`** (adjudicator and treasury the deployer's key, fee 0.001 xDAI, floor 0.01 xDAI, challenge 1 h, ruling 1 d, winner 7500 bps, escalation 5000 bps); loopmarket's redeployed escrow `0x299CE499fdDA61bCB006718E5Ac551B5006269Bf` names it as resolver. **Live gate the same night:** assertion 1 — a claim on a real reservation (subject = the escrow's key), the escrow's `hold` fired by `assert_`, certified by timeout after its hour, `resolve` paying the wanter 0.01 xDAI through the escrow, the bond returned. **That deployment is the 2026-09-19 source**; the per-assertion window and escalation value (constructor with the window bounds, the six-argument `assert_`) await their Gnosis redeploy, which loopmarket's one escrow redeploy (its E3) then names.
 - `src/factbond/assertions.py` — `AssertionsClient` (web3 lazy, the
   `chain` extra), `BUCKETS`, `abi()` reading the shipped artifact
   `src/factbond/contracts/Assertions.json` (`scripts/build.py`; solc 0.8.24,
-  via IR, optimizer 200). `scripts/deploy_assertions.py`.
+  via IR, optimizer 200), `UNRESOLVED`. `scripts/deploy_assertions.py`.
+- `src/factbond/policy.py` — evidence policy as data (F3, 2026-09-28;
+  `evidence-policy.md` §1–§2, §6): `PolicyDocument` per domain, its
+  `policy_ref` the SHA-256 of the canonical encoding (recordstore's), and
+  `load(bytes, ref)` refusing a pin whose bytes are not that canonical
+  spelling; a `ClassRule` per claim type (`CLAIM_TYPES`, now with
+  `self-knowable`) carrying the rungs, each with its adjudicator class,
+  ruling period, fee, deposit and admitted evidence weights, plus the cure
+  period, evidence period and fee, challenger cap, finality window and
+  escalation value (`escalation_arg()` is what `assert_` takes). It
+  refuses at load a class with no named, bonded final rung, a token vote,
+  a structural class not settled by certificate alone (F8), an evidence
+  period outside `self-knowable`, and the other fixed rules. `Suspension`
+  is the `suspended/<statement>` register record; `suspended()` derives
+  it: from the evidence period's lapse until the ruling, and late evidence
+  does not lift it. `shipped("credential")`
+  (`src/factbond/policies/credential.json`) is the placeholder policy
+  loopmarket's gate and hansa's adapter code against; its numbers and its
+  arbitrator are placeholders.
 - `tests/test_assertions.py` on a local EVM (the `evm` extra; skips per
-  test without it). The cross-repo gate lives in loopmarket:
+  test without it), `tests/test_policy.py`. The cross-repo gate lives in loopmarket:
   `tests/test_escrow.py::test_factbond_as_the_resolver` compiles this
   contract from `../factbond` and runs a claim on a real `LoopEscrow`
   reservation both ways (certified by timeout; disputed and refuted).
@@ -162,19 +190,21 @@ product and the reliance proof (`insurance-products.md`,
 (`phase0-simulation.md`), which gates the *insurance* product, not this
 primitive.
 
-Decided 2026-09-25 with the assurance drafts, not built
-(`docs/plans/credentials-cover-and-options.md`, `assertion-extensions.md`):
-F1, a per-assertion challenge window with bounds and a default (the v0
-contract's single `challengeSeconds` catching up with the record design's
-per-assertion `liveness`); a per-fact-type escalation value (the stand-in
-reads a boolean outcome as 0); the `self-knowable` class with its clocks,
-evidence fee, challenger cap, finality window, suspension, adjudicator
-class and named final rung as evidence-policy data; adjudicators paid per
-ruling and in the calibration ledger; the asserter-indexed loss view with
-a look-back (from `Asserted ⋈ Refuted`, the feed to carry the asserter);
-cover on loopmarket legs at the caps with the insured asserting the
-trigger; the mutual as the first pooled form on the reserve, with its
-rules. None of it adds a subject-specific field to the contract.
+Decided 2026-09-25 with the assurance drafts
+(`docs/plans/credentials-cover-and-options.md`, `assertion-extensions.md`;
+the order is `../assurance-drafts/development-sequence-2026-09-25.md`,
+Track F). Built 2026-09-28: F1 and F-esc (above, in the source, not yet
+redeployed) and F3's shapes (`factbond.policy`). Not built: the dispute
+rules on the adjudicator path (F4: specificity, the notice-and-cure
+record before a dispute, ex parte after lapse), since the policy names
+the periods and nothing enforces them yet; the evidence fee and cap
+charged on a real dispute; adjudicators paid per ruling and in the
+calibration ledger, and the ruling record's fields (F6); the
+asserter-indexed loss view with a look-back (F5: from `Asserted ⋈
+Refuted`, the feed to carry the asserter); cover on loopmarket legs at the
+caps with the insured asserting the trigger; the mutual as the first
+pooled form on the reserve, with its rules. None of it adds a
+subject-specific field to the contract.
 
 ## Releasing
 

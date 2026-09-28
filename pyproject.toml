@@ -20,7 +20,7 @@ test = ["pytest"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-factbond = ["contracts/*.json"]
+factbond = ["contracts/*.json", "policies/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

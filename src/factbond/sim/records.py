@@ -12,7 +12,7 @@ import json
 from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 
-CLAIM_TYPES = ("attribute-matches-source", "attribute-matches-world", "entity-exists")
+from ..policy import CLAIM_TYPES  # noqa: F401 (the vocabulary is the evidence policy's)
 
 
 def content_hash(obj) -> str:

@@ -222,7 +222,13 @@ Adjudicators have entries of their own (C3).
 | F6 | adjudicators in the ledger: fee per ruling, deposit, reversal entries; the ruling record (§2) | a rung that lapses forfeits its fee and the claim moves up; a reversal at the final rung forfeits the deposit and is recorded; a ruling record missing the referred fact or the notice timestamps is not a ruling |
 | F7 | a named, bonded final rung per fact-type class (§2) | a class without a final rung is refused by the gate; the final rung is never a token vote |
 
-F1 is small and unblocks the rest.
+F1 is small and unblocks the rest. *(2026-09-28: F1 built in
+`contracts/Assertions.sol` together with the per-assertion escalation
+value of D10, and awaiting its redeploy; F3's policy shapes built in
+`factbond.policy`, the placeholder `credential` policy shipped. The
+behaviour F3's gate names (the evidence fee and cap charged, re-challenge
+at double the stake, E returned on late evidence) waits for the dispute
+path of F4 and F6.)*
 
 ## 8. Open
 

@@ -58,6 +58,13 @@ trusted publishing).
   reliance. The first product sold becomes cover on loopmarket legs and
   on warranted facts (§8, G-I5); OP-2 narrows to classifying which fact
   types can be controlled. THREATS T5, DESIGN §5.3 and CLAUDE.md follow.
+- **The harness models §5a** (2026-09-28): `FactType.controllable`,
+  `cover_rule` ("warranty", the default, or "cap", the product before),
+  owners' warranties and sureties (`warranted_share`, `warranty_deposit`,
+  `surety_share`, `surety_fee`, `surety_error`, `surety_limit`), the
+  arsonist's two routes, and the panels' `uninsurable` and
+  `warranty_paid`. Default cell: arson −33% (panel 3 passes), 4 errors
+  corrected by the coupling against 12 under the cap.
 
 ### Added
 

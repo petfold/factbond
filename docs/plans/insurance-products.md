@@ -309,6 +309,26 @@ evidence policy can record per class (a café's hours: yes; a parcel
 locker's existence: its operator; a public building's address: hardly).
 The exclusion stays as a second line.
 
+**In the harness** (built 2026-09-28: `cover_rule="warranty"`, the
+default; `"cap"` keeps the product before this section). Every POI and
+locker fact type counts as controllable. A fact's controller warrants it
+with a reserved deposit (`warranted_share` of them, `warranty_deposit`
+each) or a surety backs it after vetting (`surety_share`, `surety_fee`,
+`surety_error`, `surety_limit`); a controlled fact with neither is
+uninsurable. The arsonist must become its facts' guarantee: warranting
+them pays it its own money back and loses the statement's fee, and the
+surety route pays for vetting every fact and profits only where vetting
+fails. On the default 2,000 × 120 cell, against the same cell under the
+cap: arson −33% against +10%, so panel 3 passes; the cost is the
+coupling's reach, since with a fifth of the owners warranting and a tenth
+surety-backed, 2,781 purchases find no guarantee, the payout→dispute
+coupling corrects 4 seeded errors against 12, and the honest dispute
+rate falls to 0.2%, below the calibration band. Owners' warranties paid
+$340 of claims the pool no longer carries. How many owners bond is the
+adoption question this section's demand argument has to answer; a
+careless surety (`surety_error` 0.9 with no exclusion) makes arson pay
+again, which is the surety's vetting doing the work.
+
 ## 6. The payout→dispute coupling — funding the correction machinery
 
 The wiring that turns consumers into the verification workforce

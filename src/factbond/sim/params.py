@@ -14,6 +14,8 @@ class FactType:
     drift_hazard: float      # per tick, true -> false
     consumption_share: float # of consumption events
     claim_type: str = "attribute-matches-world"
+    controllable: bool = True  # someone (an owner, an operator) can make a fact of this type wrong at will
+                               # (insurance-products §5a: the judgment is per type, never per buyer)
 
 
 #: POI liveness (domain-choice.md, decided 2026-09-19): one place, five linked
@@ -74,6 +76,16 @@ class Params:
     informed_share: float = 0.05           # buyers who know the fact is wrong
     detect_rate: float = 0.9               # a consumer of a wrong fact notices
     control_exclusion: float = 0.9         # a policy on a fact the buyer controls is refused
+    # who guarantees a controlled fact (insurance-products §5a, 2026-09-28)
+    cover_rule: str = "warranty"           # a controllable fact is covered only by its controller's reserved
+                                           # deposit or by a surety; "cap": the pre-§5a product, the pool
+                                           # insuring any fact under the payout cap, the exclusion its only guard
+    warranted_share: float = 0.2           # controllable facts whose controller posts a warranty (adoption, a guess)
+    warranty_deposit: float = 100.0        # the controller's reserved deposit behind a warranted fact, $
+    surety_share: float = 0.1              # of the rest, the share a surety (the pool, having vetted) backs
+    surety_fee: float = 10.0               # a controller's cost of the surety's vetting, per fact, admitted or not
+    surety_error: float = 0.1              # the surety admits a controller that will break its own fact
+    surety_limit: float = 60.0             # the surety's cover per fact, $
     pool_stake: float = 20000.0
     reserve_gearing: float = 4.8           # Nexus's MCR gearing prior (netting-and-reserves §7)
     ruin_epsilon: float = 0.005            # Solvency II 99.5 %

@@ -34,11 +34,17 @@ class Adversary:
 @dataclass
 class Arsonist(Adversary):
     """T5: control m facts, buy the verification bet on each at the cap,
-    break them, collect. F3's cap and the control exclusion are what it
-    tests; the aggregation variant spreads the same over sybil buyers."""
+    break them, collect. Under the pre-§5a rule F3's cap and the control
+    exclusion are all it meets; the aggregation variant spreads the same
+    over sybil buyers. Under §5a a controlled fact is covered only by its
+    controller's warranty or a surety, so the arsonist must be one: the
+    `warranty` route posts its own deposit and is paid from it (it loses
+    the statement's fee), the `surety` route pays for the vetting of each
+    fact and profits only where the surety's vetting fails."""
     name: str = "arson"
     facts_controlled: int = 20
     sybils: int = 1
+    route: str = "surety"        # the arsonist's best response under §5a; `warranty` is the dominated one
     targets: list = field(default_factory=list)
 
     def start(self, e):
@@ -46,27 +52,61 @@ class Arsonist(Adversary):
         self.targets = e.world.rng.sample([f for f in e.world.facts if f.correct], self.facts_controlled)
         for f in self.targets:
             f.controlled_by = self.name
+            if f.warranty:                         # it is the fact's controller: no owner stands behind it
+                e.ledger.move("warranty", f.controller, f.warranty)
+            f.controller, f.warranty, f.surety = self.name, 0.0, 0.0
 
     def act(self, e):
         if self.done:
             return
         p, rng = e.p, e.world.rng
         for f in self.targets:
-            for _ in range(self.sybils):
+            policies = self.sybils
+            if p.cover_rule == "warranty" and e.world.types[f.type].controllable:
+                policies = self._guarantee(e, f, rng)
+            for _ in range(policies):
                 if rng.random() < p.control_exclusion:      # the pool refuses a policy on a controlled source
                     continue
-                if e.exposure + p.payout_cap > e.capacity():
+                cover = e.cover_for(f)
+                if cover is None:
+                    break
+                if cover != "warranty" and e.exposure + p.payout_cap > e.capacity():
                     continue
-                prem = e.premium(f.type)
+                prem = e.premium(f.type) if cover != "warranty" else 0.0
                 if e.ledger.balances[self.name] < prem:
                     continue
                 e.ledger.move(self.name, POOL, prem); self.spent += prem
                 e.sold[f.type] += 1
                 f.correct = False; f.planted_at = e.now              # break it (free: it is theirs)
-                e.ledger.move(POOL, self.name, p.payout_cap); self.earned += p.payout_cap
+                e.pay_claim(f, cover, self.name); self.earned += p.payout_cap
                 e.losses[f.type] += 1; e.paid[f.type] += p.payout_cap
                 e.file_dispute(f, POOL)                               # the pool prosecutes the record
+            if f.warranty:                                            # what is left of its deposit comes back
+                e.ledger.move("warranty", self.name, f.warranty); self.earned += f.warranty; f.warranty = 0.0
         self.done = True
+
+    def _guarantee(self, e, f, rng) -> int:
+        """Become the fact's guarantee under §5a and return how many policies
+        it can then buy: its own deposit (paid back to itself on every claim,
+        the statement's fee lost), or a surety's backing, bought with the
+        vetting fee and granted only when the vetting fails."""
+        p = e.p
+        f.controller = self.name
+        if self.route == "warranty":
+            deposit = p.payout_cap * self.sybils
+            if e.ledger.balances[self.name] < deposit + p.fee:
+                return 0
+            e.ledger.move(self.name, "treasury", p.fee); self.spent += p.fee
+            e.ledger.move(self.name, "warranty", deposit); self.spent += deposit
+            f.warranty = deposit
+            return self.sybils
+        if e.ledger.balances[self.name] < p.surety_fee:
+            return 0
+        e.ledger.move(self.name, POOL, p.surety_fee); self.spent += p.surety_fee
+        if rng.random() >= p.surety_error:
+            return 0                                                  # the surety saw through it
+        f.surety = p.surety_limit
+        return int(p.surety_limit // p.payout_cap)
 
 
 @dataclass

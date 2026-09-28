@@ -24,6 +24,9 @@ class Fact:
     corrected_at: int | None = None
     assertion_ref: str | None = None
     controlled_by: str = ""       # an attacker who controls the source (T5)
+    controller: str = ""          # whoever guarantees this fact's cover (§5a): an owner, or an attacker
+    warranty: float = 0.0         # the controller's reserved deposit left for claims, $
+    surety: float = 0.0           # the surety's cover left on this fact, $
     consumed: int = 0
     reliance: float = 0.0         # open insured exposure riding on this record, $ (retires over the liveness window)
     seeded: bool = False          # a planted error present at t0 (the population the half-life is measured on)
@@ -59,6 +62,18 @@ class World:
             claim = Claim(f"{t.name}/{i}", "root:snapshot", t.claim_type, f"policy:{t.name}:v1")
             facts.append(Fact(i, t.name, correct, ranks[i] ** (-p.zipf_s), claim,
                               planted_at=None if correct else 0, seeded=not correct))
+        if p.cover_rule == "warranty":
+            # who guarantees each controlled fact (§5a), drawn apart from the world's own stream so the
+            # facts, their errors and their consumption are those of the same seed under either rule
+            g = random.Random(f"guarantee:{p.seed}")
+            for f in facts:
+                if not types[f.type].controllable:
+                    continue
+                r = g.random()
+                if r < p.warranted_share:
+                    f.controller, f.warranty = f"owner/{f.id}", p.warranty_deposit
+                elif r < p.warranted_share + p.surety_share:
+                    f.controller, f.surety = f"owner/{f.id}", p.surety_limit
         return cls(facts, rng, types)
 
     def drift(self, now: int, retire: float = 0.0) -> int:

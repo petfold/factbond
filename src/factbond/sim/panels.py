@@ -54,6 +54,7 @@ def panels(engine, adversaries, capture_on=None, capture_off=None) -> dict:
         "challenger_exits": engine.stats["challenger_exits"],
         "minted": round(engine.ledger.minted, 2),
         "bounties": engine.stats["bounties"],
+        "uninsurable": engine.stats["uninsurable"], "warranty_paid": round(engine.stats["warranty_paid"], 2),
         "swept": engine.stats["swept"], "sweep_disputes": engine.stats["sweep_disputes"],
         "loss_tables": loss_tables(engine),
     }

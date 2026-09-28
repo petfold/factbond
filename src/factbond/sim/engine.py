@@ -84,6 +84,11 @@ class Engine:
             self.challengers[f"c{i}"] = [0.0, True]
             self.ledger.mint(f"c{i}", 100.0)             # working capital, not income (F9)
         self.adjudicator = Adjudicator("adj", error=self.p.ruling_error)
+        for f in self.world.facts:                        # the controllers' own capital (§5a)
+            if f.warranty:
+                self.ledger.mint(f.controller, f.warranty); self.ledger.move(f.controller, "warranty", f.warranty)
+            elif f.surety:
+                self.ledger.mint(f.controller, self.p.surety_fee); self.ledger.move(f.controller, POOL, self.p.surety_fee)
 
     # ---- money helpers --------------------------------------------------------
 
@@ -99,6 +104,34 @@ class Engine:
 
     def capacity(self) -> float:
         return self.ledger.balances[POOL] * self.p.reserve_gearing
+
+    def cover_for(self, f: Fact) -> str | None:
+        """Who guarantees a policy on `f` (insurance-products §5a): `pool` for
+        a fact nobody controls (the risk is ignorance), `warranty` from the
+        controller's reserved deposit, `surety` from the pool as a surety that
+        vetted the controller, or None: a controlled fact with neither is
+        uninsurable. Under the pre-§5a rule the pool covers anything."""
+        p = self.p
+        if p.cover_rule == "cap" or not self.world.types[f.type].controllable:
+            return "pool"
+        if f.warranty >= p.payout_cap:
+            return "warranty"
+        if f.surety >= p.payout_cap:
+            return "surety"
+        return None
+
+    def pay_claim(self, f: Fact, cover: str, to: str) -> None:
+        """A claim paid by whoever guaranteed it: the controller's deposit
+        first where it warranted the fact, else the pool (as insurer or as
+        surety), never above the cap (F3)."""
+        cap = self.p.payout_cap
+        if cover == "warranty":
+            self.ledger.move("warranty", to, cap); f.warranty -= cap
+            self.stats["warranty_paid"] += cap
+        else:
+            self.ledger.move(POOL, to, cap)
+            if cover == "surety":
+                f.surety -= cap
 
     # ---- the tick ---------------------------------------------------------------
 
@@ -178,20 +211,28 @@ class Engine:
                 continue
             if f.controlled_by and rng.random() < p.control_exclusion:
                 continue
-            if self.exposure + p.payout_cap > self.capacity():
+            cover = self.cover_for(f)
+            if cover is None:
+                self.stats["uninsurable"] += 1     # §5a: controlled, and nobody guarantees it
+                continue
+            pooled = cover != "warranty"
+            if pooled and self.exposure + p.payout_cap > self.capacity():
                 self.sales_stopped += 1            # F4: fail closed
                 continue
-            prem = self.premium(f.type)
+            prem = self.premium(f.type) if pooled else 0.0   # a warranty is the controller's, free to the buyer
             buyer = f"buyer/{f.id}"
-            self.ledger.mint(buyer, prem)          # the consumer's own money enters here
-            self.ledger.move(buyer, POOL, prem)
+            if prem:
+                self.ledger.mint(buyer, prem)      # the consumer's own money enters here
+                self.ledger.move(buyer, POOL, prem)
             self.sold[f.type] += 1
-            self.exposure += p.payout_cap
+            if pooled:
+                self.exposure += p.payout_cap
             f.reliance += p.payout_cap            # reliance counts at sale
             bites = (not f.correct) and (informed or rng.random() < p.detect_rate)
-            self.exposure -= p.payout_cap
+            if pooled:
+                self.exposure -= p.payout_cap
             if bites:
-                self.ledger.move(POOL, buyer, p.payout_cap)   # F3: never above the cap
+                self.pay_claim(f, cover, buyer)   # F3: never above the cap
                 self.losses[f.type] += 1; self.paid[f.type] += p.payout_cap
                 self.file_dispute(f, POOL)                    # the pool prosecutes, funded
 

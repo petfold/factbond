@@ -2,7 +2,9 @@
 seed, status derived from records alone (F1, G-REC1), nothing minted for
 asserting (F9), the capture replay reproducing with F4 off and failing
 with it on (§6), a scored run refused until the pre-registration block is
-filled (§2), arson negative under a full control exclusion (F3/T5)."""
+filled (§2), arson negative under a full control exclusion with the cap
+alone and under any exclusion with the warranty rule (F3/T5,
+insurance-products §5a)."""
 
 import pytest
 
@@ -73,12 +75,36 @@ def test_a_scored_run_needs_the_preregistration_block():
     assert run(SMALL.replace(ticks=3))["scored"] is False
 
 
-def test_arson_is_negative_under_a_full_control_exclusion_and_positive_without_one():
-    closed = run(SMALL.replace(control_exclusion=1.0, ticks=30))
-    assert closed["adversary_roi"]["arson"] <= 0
-    open_ = run(SMALL.replace(control_exclusion=0.0, ticks=30))
-    assert open_["adversary_roi"]["arson"] > 0                   # the wedge's cap alone does not stop arson
-    assert closed["adversary_roi"]["launder"] < 0 and closed["adversary_roi"]["spam"] < 0
+def test_arson_under_the_cap_alone_and_under_the_warranty_rule():
+    """The pre-§5a product loses to arson unless the exclusion is total;
+    under §5a (a controlled fact covered only by its controller's warranty
+    or a surety) arson loses even with no exclusion at all, and only a
+    careless surety opens it again."""
+    cap = SMALL.replace(cover_rule="cap", ticks=30)
+    assert run(cap.replace(control_exclusion=1.0))["adversary_roi"]["arson"] <= 0
+    assert run(cap.replace(control_exclusion=0.0))["adversary_roi"]["arson"] > 0   # the cap alone does not stop it
+    open_ = SMALL.replace(control_exclusion=0.0, ticks=30)
+    r = run(open_)
+    assert r["adversary_roi"]["arson"] < 0 and r["uninsurable"] > 0
+    assert run(open_.replace(surety_error=0.9))["adversary_roi"]["arson"] > 0      # the surety's vetting is the lever
+    assert r["adversary_roi"]["launder"] < 0 and r["adversary_roi"]["spam"] < 0
+
+
+def test_a_warranty_pays_from_its_controllers_deposit():
+    """An owner's warranted fact that goes wrong is paid from the owner's
+    deposit, not the pool's; a controller warranting its own fact and
+    breaking it is paid its own money back and loses the statement's fee."""
+    from factbond.sim.adversaries import Arsonist
+    from factbond.sim.engine import Engine
+    from factbond.sim.world import World
+    assert run(SMALL, adversaries=False)["warranty_paid"] > 0
+    p = SMALL.replace(control_exclusion=0.0)
+    e = Engine(p, World.build(p))
+    a = Arsonist(route="warranty")
+    a.start(e)
+    for _ in range(3):
+        e.tick([a])
+    assert a.roi() < 0 and abs(a.spent - a.earned - p.fee * a.facts_controlled) < 1e-6
 
 
 def test_the_grid_runs_and_writes_content_addressed_artifacts(tmp_path):

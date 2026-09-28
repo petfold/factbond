@@ -5,6 +5,20 @@ trusted publishing).
 
 ## [Unreleased]
 
+### Changed
+
+- **Every close reaches the consumer isolated** (2026-09-29; loopmarket
+  THREATS T18's residual). `certify`, `rule`, `ruleAppeal`, `finalize`,
+  `concede` and `retract` tell the consumer through one path: `resolve`
+  gets `CONSUMER_GAS` (500,000), a revert or an exhausted allowance is
+  recorded as `ConsumerFailed(id, subject)`, and the case closes and pays
+  regardless. A caller sending too little gas for the allowance is refused
+  (the 63/64 rule would otherwise let it close a case with the consumer
+  never told). Before, a consumer reverting in `resolve` stranded the case
+  and both stakes, and one reverting only on 0 made its claims
+  unrefutable. `hold` is unchanged: a revert there is the consumer's
+  refusal. The shipped artifact is rebuilt.
+
 ## [0.2.0] — 2026-09-28
 
 The assertion contract grows its procedure: per-assertion windows, a

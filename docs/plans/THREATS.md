@@ -534,10 +534,12 @@ a claim above the reservation could never certify. **Here:** nothing is
 factbond's to change for the hijack itself: `assert_` stays open to
 anyone and a consumer refuses at `hold` what it does not accept (the
 escrow now reads the claim and opens only the wanter's, naming the
-giver). **Residual here:** `Assertions` calls the consumer without
-isolating a revert, so a consumer that reverts in `resolve` strands a
-case and both stakes, and one that reverts only on 0 makes its claims
-unrefutable. Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
+giver). **Residual here, closed 2026-09-29:** `Assertions` called the
+consumer without isolating a revert, so a consumer reverting in
+`resolve` stranded a case and both stakes, and one reverting only on 0
+made its claims unrefutable; every close now reaches the consumer with a
+fixed gas allowance, a failure is `ConsumerFailed`, and the case closes
+(`tests/test_assertions.py::test_a_consumer_that_misbehaves_never_strands_a_case`). Full entry: [`loopmarket/docs/plans/THREATS.md`](https://github.com/petfold/loopmarket/blob/main/docs/plans/THREATS.md).
 
 ## The invariant ↔ threat coverage matrix
 

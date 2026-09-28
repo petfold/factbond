@@ -192,6 +192,17 @@ interface IConsumer {
 - `resolve` arrives exactly once: with the outcome on certification or
   an upheld ruling, with 0 on a refutation, concession or retraction.
   Between the two calls your hold persists however long the case takes.
+  A consumer that needs to tell a retraction from a refutation reads the
+  claim's `status` (5 is `Retracted`); loopmarket's escrow reopens the
+  reservation on a retraction, since nobody ruled.
+- `resolve` runs with `CONSUMER_GAS` (500,000) and cannot block the case:
+  if it reverts or runs out, the contract emits `ConsumerFailed(id,
+  subject)` and closes the case anyway (2026-09-29). So never revert in
+  `resolve` for a claim you accepted at `hold` — your own state would stay
+  held while the stakes are paid. Refuse at `hold` instead: read the claim
+  there (the asserter, the outcome, the windows, `about`) and revert what
+  you will not honour. loopmarket's escrow opens only the reservation's
+  wanter's own claim, naming the giver, within the reservation.
 
 loopmarket's `LoopEscrow` is the worked example: the subject is a
 reservation's key, the outcome is what the wanter is paid, and the escrow

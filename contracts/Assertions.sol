@@ -81,7 +81,11 @@ pragma solidity ^0.8.20;
 ///   a case moved up with no ruling below, its fee comes out of the two
 ///   stakes, whoever wins. Without an arbiter the first ruling pays at once;
 /// - `Certified` is a process fact, not truth (F7): nobody found it worth
-///   disputing, at these stakes, under this procedure.
+///   disputing, at these stakes, under this procedure;
+/// - every close reaches the consumer isolated (2026-09-29): `resolve` gets
+///   `CONSUMER_GAS`, a revert or an exhausted allowance is `ConsumerFailed`,
+///   and the case closes regardless — no consumer can strand a case and its
+///   stakes, or make its claims unrefutable by reverting only on 0.
 interface IConsumer {
     function hold(bytes32 subject) external;
     function resolve(bytes32 subject, uint256 outcome) external;
@@ -141,6 +145,7 @@ contract Assertions {
     uint64 public appealSeconds;  // how long a first ruling is open to appeal, its payout held
     uint256 public depositWei;    // what the first rung holds to rule while an appeal is possible
     uint256 public count;
+    uint256 public constant CONSUMER_GAS = 500_000;  // what a consumer's `resolve` may spend
     mapping(uint256 => Assertion) public assertions;
     mapping(uint256 => Appeal) public appeals;
     mapping(address => uint256) public deposits;      // an adjudicator's deposit, forfeited on a reversal
@@ -160,6 +165,7 @@ contract Assertions {
     event Confirmed(uint256 indexed id, address indexed adjudicator);   // the arbiter upheld the ruling below
     event Reversed(uint256 indexed id, address indexed adjudicator, uint256 forfeited);
     event Deposited(address indexed adjudicator, uint256 amount);
+    event ConsumerFailed(uint256 indexed id, bytes32 indexed subject);   // told, and it reverted or ran out
 
     constructor(address adjudicator_, address treasury_, uint256 feeWei_, uint256 floorWei_,
                 uint64 challengeSeconds_, uint64 minChallengeSeconds_, uint64 maxChallengeSeconds_,
@@ -253,7 +259,7 @@ contract Assertions {
         require(a.status == Status.Asserted, "not open");
         a.status = Status.Retracted;
         _pay(payable(a.asserter), a.bond);
-        if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, 0);
+        _tell(id, a, 0);
         emit Retracted(id);
     }
 
@@ -280,7 +286,7 @@ contract Assertions {
         require(a.status == Status.Contested || a.status == Status.Escalated, "not contested");
         a.status = Status.Refuted;
         _pay(payable(a.challenger), a.stake + a.bond);
-        if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, 0);
+        _tell(id, a, 0);
         emit Refuted(id, a.subject, false);
     }
 
@@ -291,7 +297,7 @@ contract Assertions {
         require(block.timestamp > a.challengeUntil, "challenge window open");
         a.status = Status.Certified;
         _pay(payable(a.asserter), a.bond);
-        if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, a.outcome);
+        _tell(id, a, a.outcome);
         emit Certified(id, a.subject, a.outcome, false);
     }
 
@@ -416,9 +422,30 @@ contract Assertions {
     /// The consumer told, the record emitted: the one way every ruled case ends.
     function _close(uint256 id, bool upheld) private {
         Assertion storage a = assertions[id];
-        if (a.consumer != address(0)) IConsumer(a.consumer).resolve(a.subject, upheld ? a.outcome : 0);
+        _tell(id, a, upheld ? a.outcome : 0);
         if (upheld) emit Certified(id, a.subject, a.outcome, true);
         else emit Refuted(id, a.subject, true);
+    }
+
+    /// Tell the consumer the case closed, isolated from what the consumer
+    /// does (2026-09-29; loopmarket THREATS T18's residual). Why not a plain
+    /// call: a consumer that reverts in `resolve` would revert every close —
+    /// certification, ruling, concession, retraction — and strand the case
+    /// and both stakes; one reverting only on 0 would make its claims
+    /// unrefutable. So the consumer gets a fixed `CONSUMER_GAS`, its failure
+    /// is recorded in `ConsumerFailed`, and the case closes. Why the floor on
+    /// `gasleft()`: under the 63/64 rule a caller could send just too little
+    /// gas for the consumer, let it fail, and close the case with the
+    /// consumer never told; refusing to call without the full allowance
+    /// makes a failure the consumer's own. `hold` stays a plain call: a
+    /// revert there is the consumer's refusal, and the assertion never opens.
+    function _tell(uint256 id, Assertion storage a, uint256 outcome) private {
+        if (a.consumer == address(0)) return;
+        require(gasleft() >= CONSUMER_GAS * 64 / 63 + 10_000, "gas for the consumer");
+        try IConsumer(a.consumer).resolve{gas: CONSUMER_GAS}(a.subject, outcome) {
+        } catch {
+            emit ConsumerFailed(id, a.subject);
+        }
     }
 
     function _pay(address payable to, uint256 amount) private {

@@ -17,7 +17,8 @@ and the procedure around it:
   appeal at the doubled stake, a reversal forfeiting the first rung's
   deposit; a lapsed rung's case moving up with the stakes held, since only
   a ruling moves money. A consumer contract is told `hold(subject)` and
-  `resolve(subject, outcome)`. Built for loopmarket's escrow, whose
+  `resolve(subject, outcome)`, the latter isolated so that no consumer can
+  block a close. Built for loopmarket's escrow, whose
   contested claims it adjudicates (`docs/plans/loopmarket-coupling.md`
   §3b; the cross-repo gate is loopmarket's `tests/test_escrow.py`). The
   Gnosis deployment is the 2026-09-19 source until the redeploy;

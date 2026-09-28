@@ -550,6 +550,77 @@ def test_a_claim_about_a_key_names_it_or_does_not_count_against_it(chain):
     assert client.assertion(told)["about"] == k
 
 
+HOSTILE_SRC = """
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+contract Hostile {                        // holds everything, then misbehaves when told the outcome
+    uint8 public mode;                    // 1: revert, 2: burn the gas, 3: revert only on 0
+    uint256 public told;
+    function setMode(uint8 m) external { mode = m; }
+    function hold(bytes32) external {}
+    function resolve(bytes32, uint256 o) external {
+        if (mode == 1 || (mode == 3 && o == 0)) revert("no");
+        if (mode == 2) while (true) {}
+        told += 1;
+    }
+}
+"""
+
+
+def test_a_consumer_that_misbehaves_never_strands_a_case(chain):
+    """2026-09-29 (loopmarket THREATS T18's residual): a consumer that
+    reverts in `resolve`, burns the gas, or reverts only on 0 cannot block
+    a close — certification, a refutation, a retraction each complete and
+    pay, the failure recorded in `ConsumerFailed`; and a caller who sends
+    too little gas for the consumer's allowance is refused rather than
+    closing the case with the consumer never told."""
+    import solcx
+    w3, a, consumer, adjudicator, treasury = chain
+    art = solcx.compile_source(HOSTILE_SRC, output_values=["abi", "bin"], solc_version="0.8.24")["<stdin>:Hostile"]
+    receipt = w3.eth.wait_for_transaction_receipt(
+        w3.eth.contract(abi=art["abi"], bytecode=art["bin"]).constructor().transact())
+    hostile = w3.eth.contract(address=receipt["contractAddress"], abi=art["abi"])
+    asserter, challenger = w3.eth.accounts[2], w3.eth.accounts[3]
+
+    def failed(receipt_):
+        return [e["args"]["id"] for e in a.events.ConsumerFailed().process_receipt(receipt_)]
+
+    # reverting on every close: certified anyway, the bond back
+    hostile.functions.setMode(1).transact()
+    a.functions.assert_(b"\x71" * 32, hostile.address, 3, 990, *DEFAULT).transact({"from": asserter, "value": FEE + FLOOR})
+    id_ = a.functions.count().call()
+    _advance(w3, CHALLENGE + 1)
+    short = w3.eth.wait_for_transaction_receipt(a.functions.certify(id_).transact({"from": asserter, "gas": 300_000}))
+    assert short["status"] == 0                                           # too little gas for the allowance: refused
+    assert a.functions.assertions(id_).call()[10] == 1                    # still Asserted: nothing closed
+    r = w3.eth.wait_for_transaction_receipt(a.functions.certify(id_).transact({"from": asserter, "gas": 2_000_000}))
+    assert failed(r) == [id_] and a.functions.assertions(id_).call()[10] == 3
+    # reverting only on 0: a refutation still pays the challenger
+    hostile.functions.setMode(3).transact()
+    bond = 10 ** 17
+    a.functions.assert_(b"\x72" * 32, hostile.address, 3, 990, *DEFAULT).transact({"from": asserter, "value": FEE + bond})
+    id_ = a.functions.count().call()
+    stake = a.functions.stakeFor(bond, 990).call()
+    a.functions.dispute(id_).transact({"from": challenger, "value": stake})
+    before = w3.eth.get_balance(challenger)
+    r = w3.eth.wait_for_transaction_receipt(a.functions.rule(id_, False).transact({"from": adjudicator, "gas": 2_000_000}))
+    assert failed(r) == [id_] and a.functions.assertions(id_).call()[10] == 4          # Refuted
+    assert w3.eth.get_balance(challenger) - before == stake + bond - RULING_FEE
+    # burning the gas: a retraction completes within the allowance
+    hostile.functions.setMode(2).transact()
+    a.functions.assert_(b"\x73" * 32, hostile.address, 3, 990, *DEFAULT).transact({"from": asserter, "value": FEE + FLOOR})
+    id_ = a.functions.count().call()
+    assert _balance_delta(w3, asserter, a.functions.retract(id_), gas=2_000_000) == FLOOR
+    assert a.functions.assertions(id_).call()[10] == 5                    # Retracted
+    # a consumer that behaves is told as before
+    hostile.functions.setMode(0).transact()
+    a.functions.assert_(b"\x74" * 32, hostile.address, 3, 990, *DEFAULT).transact({"from": asserter, "value": FEE + FLOOR})
+    id_ = a.functions.count().call()
+    _advance(w3, CHALLENGE + 1)
+    r = w3.eth.wait_for_transaction_receipt(a.functions.certify(id_).transact({"from": asserter}))
+    assert failed(r) == [] and hostile.functions.told().call() == 1
+
+
 def test_retraction_returns_the_bond_and_keeps_the_fee(chain):
     w3, a, consumer, adjudicator, treasury = chain
     asserter = w3.eth.accounts[2]

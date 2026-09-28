@@ -41,7 +41,7 @@ procedure, the policy and the ledger views around them, and a consumer
 - [x] The calibration ledger's views from events (F5, F6) —
       `factbond.ledger`: the loss view, the adjudicator view, claims about
       a key.
-- [ ] **Isolate consumer reverts** (added 2026-09-29, before the
+- [x] **Isolate consumer reverts** (added and DONE 2026-09-29, before the
       redeploy): `Assertions` calls the consumer's `hold` and `resolve`
       without isolating a revert, so a consumer that reverts in `resolve`
       strands the case and both stakes, and one that reverts only on 0

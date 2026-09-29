@@ -10,10 +10,10 @@ simulation harness. Why it is shaped this way is in
 [DESIGN.md](DESIGN.md) and the plans under [plans/](plans/); what comes
 next is the [ROADMAP](../ROADMAP.md).
 
-**Status (2026-09-28).** Alpha. The contract described here is the
-current source; the deployment on Gnosis (`0xfa6f…bF99`) is the
-2026-09-19 version until it is redeployed. Numbers in the shipped policy
-are placeholders.
+**Status (2026-09-29).** Alpha. The contract described here is the
+current source, deployed on Gnosis at `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270` (2026-09-29;
+the 2026-09-19 deployment `0xfa6f…bF99` keeps its history). Numbers in the
+shipped policy and the deployment's parameters are placeholders.
 
 Contents: 1 who does what · 2 the life of a claim · 3 the money ·
 4 deploying · 5 the client · 6 writing a consumer · 7 claims about a key ·

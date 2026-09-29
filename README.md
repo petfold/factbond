@@ -20,8 +20,9 @@ and the procedure around it:
   `resolve(subject, outcome)`, the latter isolated so that no consumer can
   block a close. Built for loopmarket's escrow, whose
   contested claims it adjudicates (`docs/plans/loopmarket-coupling.md`
-  §3b; the cross-repo gate is loopmarket's `tests/test_escrow.py`). The
-  Gnosis deployment is the 2026-09-19 source until the redeploy;
+  §3b; the cross-repo gate is loopmarket's `tests/test_escrow.py`). On
+  Gnosis at `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270` since 2026-09-29 (the source above, with
+  an arbiter), resolver of loopmarket's escrow `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936`;
 - `factbond.assertions`, the client; `factbond.policy`, evidence policy
   as data (per-domain documents, one rule per claim type, a named and
   bonded final rung required at load); `factbond.procedure`, the

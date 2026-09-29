@@ -51,9 +51,15 @@ procedure, the policy and the ledger views around them, and a consumer
       whatever the consumer does, the consumer's failure recorded in an
       event. loopmarket's escrow no longer reverts on a claim it opened, so
       the gate is a hostile consumer in the tests.
-- [ ] **Redeploy on Gnosis** with an arbiter, then the adjudicator's
+- [x] **Redeploy on Gnosis** with an arbiter, then the adjudicator's
       deposit; loopmarket's single escrow redeploy (its E3) names the new
-      address. The order across the two repositories is kept in
+      address. DONE 2026-09-29: `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270` (adjudicator and treasury the
+      deployer's key, the arbiter a stand-in key of the same operator —
+      to be replaced by a named, bonded final rung at the next redeploy —
+      fee 0.001, floor 0.01, challenge 1 h within [10 min, 60 d], ruling
+      1 d up to 90 d, ruling and arbiter fees 0.005, appeal 1 d, the rung's
+      0.01 deposit posted); loopmarket's escrow `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` names it, and
+      loopmarket's E3 gate ran claim 1 on it live. The order across the two repositories is kept in
       loopmarket's `ROADMAP.md` (P3b, "order of work", 2026-09-29).
 - [ ] The evidence fee and the challenger's cap charged on a real dispute;
       B5's return of the fee · [assertion-extensions §2](docs/plans/assertion-extensions.md).

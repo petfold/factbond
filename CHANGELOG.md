@@ -5,6 +5,14 @@ trusted publishing).
 
 ## [Unreleased]
 
+### Deployed
+
+- **`Assertions` redeployed on Gnosis at `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270`** (2026-09-29),
+  the current source with an arbiter as the final rung (a stand-in key of
+  the deployer for now) and the first rung's deposit posted; loopmarket's
+  escrow `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` names it as resolver, and loopmarket's E3 gate
+  ran claim 1 on it live.
+
 ### Changed
 
 - **Every close reaches the consumer isolated** (2026-09-29; loopmarket

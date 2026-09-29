@@ -288,7 +288,18 @@ funding, §5–§6, land with Phase 2):
   votes on disputes it can trade against — §2's capture); reality.eth's
   composition is the model: a cheap exponential-bond fast path escalating
   into an independent arbitrator contract, expected to be invoked rarely
-  and allowed to be slow and expensive. Rarely-invoked is the design
+  and allowed to be slow and expensive. *(2026-09-29, Peter with
+  loopmarket's assistant: who it may be — not one, competing ones, each
+  fact class naming its own, each maker choosing which it accepts, by
+  property rather than by name: loopmarket `counterparty-gate.md` §7a.)*
+  Candidates that meet F5: a professional arbitration provider signing
+  rulings on chain behind a deposit; a domain authority for its own fact
+  class (a licensing chamber, a land register, a ride-dispute board — the
+  body whose register is already the evidence, never a party to the
+  market it judges); a drawn-juror court for small stakes, its integrity
+  cost checked against what rides on it; a mutual's committee for the
+  mutual's own claims. The deployed `Assertions` names a stand-in key
+  until one is named. Rarely-invoked is the design
   intent: expensive rungs exist mainly as deterrence (`DESIGN.md` §6.4).
 
 Constitutional clauses, binding across all rungs:

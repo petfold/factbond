@@ -58,8 +58,8 @@ procedure, the policy and the ledger views around them, and a consumer
       to be replaced by a named, bonded final rung at the next redeploy —
       fee 0.001, floor 0.01, challenge 1 h within [10 min, 60 d], ruling
       1 d up to 90 d, ruling and arbiter fees 0.005, appeal 1 d, the rung's
-      0.01 deposit posted); loopmarket's escrow `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` names it, and
-      loopmarket's E3 gate ran claim 1 on it live. The order across the two repositories is kept in
+      0.01 deposit posted); loopmarket's escrow named it from `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` (E3, claim 1 live)
+      and names it at `0xddDB7276F705671673F0885aEf93B99b890Eb5A9` since 2026-09-29 night. The order across the two repositories is kept in
       loopmarket's `ROADMAP.md` (P3b, "order of work", 2026-09-29).
 - [ ] The evidence fee and the challenger's cap charged on a real dispute;
       B5's return of the fee · [assertion-extensions §2](docs/plans/assertion-extensions.md).
@@ -106,6 +106,13 @@ fact, the pool solvent under the harness's loss scenarios.
 - [ ] Cover on loopmarket legs: the insured asserts the trigger, the
       reservation pays, assignment and netting (loopmarket's C5; milestone
       M4) · [credentials-cover-and-options D3](docs/plans/credentials-cover-and-options.md).
+      *Half done 2026-09-29 on loopmarket's side:* the covered period, the
+      cover-only reservation, the deductible on the deposit, assignment and
+      netting in the escrow (live at `0xddDB7276F705671673F0885aEf93B99b890Eb5A9`, claims resolved
+      through this contract). Open here: D-1 — a false presentation reduces
+      the payout proportionately, which needs a ruling that states an amount
+      (and a rule for how stakes split on it); D-3's doctrine for the
+      adjudicator (an unadjudicable term construed against the insurer).
 - [ ] Warranted facts and sureties as products (§5a).
 - [ ] The geared reserve and the mutual as the first pooled form, with its
       rules (milestone M5) · [netting-and-reserves §7](docs/plans/netting-and-reserves.md).

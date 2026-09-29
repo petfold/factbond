@@ -61,6 +61,16 @@ procedure, the policy and the ledger views around them, and a consumer
       0.01 deposit posted); loopmarket's escrow named it from `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` (E3, claim 1 live)
       and names it at `0xddDB7276F705671673F0885aEf93B99b890Eb5A9` since 2026-09-29 night. The order across the two repositories is kept in
       loopmarket's `ROADMAP.md` (P3b, "order of work", 2026-09-29).
+- [ ] **A notice on the rung deposit** (added 2026-09-29 night, from
+      loopmarket's arbitrators-by-property build, its THREATS T20): a
+      maker may now accept resolvers by what a reversed ruling forfeits
+      (`min(deposits(adjudicator), depositWei)`, read at clearing), but
+      `withdrawDeposit` needs only that no ruling is open to appeal, so the
+      stake can leave between clearing and the claim, and `setAdjudicator`
+      swaps the rung without an event. Candidates: a withdrawal notice
+      longer than the longest claim period a consumer names, or a lock
+      while a consumer reports an open reservation naming this contract;
+      and an event on `setAdjudicator`. Next redeploy.
 - [ ] The evidence fee and the challenger's cap charged on a real dispute;
       B5's return of the fee · [assertion-extensions §2](docs/plans/assertion-extensions.md).
 - [ ] The ladder beyond two rungs: the automated evidence rung, the staked

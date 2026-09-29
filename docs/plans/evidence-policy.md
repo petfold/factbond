@@ -152,6 +152,7 @@ normative summary, the subsections carry the why.
 | location | PoL networks | slot carried, **not implemented 2026** | everything, today |
 | possession | the giver's key answering a fresh challenge at the door | loopmarket R7 (2026-09-29): spent on the first response; a door level, never a bare type | key lending (priced by bond and cover) |
 | photo-match | possession plus the attester's photo commitment, opened at the door | loopmarket R7 (2026-09-29): the counterparty confirms the face | a look-alike; a coerced holder |
+| registry-transfer(ID) | the title register ID showing the item held by the wanter (land, vehicles: the register is the title) | loopmarket I4 (2026-09-29 night): the register named in the type, the wanter accepting exactly the registers she names; a give naming no item is refused at clearing | a register's error or corruption (its own deposit and accreditation); a transfer outside the register |
 
 **Countersign — the default.** The optimistic pattern in miniature: both
 parties silent past the liveness window = confirmed; a disagreement — not a

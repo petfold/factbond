@@ -61,6 +61,11 @@ procedure, the policy and the ledger views around them, and a consumer
       0.01 deposit posted); loopmarket's escrow named it from `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` (E3, claim 1 live)
       and names it at `0xddDB7276F705671673F0885aEf93B99b890Eb5A9` since 2026-09-29 night. The order across the two repositories is kept in
       loopmarket's `ROADMAP.md` (P3b, "order of work", 2026-09-29).
+- [ ] *(2026-10-01, Peter: the default resolver of a loopmarket leg is
+      now one named adjudicator both sides accept, final, chosen by
+      reputation or accreditation — commercial arbitration's model; this
+      contract's bonded ladder is an option for higher stakes among
+      strangers. loopmarket `counterparty-gate.md` §7a.)*
 - [ ] **A named final rung — deferred, the stand-in labelled** (ruled by
       Peter 2026-10-01): the deployed arbiter stays the operator's
       stand-in key, documented as test amounts only, until real money

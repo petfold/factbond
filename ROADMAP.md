@@ -142,6 +142,14 @@ fact, the pool solvent under the harness's loss scenarios.
 - [ ] Warranted facts and sureties as products (§5a).
 - [ ] The geared reserve and the mutual as the first pooled form, with its
       rules (milestone M5) · [netting-and-reserves §7](docs/plans/netting-and-reserves.md).
+      *Deferred (Peter, 2026-10-01)* until a pooled-cover need appears:
+      single-insurer cover already works end to end on loopmarket's escrow,
+      and the question worth simulating — viability — needs a scored run,
+      hence the pre-registration first. Revisit with the other pooled form
+      left undecided the same day (insurance in place of an adjudicator's
+      deposit, Open decisions). The mutual itself is a maker on existing
+      interfaces, its rules its own code — no plugin the protocol runs; a
+      reference mutual belongs in hansa (its CHARTER §E′).
 - [ ] The pool as asserter and pool-funded disputes · [mechanism §6–§7](docs/plans/mechanism-design.md).
 - [ ] Dispute markets · [mechanism §5](docs/plans/mechanism-design.md).
 - [ ] The agents' product on facts nobody controls.

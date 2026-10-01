@@ -305,6 +305,18 @@ ruling could enforce, and one loss could be paid from two reservations.
   as a bonded negation; a certified refutation reduces the payout
   proportionately (the Insurance Act 2015's remedy). Without a
   presentation duty, concealment is priced into everyone's premium.
+  *Ruled (Peter, 2026-10-01), recorded, not built:* final-offer
+  ("baseball") arbitration — the insured asserts X, the insurer disputes
+  stating its own figure Y < X, the ruling picks X or Y and nothing between;
+  the winner takes the stakes as now; Y = 0 is today's refutation. In
+  factbond: `dispute(id)` gains the counter-amount and a ruling for the
+  disputer resolves the consumer with it instead of 0; the escrow already
+  pays any amount up to the reservation less the deductible. Chosen over a
+  ruling that states an amount (discretion over money, a stake-split rule, a
+  meaning for partial reversal) and a reduction schedule in the policy (two
+  assertions combined in the escrow): a binary choice between the parties'
+  own figures leaves a bribe least to buy. The `presentation(…)` term stays a
+  hash of what was declared, carrying no number.
 - **D-2. Assignment before payout, and netting.** The resolver requires
   `assign` of the insured's claim on the giver's reservation to the insurer
   before a cover `resolve(toWanter)`, and nets any amount already recovered
@@ -395,6 +407,13 @@ checking means, and a fail-closed gate said only "meets nothing".
   GAFTA's loading-port rule; the basis of D10's professional indemnity as
   fact cover; the inspector is a bonded attester like every other checker.
   Inspection history of `item(h)` is the set of `inspect` fills naming it.
+  *Ruled (Peter, 2026-10-01), recorded, not built:* the flag is a catalogue
+  marker (`certificate-final`) over inspection categories that say what
+  they certify; the report travels as the inspection leg's sealed handoff;
+  the routing is this repo's doctrine for adjudicators — a claim against
+  the giver on a certified attribute is refuted, one against the
+  inspector's reservation admissible up to its deposit — to enter the
+  evidence policy when built (loopmarket `items-and-ownership.md` §3).
 - **E2. Inspector independence.** The free formality: an `inspect` give is
   admissible only if its giver's key is not a maker or wanter on any other
   leg of the loop naming `item(h)`. The real mechanism, since keys are

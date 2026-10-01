@@ -13,7 +13,12 @@ next is the [ROADMAP](../ROADMAP.md).
 **Status (2026-09-29).** Alpha. The contract described here is the
 current source, deployed on Gnosis at `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270` (2026-09-29;
 the 2026-09-19 deployment `0xfa6f…bF99` keeps its history). Numbers in the
-shipped policy and the deployment's parameters are placeholders.
+shipped policy and the deployment's parameters are placeholders. **Test amounts only:** this deployment's adjudicator and arbiter are both
+the operator's own keys — a stand-in final rung, kept deliberately (Peter,
+2026-10-01) until real money arrives; the first real final rung is then
+planned as a multisig of named people independent of the operator (a Safe
+is an address, so the contract needs no change), deployed with the
+per-ruling lock and the fixed adjudicator (ROADMAP).
 
 Contents: 1 who does what · 2 the life of a claim · 3 the money ·
 4 deploying · 5 the client · 6 writing a consumer · 7 claims about a key ·

@@ -61,16 +61,29 @@ procedure, the policy and the ledger views around them, and a consumer
       0.01 deposit posted); loopmarket's escrow named it from `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` (E3, claim 1 live)
       and names it at `0xddDB7276F705671673F0885aEf93B99b890Eb5A9` since 2026-09-29 night. The order across the two repositories is kept in
       loopmarket's `ROADMAP.md` (P3b, "order of work", 2026-09-29).
-- [ ] **A notice on the rung deposit** (added 2026-09-29 night, from
-      loopmarket's arbitrators-by-property build, its THREATS T20): a
-      maker may now accept resolvers by what a reversed ruling forfeits
-      (`min(deposits(adjudicator), depositWei)`, read at clearing), but
-      `withdrawDeposit` needs only that no ruling is open to appeal, so the
-      stake can leave between clearing and the claim, and `setAdjudicator`
-      swaps the rung without an event. Candidates: a withdrawal notice
-      longer than the longest claim period a consumer names, or a lock
-      while a consumer reports an open reservation naming this contract;
-      and an event on `setAdjudicator`. Next redeploy.
+- [ ] **A named final rung — deferred, the stand-in labelled** (ruled by
+      Peter 2026-10-01): the deployed arbiter stays the operator's
+      stand-in key, documented as test amounts only, until real money
+      arrives. Then the first real final rung is a multisig of named people
+      independent of the operator (a Safe is an address: no contract
+      change; "bonded" is their names unless an arbiter deposit is added),
+      deployed together with the item below. Considered and not chosen now:
+      a professional arbitration provider (needs an agreement), a drawn-
+      juror court such as Kleros (stake-weighted drawing sits against "never
+      a token vote" for large stakes, and ties factbond to another
+      protocol's governance; a later option for a small-stakes class), a
+      domain authority per fact class (needs the institutions).
+- [ ] **The rung deposit per ruling, and a fixed adjudicator** (added
+      2026-09-29 night from loopmarket's THREATS T20; *ruled by Peter
+      2026-10-01*, corrected the same day: `rule` already requires
+      `depositWei` at the ruling, so a withdrawn deposit cannot rule).
+      At the redeploy that names a real final rung (above):
+      a per-ruling lock — `rule` requires `deposits ≥ (openRulings + 1) ×
+      depositWei` and `withdrawDeposit` only the unlocked part — so
+      concurrent rulings do not share one deposit; and no `setAdjudicator`
+      — one contract per adjudicator, so what a maker accepted at clearing
+      is what rules. A stake scaled to the claim waits until claims outgrow
+      a constant one.
 - [ ] The evidence fee and the challenger's cap charged on a real dispute;
       B5's return of the fee · [assertion-extensions §2](docs/plans/assertion-extensions.md).
 - [ ] The ladder beyond two rungs: the automated evidence rung, the staked
@@ -120,8 +133,11 @@ fact, the pool solvent under the harness's loss scenarios.
       cover-only reservation, the deductible on the deposit, assignment and
       netting in the escrow (live at `0xddDB7276F705671673F0885aEf93B99b890Eb5A9`, claims resolved
       through this contract). Open here: D-1 — a false presentation reduces
-      the payout proportionately, which needs a ruling that states an amount
-      (and a rule for how stakes split on it); D-3's doctrine for the
+      the payout proportionately; *ruled 2026-10-01, recorded and not
+      built:* final-offer arbitration (the insurer's dispute states its own
+      figure, the ruling picks one of the two, the winner takes the stakes;
+      `credentials-cover-and-options.md` D-1), deployed with the batched
+      redeploy that names a real final rung; D-3's doctrine for the
       adjudicator (an unadjudicable term construed against the insurer).
 - [ ] Warranted facts and sureties as products (§5a).
 - [ ] The geared reserve and the mutual as the first pooled form, with its
@@ -148,6 +164,46 @@ Recorded with their options in the plans; the ones waiting on Peter:
 - Which fact types count as controllable (insurance-products OP-2; the
   harness counts every POI and locker type).
 - The reliance term's `k` (mechanism §2), a Phase-0 output.
+- **Insurance in place of an adjudicator's deposit — undecided** (raised by
+  Peter 2026-10-01; for now the deposit is the adjudicator's own, option A).
+  The rung deposit does two jobs: *integrity* (the adjudicator loses its own
+  money when a ruling is reversed, so bending one for a bribe costs it) and
+  *compensation* (the forfeit pays the appellant the bad ruling wronged).
+  Insurance carries compensation well but weakens integrity: a fully
+  insured adjudicator loses a premium increase, not a deposit. The options
+  considered:
+  - **A. Own deposit only** (in force). Simplest; integrity and
+    compensation are one number. Against: capital is a barrier, so new or
+    small arbitrators cannot compete (loopmarket `counterparty-gate.md`
+    §7a wants a competitive market of them).
+  - **B. A sponsor's deposit counts, no own minimum**
+    (`postDepositFor(adjudicator)`). Lowers the barrier, small change.
+    Against: the adjudicator may have nothing of its own at stake;
+    integrity then rests on the insurer's off-chain terms, which makers
+    cannot see.
+  - **C. A sponsor's deposit counts above a required own share** (the
+    candidate if this is revisited): one insurer per adjudicator; the own
+    deposit forfeits first, the insurer's after; a minimum own share fixed
+    per contract at deployment (equal to `depositWei` is option A, zero is
+    full insurance), makers choosing among contracts. For: integrity (the
+    own share) and compensation (the total) both on chain; the same shape
+    as loopmarket's taxi case (the driver's own deposit first, the
+    insurer's above) and the mutual's order of recourse (F3). Against: more
+    contract logic and one more deployment number; loopmarket's `min:`
+    floor reads only the total, so a floor on the own share would be a
+    future `Accept` field.
+  - **D. Unfunded cover** (a statement "insured by X"). Rejected: an
+    insurer's promise is a claim on another party, which needs adjudicating
+    in turn — the regress factbond exists to avoid.
+
+  Two conditions any insured form must meet: the cover is held money (a
+  deposit, not a promise), and it pays on the on-chain `Reversed` event
+  whatever the reason — ordinary professional indemnity excludes
+  dishonesty, so it would refuse exactly the bribery case; the insurer
+  prices the risk from the adjudicator's reversal record
+  (`factbond.ledger`). Why not now: no arbitrator yet lacks the capital
+  (the deployed contract's rungs are the operator's keys), and keeping it
+  simple until one does.
 
 ## Related repositories
 

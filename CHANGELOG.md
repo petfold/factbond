@@ -5,13 +5,20 @@ trusted publishing).
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-10-01
+
+The package's contract artifact is the one deployed on Gnosis: every
+close reaches the consumer isolated (`CONSUMER_GAS`, `ConsumerFailed`).
+0.2.0's artifact predates that change; 0.2.1's runtime code equals the
+live `0x3c1B…e270` byte for byte. No change to the client's API.
+
 ### Deployed
 
 - **`Assertions` redeployed on Gnosis at `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270`** (2026-09-29),
   the current source with an arbiter as the final rung (a stand-in key of
   the deployer for now) and the first rung's deposit posted; loopmarket's
-  escrow `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` names it as resolver, and loopmarket's E3 gate
-  ran claim 1 on it live.
+  escrow `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936` named it as resolver (and `0xddDB7276F705671673F0885aEf93B99b890Eb5A9` since
+  that night), and loopmarket's E3 gate ran claim 1 on it live.
 
 ### Changed
 
@@ -26,6 +33,19 @@ trusted publishing).
   and both stakes, and one reverting only on 0 made its claims
   unrefutable. `hold` is unchanged: a revert there is the consumer's
   refusal. The shipped artifact is rebuilt.
+
+### Documentation
+
+- **Checked for the release** (2026-10-01). The README and the User
+  Guide's §12 say how loopmarket uses this contract now: loopmarket's
+  default resolver is one named arbitrator both sides accept, whose ruling
+  is final (loopmarket 0.13.0), and this bonded ladder is the option a
+  reservation names for higher stakes among strangers; the escrow's
+  current address (`0xddDB…b5A9`); the guide's status line; the roadmap's
+  note on the default form and its related-repositories line;
+  `CLAUDE.md`'s `Asserted` fields (no `escalation` since 2026-09-28) and
+  its deployment history; `loopmarket-coupling.md` §3b gains a dated note
+  that the default form is no longer this ladder's top rung.
 
 ## [0.2.0] — 2026-09-28
 

@@ -212,6 +212,17 @@ assumed. What loopmarket needs from the guarantee side:
 
 ## 3b. The resolver interface: custody in loopmarket, adjudication here (Peter, 2026-09-19)
 
+> **Update 2026-10-01 (Peter).** loopmarket's *default* resolver is now the
+> simpler form: one named arbitrator both sides accept, a plain key whose
+> ruling is final — commercial arbitration's model, built in loopmarket
+> 0.13.0 (the case carried sealed through the makers' books, the escrow's
+> `hold` and `resolve` called by that key). This ladder is the option a
+> reservation names for higher stakes among strangers. The interface below
+> is unchanged: either kind of resolver makes the same two calls. Where the
+> text says the agreed arbiter "is the top rung of *this* ladder", read it
+> as holding when a leg names this contract (loopmarket
+> `counterparty-gate.md` §7a).
+
 loopmarket built its escrow contract on 2026-09-19 and first put a claim
 mechanism inside it — every payout a ruling by an arbiter key. Peter's
 correction, agreed the same day: **a ruling or a timeout**; rulings are for

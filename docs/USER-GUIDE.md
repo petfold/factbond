@@ -10,7 +10,7 @@ simulation harness. Why it is shaped this way is in
 [DESIGN.md](DESIGN.md) and the plans under [plans/](plans/); what comes
 next is the [ROADMAP](../ROADMAP.md).
 
-**Status (2026-09-29).** Alpha. The contract described here is the
+**Status (2026-10-01, 0.2.1).** Alpha. The contract described here is the
 current source, deployed on Gnosis at `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270` (2026-09-29;
 the 2026-09-19 deployment `0xfa6f…bF99` keeps its history). Numbers in the
 shipped policy and the deployment's parameters are placeholders. **Test amounts only:** this deployment's adjudicator and arbiter are both
@@ -319,8 +319,15 @@ rule, kept for comparison.
 
 ## 12. With loopmarket
 
-loopmarket's escrow names factbond's contract as the resolver of its
-reservations: custody there, adjudication here. How a contested claim on
-a deposit runs is sections 2 and 3 above, with the escrow as the consumer
-and a notice to the giver first (section 9). loopmarket's own guide
-covers the escrow side: `../loopmarket/docs/USER-GUIDE.md` §7.
+loopmarket's escrow holds a deposit and lets each reservation name its
+*resolver*: custody there, adjudication by whoever is named. Since
+2026-10-01 (loopmarket 0.13.0) the default is the simplest form — one
+named arbitrator both sides accept, a plain key whose ruling is final,
+the case carried sealed through the makers' books (`loop claim`,
+`answer`, `hold`, `rule`). This contract is the option for higher stakes
+among strangers: a reservation names its address as resolver (a give's
+`arbitrator`, or the clearing's `resolver` setting), and a contested
+claim on the deposit is then an assertion here — sections 2 and 3 above,
+with the escrow as the consumer and a notice to the giver first (section
+9). loopmarket's own guide covers the escrow side and the default form:
+`../loopmarket/docs/USER-GUIDE.md` §7.2.

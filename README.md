@@ -22,7 +22,11 @@ and the procedure around it:
   contested claims it adjudicates (`docs/plans/loopmarket-coupling.md`
   §3b; the cross-repo gate is loopmarket's `tests/test_escrow.py`). On
   Gnosis at `0x3c1B4C944398bcc30890d6A6c78f1F9AA2dFe270` since 2026-09-29 (the source above, with
-  an arbiter), resolver of loopmarket's escrow `0xA49Cc9F9dab95aAB7093F138A084027ef66dD936`;
+  an arbiter; test amounts only — both rungs are the operator's keys), the
+  resolver loopmarket's escrow `0xddDB7276F705671673F0885aEf93B99b890Eb5A9` reservations may name.
+  Since 2026-10-01 loopmarket's *default* resolver is one named arbitrator
+  both sides accept, whose ruling is final; this bonded ladder is the
+  option for higher stakes among strangers;
 - `factbond.assertions`, the client; `factbond.policy`, evidence policy
   as data (per-domain documents, one rule per claim type, a named and
   bonded final rung required at load); `factbond.procedure`, the

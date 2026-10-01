@@ -3,7 +3,7 @@ claims. The first code (2026-09-19) is the assertion primitive's
 consumer-facing edge — `contracts/Assertions.sol` and `factbond.assertions`;
 the design lives in `docs/`."""
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 from .assertions import AssertionsClient, BUCKETS, NO_LADDER, abi  # noqa: E402,F401
 

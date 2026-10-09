@@ -11,6 +11,42 @@ gates and open problems; how to use what is built is the
 [DESIGN.md](docs/DESIGN.md). The order across repositories is the
 development sequence of 2026-09-25 (Track F is factbond's).
 
+## Alignment with loopmarket (2026-10-10)
+
+loopmarket's review question 17 (ontodag `docs/plans/REVIEW_2026-10.md`
+§8 item 17, decided by Peter) restates the two gates this repository and
+loopmarket share (`loopmarket-coupling.md` §5). loopmarket's P3 went ahead
+of both on Peter's decisions from 2026-09-19: the escrow with this
+contract as a resolver, cover and the deductible, registers, the
+counterparty gate, arbitrators and cases, live on Gnosis at test amounts.
+The gates keep their owners and sign-offs, and now guard:
+
+- **loopmarket's record-format freeze: a public launch.** No new offer
+  record version once other people's offers are in the books (loopmarket
+  `P4-privacy.md` §5 is the checklist); declared after the review's
+  decided loopmarket items land, since they may touch the record.
+- **This repository's scored Phase-0 run: selling insurance from a pool**
+  (Phase 2's pooled forms, the premium feed, clearing-attached insurance
+  as a product), as Phase 0's exit already says. Single-insurer cover
+  between named parties on loopmarket's escrow is not gated by it.
+
+What follows for the order of work here:
+
+- Phase 1's open items and Phase 1b need neither gate.
+- Real money is expected with loopmarket's public launch, which the freeze
+  now gates, so the named final rung and the per-ruling deposit (Phase 1,
+  both deferred until real money arrives) belong before that launch.
+- The pre-registration stays Peter's own decision, taken when Phase 0's
+  answer is wanted; until then every run is exploratory.
+- loopmarket's other review decisions that touch this repository, none
+  built yet: `MockClearing` becomes `BookClearing` (rename the mentions
+  in `docs/INTEGRATION.md` and `loopmarket-coupling.md` when it ships);
+  loopmarket refuses an offer pinned to a registry or contract major other
+  than the installed ontodag's, so the U10 pins the reliance proof
+  consumes are also checked against the interpreter; every reader's fold
+  re-checks a clearing book's loops, and where a chain is configured only
+  on-chain fills count.
+
 ---
 
 ## Phase 1 — the assertion primitive · [mechanism](docs/plans/mechanism-design.md)

@@ -356,6 +356,18 @@ it is a list of forbidden assumptions:
 
 ## 5. Sequencing: two gates, jointly necessary
 
+> **Update (2026-10-10, loopmarket review question 17, Peter).**
+> loopmarket's P3 mechanics went ahead of both gates on Peter's decisions
+> from 2026-09-19 (§3a–§3b: the escrow with this contract as a resolver,
+> cover and the deductible, cases), live on Gnosis at test amounts. The
+> gates keep their owners and sign-offs (G-LC2) and are restated for what
+> they still guard: the P2 record-format freeze gates loopmarket's public
+> launch, where other people's offers and real money enter the books;
+> Phase-0 green gates selling insurance from a pool, the clearing-attached
+> product and the premium feed below. Single-insurer cover between named
+> parties on the escrow is not gated by Phase 0. What follows for the
+> order of work is in the roadmap's "Alignment with loopmarket".
+
 Stated here only (since 2026-09-28 loopmarket's `P3-guarantee-coupling.md`
 §8 points here): **the coupling ships only after factbond Phase-0 is green
 AND loopmarket's P2 record formats are frozen.** Neither alone suffices:
@@ -397,7 +409,8 @@ never a corrected catalogue; lane (c)'s last mile is governance, T6's home.
   §2's measure; replaying sampled loops from their pinned `{book_root,
   ontology_root}` reproduces witness lists byte-for-byte (consuming the
   mirror's G1); loops without fee-paid clearing contribute zero.
-- **G-LC2 (the coupling proper; mirrors loopmarket's G3).** Both owner
+- **G-LC2 (the coupling proper, the pooled clearing-attached product since
+  §5's 2026-10-10 update; mirrors loopmarket's G3).** Both owner
   sign-offs recorded: Phase-0's four pre-registered panels passed
   (owner: factbond, `phase0-simulation.md` §1–§2, half-life first among
   them), and the P2 record-format

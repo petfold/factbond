@@ -25,8 +25,9 @@ matches-world rung) — this is the matches-source rung's first domain.
   same for everyone.
 - **Bonds attach to claim subjects, never edges (F2)**, and ontodag's
   transitive reduction is exactly why: an asserted edge can vanish while
-  its claim stays entailed. `Ontology.assert_edge(bond=)` in loopmarket
-  must resolve to the claim subject.
+  its claim stays entailed. (loopmarket's `Ontology.assert_edge(bond=)`,
+  which would have had to resolve to the claim subject, is gone: retired
+  for coverage gives on 2026-09-25, removed on 2026-10-10.)
 
 ## The shape
 

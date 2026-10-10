@@ -150,8 +150,9 @@ product surface seen from two sides.
 
 loopmarket's roadmap has reserved the slot since P0: `bond`, `oracle`,
 `arbitrator` ride in every offer's canonical encoding (carried, unenforced)
-and `Ontology.assert_edge` already takes `bond=` — "bonded assertions,
-stakes on ⊑ edges, scaled to centrality" is its P3 line item. **factbond is
+and `Ontology.assert_edge` took `bond=` (retired in favour of coverage
+gives on 2026-09-25, removed on 2026-10-10) — "bonded assertions, stakes on
+⊑ edges, scaled to centrality" is its P3 line item. **factbond is
 the mechanism design for that line item**: bond sizing, odds-weighted
 disputes, the shared bond pool, the escalation ladder.
 

@@ -124,8 +124,9 @@ reduction, so an asserted edge can be pruned while its claim stays entailed
 (assert `X⊑A`; `X⊑B, B⊑A` arrives; the edge vanishes, `is_below(X, A)`
 stays true — `PROVENANCE.md` §8.1). An edge-attached bond would be orphaned
 by a re-routing that changed no knowledge; claim-grain subjects survive
-reduction by construction. loopmarket's `Ontology.assert_edge(bond=)` must
-therefore resolve its bond to the claim subject, not the stored edge.
+reduction by construction. (loopmarket's `Ontology.assert_edge(bond=)`,
+which would have had to resolve its bond to the claim subject, was retired
+in favour of coverage gives on 2026-09-25 and removed on 2026-10-10.)
 
 None of these records ever enters canonical knowledge (**F6**): identical
 knowledge with different bonding must keep identical roots, or
